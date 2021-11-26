@@ -1,0 +1,22 @@
+# top-most EditorConfig file
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+quote_type = single
+indent_size = 2
+prettier.semi = false
+
+# Styles
+[*.{css,scss}]
+indent_style = tab
+
+# Scripts
+[*.{js,ts,jsx,tsx}]
+indent_style = space
+
+# JSON
+[*.json]
+indent_style = space
+quote_type = double
