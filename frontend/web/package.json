@@ -8,18 +8,23 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@stitches/react": "^1.2.5",
     "await-protect": "^1.0.14",
     "axios": "^0.24.0",
+    "classnames": "^2.3.1",
+    "formik": "^2.2.9",
     "next": "12.0.4",
     "react": "17.0.2",
     "react-dom": "17.0.2",
+    "react-relay": "^12.0.0",
     "relay": "^0.8.0-1",
+    "yup": "^0.32.11",
     "zustand": "^3.6.5"
   },
   "devDependencies": {
     "@types/node": "16.11.10",
     "@types/react": "17.0.37",
+    "@types/react-relay": "^11.0.2",
+    "babel-plugin-relay": "^12.0.0",
     "eslint": "7",
     "eslint-config-next": "12.0.4",
     "typescript": "4.5.2"

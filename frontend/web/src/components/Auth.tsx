@@ -9,7 +9,6 @@ import Head from "next/head"
 
 import { checkAuth, setSessionToken } from "../lib/auth"
 import Loading from "./Loading"
-import { setLocalWorkspaceId } from "../lib/workspace"
 import { LOGIN_URL } from "../constants/env"
 
 interface AuthContextValues {
@@ -71,8 +70,6 @@ export default function Auth(props: PropsWithChildren<Props>) {
 
   useEffect(() => {
     if (require && !auth.authenticated && !authLoading && initialized) {
-      setLocalWorkspaceId("")
-
       window.location.href = LOGIN_URL
     }
   }, [auth])

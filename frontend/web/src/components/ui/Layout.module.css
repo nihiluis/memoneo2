@@ -1,0 +1,106 @@
+@import "../../../styles/vars.css";
+
+#layout {
+  --header-height: 54px;
+  --sidebar-left-width: 260px;
+  --sidebar-right-width: 200px;
+  --bg-color: white;
+
+  grid-template-columns: 200px auto 200px;
+  grid-template-rows: min-content auto min-content;
+}
+
+.fullSidebar {
+  grid-template-areas:
+    "userHeader header header"
+    "sidebarLeft content sidebarRight"
+    "footer footer footer";
+}
+
+.leftSidebar .contentGrid {
+  padding-left: var(--sidebar-left-width);
+}
+
+.rightSidebar .contentGrid {
+  padding-right: var(--sidebar-right-width);
+}
+
+.noSidebar {
+  grid-template-areas:
+    "userHeader header header"
+    "content content content"
+    "footer footer footer";
+}
+
+.userHeaderGrid {
+  grid-area: userHeader;
+}
+
+.headerGrid {
+  display: grid;
+  grid-template-columns: var(--sidebar-left-width) auto var(
+      --sidebar-right-width
+    );
+  position: fixed;
+  width: 100%;
+  height: var(--header-height);
+  z-index: 1000;
+  background-color: var(--bg-color);
+}
+
+.sidebarLeftGrid {
+  position: fixed;
+  height: 100%;
+  left: 0;
+  top: var(--header-height);
+  width: var(--sidebar-left-width);
+  @apply bg-white;
+}
+
+.sidebarRightGrid {
+  position: fixed;
+  height: 100%;
+  right: 0;
+  top: var(--header-height);
+  width: var(--sidebar-right-width);
+  @apply bg-gray-300;
+}
+
+.sidebarGridDisabled {
+  display: none;
+}
+
+.contentGrid {
+  grid-area: content;
+  min-height: 500px;
+  padding-top: var(--header-height);
+  display: grid;
+}
+
+.contentRightSidebar {
+  padding-right: var(--sidebar-right-width);
+}
+
+.contentLeftSidebar {
+  padding-left: var(--sidebar-left-width);
+}
+
+.content {
+  @apply bg-gray-100;
+  height: 100%;
+  padding: 1rem 2rem 2rem 2rem;
+}
+
+.footerGrid {
+  grid-area: footer;
+}
+
+.logoHeader {
+  display: grid;
+  grid-template-columns: min-content auto;
+  grid-gap: 1rem;
+  align-items: center;
+  padding-left: 1rem;
+  height: var(--header-height);
+  width: 200px;
+}
