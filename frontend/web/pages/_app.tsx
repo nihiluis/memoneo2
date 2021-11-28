@@ -1,8 +1,4 @@
 import "../styles/globals.css"
-import "../styles/vars.css"
-import "../styles/selectsearch.css"
-
-import { ReactRelayContext } from "react-relay"
 
 import { AuthContext } from "../src/components/Auth"
 import { useState, useContext } from "react"

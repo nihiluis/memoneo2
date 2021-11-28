@@ -9,7 +9,6 @@ import Head from "next/head"
 
 import { checkAuth, setSessionToken } from "../lib/auth"
 import Loading from "./Loading"
-import { LOGIN_URL } from "../constants/env"
 
 interface AuthContextValues {
   auth: AuthState
@@ -32,6 +31,8 @@ interface Props {
 
 export default function Auth(props: PropsWithChildren<Props>) {
   const { require, initialToken } = props
+
+  const router = useRouter()
 
   const { auth, setAuth } = useContext(AuthContext)
 
@@ -70,7 +71,7 @@ export default function Auth(props: PropsWithChildren<Props>) {
 
   useEffect(() => {
     if (require && !auth.authenticated && !authLoading && initialized) {
-      window.location.href = LOGIN_URL
+      router.push("/login")
     }
   }, [auth])
 

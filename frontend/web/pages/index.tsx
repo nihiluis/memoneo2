@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react"
 
-import Layout from "../src/components/ui/Layout"
+import Layout from "../src/components/ui/GridLayout"
 import Auth from "../src/components/Auth"
 import { initEnvironment } from "../src/relay/relay"
 

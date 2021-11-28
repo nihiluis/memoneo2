@@ -12,7 +12,7 @@
     "axios": "^0.24.0",
     "classnames": "^2.3.1",
     "formik": "^2.2.9",
-    "next": "12.0.4",
+    "next": "^12.0.5-canary.10",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-relay": "^12.0.0",
@@ -24,9 +24,13 @@
     "@types/node": "16.11.10",
     "@types/react": "17.0.37",
     "@types/react-relay": "^11.0.2",
+    "autoprefixer": "^10.4.0",
     "babel-plugin-relay": "^12.0.0",
     "eslint": "7",
     "eslint-config-next": "12.0.4",
+    "graphql": "^16.0.1",
+    "postcss": "^8.4.4",
+    "tailwindcss": "^2.2.19",
     "typescript": "4.5.2"
   }
 }

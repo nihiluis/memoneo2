@@ -1,9 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Mulish:wght@400;600&display=swap");
+
+/* purgecss start ignore */
+@tailwind base;
+@tailwind components;
+/* purgecss end ignore */
+@tailwind utilities;
+
+:root {
+	--primary-color: #4d496b;
+	--link-color: #4d496b;
+	--focused-color: #8575ff;
+	--unfocused-color: #9996a9;
+	--bg-content: #fff;
+	--bg-content-contrast: #fbfbfb;
+	--border-color: #fefefe;
+	--section-left-column-width: 8rem;
+	--section-left-column-gap: 1.5rem;
+}
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+body {
+	@apply font-body;
+	@apply text-gray-800;
 }
 
 a {
@@ -13,4 +36,120 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+
+a {
+	color: var(--link-color);
+}
+
+a:hover {
+	color: var(--focused-color);
+}
+
+p.error {
+	@apply text-red-400;
+}
+
+h1 {
+	@apply text-4xl;
+	@apply font-bold;
+}
+
+h2 {
+	@apply text-2xl;
+	@apply font-semibold;
+}
+
+h3 {
+	@apply text-xl;
+	@apply font-semibold;
+}
+
+h4 {
+	@apply text-lg;
+	@apply font-semibold;
+}
+
+.content {
+	@apply rounded;
+	@apply bg-white;
+	@apply px-6;
+	@apply py-4;
+}
+
+.btn {
+	@apply font-bold;
+	@apply py-1; 
+	@apply px-4;
+	@apply rounded-full;
+}
+
+.btn-primary {
+	@apply bg-indigo-500;
+	@apply text-white;
+}
+
+.btn-secondary {
+	@apply bg-gray-900;
+	@apply text-white;
+}
+
+.btn-disabled {
+	@apply opacity-25;
+}
+
+.btn-secondary:hover {
+	@apply bg-gray-700;
+}
+
+.btn-primary:hover {
+	@apply bg-indigo-700;
+}
+
+.title-big {
+	@apply text-2xl;
+	@apply font-semibold;
+}
+
+.title-big-margin {
+	@apply mb-6;
+}
+
+.form {
+	@apply bg-gray-100;
+	@apply p-4;
+	@apply rounded-sm;
+	@apply max-w-lg;
+}
+
+.form-row {
+	@apply mb-4;
+}
+
+.form-label {
+	@apply block;
+	@apply mb-2;
+	@apply font-semibold;
+}
+
+.form-input {
+	@apply block;
+	@apply mb-2;
+	@apply w-full;
+	@apply px-4;
+	@apply py-2;
+	@apply rounded-sm;
+}
+
+.form-btn {
+	@apply mt-2;
+}
+
+.font-unfocused {
+	color: var(--unfocused-color);
+}
+
+.text-error {
+	color: red;
 }

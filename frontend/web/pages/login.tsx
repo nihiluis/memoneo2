@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react"
+import dynamic from "next/dynamic"
 
 import { Formik, FormikErrors } from "formik"
 
@@ -17,7 +18,7 @@ function validate(values: FormValues): FormikErrors<FormValues> {
   return {}
 }
 
-export default function Login() {
+function Login() {
   return (
     <Auth require={false}>
       <Layout>
@@ -26,6 +27,8 @@ export default function Login() {
     </Auth>
   )
 }
+
+export default dynamic(() => Promise.resolve(Login), { ssr: false })
 
 function LoginForm(): JSX.Element {
   const authContext = useContext(AuthContext)
@@ -48,7 +51,6 @@ function LoginForm(): JSX.Element {
 
   return (
     <React.Fragment>
-      <h2 className="title-big title-big-margin">Log in to {PRODUCT_NAME}</h2>
       <Formik<FormValues>
         initialValues={{ mail: "", password: "" }}
         validate={validate}
@@ -65,9 +67,9 @@ function LoginForm(): JSX.Element {
             {loginError && <p className="error">{loginError}</p>}
             <button
               type="submit"
-              className="btn btn-secondary form-btn"
+              className="btn btn-secondary form-btn w-full mb-2"
               disabled={formikProps.isSubmitting || loginLoading}>
-              Submit
+              Log in
             </button>
           </form>
         )}

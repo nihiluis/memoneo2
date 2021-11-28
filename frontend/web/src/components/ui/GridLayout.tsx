@@ -9,7 +9,7 @@ import Logo from "./Logo"
 
 interface Props {}
 
-export default function Layout(props: React.PropsWithChildren<Props>) {
+export default function GridLayout(props: React.PropsWithChildren<Props>) {
   const test: any = {}
 
   return (
@@ -20,19 +20,19 @@ export default function Layout(props: React.PropsWithChildren<Props>) {
           content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
       </Head>
-      <div id={layoutStyle.layout}>
-        <header className="mb-4">
-          <div className={layoutStyle.logoHeaderSimple}>
-            <Logo width={36} height={36} className="mr-4" />
+      <div id={layoutStyle.gridLayout}>
+        <header className={layoutStyle.headerGrid}>
+          <div className={layoutStyle.logoHeader}>
+            <Logo width={36} height={36} />
             <p className="font-semibold" style={{ lineHeight: "24px" }}>
-              Log in to {PRODUCT_NAME}
+              {PRODUCT_NAME}
             </p>
           </div>
         </header>
-        <main>
-          <div>{props.children}</div>
-        </main>
       </div>
+      <main>
+        <div className={layoutStyle.content}>{props.children}</div>
+      </main>
     </div>
   )
 }

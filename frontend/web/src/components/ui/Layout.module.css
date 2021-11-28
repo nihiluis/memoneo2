@@ -1,6 +1,4 @@
-@import "../../../styles/vars.css";
-
-#layout {
+#gridLayout {
   --header-height: 54px;
   --sidebar-left-width: 260px;
   --sidebar-right-width: 200px;
@@ -103,4 +101,18 @@
   padding-left: 1rem;
   height: var(--header-height);
   width: 200px;
+}
+
+#layout {
+  display: grid;
+  grid-template-columns: auto;
+  justify-content: center;
+  margin: 40px;
+}
+
+.logoHeaderSimple {
+  display: grid;
+  grid-template-columns: max-content;
+  align-items: center;
+  justify-content: center;
 }
