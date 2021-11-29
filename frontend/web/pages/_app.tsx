@@ -9,7 +9,7 @@ import { IS_SERVER, PRODUCT_NAME } from "../src/constants/env"
 import { RelayEnvironmentProvider } from "react-relay/hooks"
 import { useEnvironment } from "../src/relay/relay"
 
-function InventoryApp({ Component, pageProps }) {
+function MemoApp({ Component, pageProps }) {
   const environment = useEnvironment()
 
   const [auth, setAuth] = useState<AuthState>({
@@ -33,4 +33,4 @@ function InventoryApp({ Component, pageProps }) {
   )
 }
 
-export default InventoryApp
+export default MemoApp

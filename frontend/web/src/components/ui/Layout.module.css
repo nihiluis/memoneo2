@@ -95,7 +95,7 @@
 
 .logoHeader {
   display: grid;
-  grid-template-columns: min-content auto;
+  grid-template-columns: max-content auto;
   grid-gap: 1rem;
   align-items: center;
   padding-left: 1rem;

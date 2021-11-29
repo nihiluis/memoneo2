@@ -12,5 +12,6 @@ export const MASTER_API_URL = DEV ? "https://master.memoneo2.nihiluis.com" : "ht
 
 export const ENDPOINT_AUTH_URL = `${AUTH_API_URL}/auth`
 export const ENDPOINT_LOGIN_URL = `${AUTH_API_URL}/login`
+export const ENDPOINT_REGISTER_URL = `${AUTH_API_URL}/register`
 
 export const ENDPOINT_RELAY_URL = `${MASTER_API_URL}/v1/relay`

@@ -1,22 +1,25 @@
 package models
 
 import (
-	"github.com/gofrs/uuid"
 	"time"
+
+	"github.com/gofrs/uuid"
 )
 
 // User represents a user of the apps
 type User struct {
-	tableName struct{} `pg:"memouser"`
+	tableName struct{}
 
-	ID     uuid.UUID `pg:",type:uuid,pk,default:uuid_generate_v4()"`
-	AuthID uuid.UUID `pg:",type:uuid,unique:idx_auth_id"`
+	ID     uuid.UUID `json:"-"`
+	AuthID uuid.UUID `json:"-"`
 
-	Level int `json:"level" pg:",notnull,default:0"`
+	Mail string `json:"mail"`
 
-	InvitedBy   *User         `json:"invitedBy" pg:"-"`
-	InvitedByID uuid.NullUUID `json:"-" pg:",type:uuid"`
+	Level int `json:"level"`
 
-	CreatedAt time.Time `json:"createdAt" pg:",default:now()"`
+	InvitedBy   *User         `json:"invitedBy"`
+	InvitedByID uuid.NullUUID `json:"-"`
+
+	CreatedAt time.Time `json:"createdAt"`
 	//UpdatedAt time.Time `json:"updatedAt" pg:",default:now()"`
 }

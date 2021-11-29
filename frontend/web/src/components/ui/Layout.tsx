@@ -21,14 +21,6 @@ export default function Layout(props: React.PropsWithChildren<Props>) {
         />
       </Head>
       <div id={layoutStyle.layout}>
-        <header className="mb-4">
-          <div className={layoutStyle.logoHeaderSimple}>
-            <Logo width={36} height={36} className="mr-4" />
-            <p className="font-semibold" style={{ lineHeight: "24px" }}>
-              Log in to {PRODUCT_NAME}
-            </p>
-          </div>
-        </header>
         <main>
           <div>{props.children}</div>
         </main>

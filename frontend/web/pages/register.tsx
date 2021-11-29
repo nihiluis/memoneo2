@@ -2,21 +2,21 @@ import React, { useContext, useState } from "react"
 import dynamic from "next/dynamic"
 import * as Yup from "yup"
 import { Formik, FormikErrors } from "formik"
-import Link from "next/link"
 
 import { PRODUCT_NAME } from "../src/constants/env"
 import Layout from "../src/components/ui/Layout"
 import Auth, { AuthContext } from "../src/components/Auth"
 import FormRow from "../src/components/form/FormRow"
-import { login } from "../src/lib/auth"
+import { register } from "../src/lib/auth"
 import Logo from "../src/components/ui/Logo"
+import Link from "next/link"
 
 interface FormValues {
   mail: string
   password: string
 }
 
-const LoginFormSchema = Yup.object().shape({
+const RegisterFormSchema = Yup.object().shape({
   password: Yup.string()
     .min(6, "Password too short.")
     .max(32, "Password too long.")
@@ -24,37 +24,33 @@ const LoginFormSchema = Yup.object().shape({
   mail: Yup.string().email("Invalid mail").required("Mail is required."),
 })
 
-function validate(values: FormValues): FormikErrors<FormValues> {
-  return {}
-}
-
-function Login() {
+function Register() {
   return (
     <Auth require={false}>
       <Layout>
-        <LoginForm />
+        <RegisterForm />
       </Layout>
     </Auth>
   )
 }
 
-export default dynamic(() => Promise.resolve(Login), { ssr: false })
+export default dynamic(() => Promise.resolve(Register), { ssr: false })
 
-function LoginForm(): JSX.Element {
+function RegisterForm(): JSX.Element {
   const authContext = useContext(AuthContext)
 
-  const [loginError, setLoginError] = useState("")
-  const [loginLoading, setLoginLoading] = useState(false)
+  const [registerError, setRegisterError] = useState("")
+  const [registerLoading, setRegisterLoading] = useState(false)
 
   const submit = async function (values: FormValues) {
     const { mail, password } = values
 
-    setLoginLoading(true)
+    setRegisterLoading(true)
 
-    const { success, token, error, userId } = await login(mail, password)
+    const { success, token, error, userId } = await register(mail, password)
 
-    setLoginLoading(false)
-    setLoginError(error)
+    setRegisterLoading(false)
+    setRegisterError(error)
 
     authContext!.setAuth({ authenticated: success, token, error, userId })
   }
@@ -64,12 +60,12 @@ function LoginForm(): JSX.Element {
       <div className="mb-4 text-center">
         <Logo width={36} height={36} className="mr-4" />
         <p className="font-semibold" style={{ lineHeight: "24px" }}>
-          Login to {PRODUCT_NAME}
+          Register to {PRODUCT_NAME}
         </p>
       </div>
       <Formik<FormValues>
         initialValues={{ mail: "", password: "" }}
-        validationSchema={LoginFormSchema}
+        validationSchema={RegisterFormSchema}
         onSubmit={submit}>
         {formikProps => (
           <form className="form w-80" onSubmit={formikProps.handleSubmit}>
@@ -80,14 +76,14 @@ function LoginForm(): JSX.Element {
               name="password"
               label="Password"
             />
-            {loginError && <p className="error">{loginError}</p>}
+            {registerError && <p className="error">{registerError}</p>}
             <button
               type="submit"
               className="btn btn-secondary form-btn w-full mb-2"
-              disabled={formikProps.isSubmitting || loginLoading}>
-              Login
+              disabled={formikProps.isSubmitting || registerLoading}>
+              Register
             </button>
-            <Link href="/register">Register here.</Link>
+            <Link href="/login">Login here.</Link>
           </form>
         )}
       </Formik>

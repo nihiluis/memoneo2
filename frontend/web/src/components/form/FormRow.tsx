@@ -30,7 +30,7 @@ export default function FormRow<T>(props: Props<T>) {
         onBlur={handleBlur}
         value={values[name]}
       />
-      {errors[name] && touched[name] && errors[name]}
+      {errors[name] && touched[name] && <p className="text-error">{errors[name]}</p>}
     </div>
   )
 }

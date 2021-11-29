@@ -26,11 +26,9 @@ type Config struct {
 	GraphQLSecretHeader     string
 	GraphQLEndpointURL      string
 	GraphQLRelayEndpointURL string
-	GraphQLWorkspaceHeader  string
 	GraphQLUserHeader       string
 	GraphQLRoleHeader       string
 	GraphQLRoleName         string
-	WorkspaceContextKey     string
 	UserIDContextKey        string
 	AuthEndpointUrl         string
 }
@@ -56,6 +54,7 @@ func (api *API) AddHandlers(s *memohttp.EchoServer) {
 
 	userAuthConfig := &userMiddleware.UserAuthConfig{
 		AuthEndpointURL: api.config.AuthEndpointUrl,
+		DataUserIDKey:   api.config.UserIDContextKey,
 	}
 	userAuthMiddleware := userMiddleware.UserAuthWithConfig(userAuthConfig)
 
@@ -77,10 +76,7 @@ type GraphQLQueryRequestBody struct {
 func (api *API) handleGraphQLQuery(c echo.Context) error {
 	var data map[string]interface{}
 
-	workspaceID := c.Get(api.config.WorkspaceContextKey).(uuid.UUID)
-
 	s := sling.New().Post(api.config.GraphQLEndpointURL).
-		Set(api.config.GraphQLWorkspaceHeader, workspaceID.String()).
 		Set(api.config.GraphQLSecretHeader, api.config.GraphQLSecret).
 		Set(api.config.GraphQLRoleHeader, api.config.GraphQLRoleName)
 	_, err := s.Body(c.Request().Body).ReceiveSuccess(&data)
@@ -97,12 +93,10 @@ func (api *API) handleGraphQLQuery(c echo.Context) error {
 func (api *API) handleGraphQLRelayQuery(c echo.Context) error {
 	var data map[string]interface{}
 
-	workspaceID := c.Get(api.config.WorkspaceContextKey).(uuid.UUID)
 	userID := c.Get(api.config.UserIDContextKey).(uuid.UUID)
 
 	s := sling.New().Post(api.config.GraphQLRelayEndpointURL).
 		Set(api.config.GraphQLSecretHeader, api.config.GraphQLSecret).
-		Set(api.config.GraphQLWorkspaceHeader, workspaceID.String()).
 		Set(api.config.GraphQLRoleHeader, api.config.GraphQLRoleName).
 		Set(api.config.GraphQLUserHeader, userID.String())
 	_, err := s.Body(c.Request().Body).ReceiveSuccess(&data)

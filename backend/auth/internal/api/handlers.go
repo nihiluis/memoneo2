@@ -87,9 +87,18 @@ func (api *API) login(c echo.Context) error {
 	mail := body.Mail
 	password := body.Password
 
+	token, err := api.performLogin(c, mail, password)
+	if err != nil {
+		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Unknown user and password combination or auth backend is down."})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{"token": token})
+}
+
+func (api *API) performLogin(c echo.Context, mail string, password string) (string, error) {
 	token, err := api.users.Login(mail, password)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	cookie := new(http.Cookie)
@@ -104,7 +113,7 @@ func (api *API) login(c echo.Context) error {
 
 	c.SetCookie(cookie)
 
-	return c.JSON(http.StatusOK, echo.Map{"token": token})
+	return token, nil
 }
 
 // RegisterRequestBody is the JSON body of a request to the register handler.
@@ -142,7 +151,9 @@ func (api *API) register(c echo.Context) error {
 
 	user = utils.MergeUser(authUser, dataUser)
 
-	return c.JSON(http.StatusOK, echo.Map{"user": user})
+	token, err := api.performLogin(c, user.Mail, body.Password)
+
+	return c.JSON(http.StatusOK, echo.Map{"token": token, "user": user})
 }
 
 func (api *API) checkAuth(c echo.Context) error {

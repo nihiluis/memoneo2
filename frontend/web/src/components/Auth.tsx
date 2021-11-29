@@ -73,6 +73,13 @@ export default function Auth(props: PropsWithChildren<Props>) {
     if (require && !auth.authenticated && !authLoading && initialized) {
       router.push("/login")
     }
+
+    if (
+      auth.authenticated &&
+      (router.pathname === "/login" || router.pathname === "/register")
+    ) {
+      router.push("/")
+    }
   }, [auth])
 
   return (

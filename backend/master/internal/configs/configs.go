@@ -42,11 +42,9 @@ func (cfg *Configs) API() (*api.Config, error) {
 		GraphQLSecretHeader:     "X-Hasura-Admin-Secret",
 		GraphQLEndpointURL:      os.Getenv("HASURA_GQL_ENDPOINT_URL"),
 		GraphQLRelayEndpointURL: os.Getenv("HASURA_RELAY_ENDPOINT_URL"),
-		GraphQLWorkspaceHeader:  "X-Hasura-Workspace",
 		GraphQLUserHeader:       "X-Hasura-User-Id",
 		GraphQLRoleHeader:       "X-Hasura-Role",
-		GraphQLRoleName:         "workspace",
-		WorkspaceContextKey:     "workspace",
+		GraphQLRoleName:         "user",
 		UserIDContextKey:        "dataUserID",
 		AuthEndpointUrl:         os.Getenv("AUTH_URL"),
 	}, nil

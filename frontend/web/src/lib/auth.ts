@@ -1,5 +1,5 @@
 import axios from "axios"
-import { ENDPOINT_AUTH_URL, ENDPOINT_LOGIN_URL } from "../constants/env"
+import { ENDPOINT_AUTH_URL, ENDPOINT_LOGIN_URL, ENDPOINT_REGISTER_URL } from "../constants/env"
 import protect from "await-protect"
 
 interface AuthResult {
@@ -57,6 +57,32 @@ export async function login(
 
   return { success: true, token, userId, error: "" }
 }
+
+
+export async function register(
+  mail: string,
+  password: string
+): Promise<AuthResult> {
+  const [res, error] = await protect(
+    axios.post(
+      ENDPOINT_REGISTER_URL,
+      { user: {firstName: "Placeholder", lastName: "Placeholder", mail}, password },
+      {
+        withCredentials: true,
+      }
+    )
+  )
+
+  if (error || !res.data.hasOwnProperty("token")) {
+    return { success: false, token: "", userId: "", error: error?.message ?? "Token not provided." }
+  }
+
+  const token: string = res.data.token
+  const userId: string = res.data.userId
+
+  return { success: true, token, userId, error: "" }
+}
+
 
 const SESSION_TOKEN_KEY = "token"
 
