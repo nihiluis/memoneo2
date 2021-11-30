@@ -6,20 +6,18 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-// User represents a user of the apps
+// User represents a user of the apps.
 type User struct {
-	tableName struct{}
+	tableName struct{} `pg:"memouser"`
 
-	ID     uuid.UUID `json:"-"`
-	AuthID uuid.UUID `json:"-"`
+	ID     uuid.UUID `pg:",type:uuid,pk,default:uuid_generate_v4()"`
+	AuthID uuid.UUID `pg:",type:uuid,unique:idx_auth_id"`
 
-	Mail string `json:"mail"`
+	Level int `json:"level" pg:",notnull,default:0"`
 
-	Level int `json:"level"`
+	InvitedBy   *User         `json:"invitedBy" pg:"-"`
+	InvitedByID uuid.NullUUID `json:"-" pg:",type:uuid"`
 
-	InvitedBy   *User         `json:"invitedBy"`
-	InvitedByID uuid.NullUUID `json:"-"`
-
-	CreatedAt time.Time `json:"createdAt"`
+	CreatedAt time.Time `json:"createdAt" pg:",default:now()"`
 	//UpdatedAt time.Time `json:"updatedAt" pg:",default:now()"`
 }

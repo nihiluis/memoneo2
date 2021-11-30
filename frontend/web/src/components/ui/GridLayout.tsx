@@ -6,12 +6,17 @@ import layoutStyle from "./Layout.module.css"
 
 import { PRODUCT_NAME } from "../../constants/env"
 import Logo from "./Logo"
+import Sidebar from "./Sidebar"
 
-interface Props {}
+interface Props {
+  showSidebarLeft: boolean
+  showSidebarRight: boolean
+  setShowSidebarRight: (show: boolean) => void
+  sidebarLeftComponent: JSX.Element
+  sidebarRightComponent: JSX.Element
+}
 
 export default function GridLayout(props: React.PropsWithChildren<Props>) {
-  const test: any = {}
-
   return (
     <div>
       <Head>
@@ -28,11 +33,27 @@ export default function GridLayout(props: React.PropsWithChildren<Props>) {
               {PRODUCT_NAME}
             </p>
           </div>
+          <div></div>
+          <div>burger</div>
         </header>
+        <Sidebar
+          position="left"
+          className={cx(layoutStyle.sidebarLeftGrid, {
+            [layoutStyle.sidebarGridDisabled]: !props.showSidebarLeft,
+          })}>
+          {props.sidebarLeftComponent}
+        </Sidebar>
+        <main className={cx(layoutStyle.contentGrid)}>
+          <div className={layoutStyle.content}>{props.children}</div>
+        </main>
+        <Sidebar
+          position="right"
+          className={cx(layoutStyle.sidebarRightGrid, {
+            [layoutStyle.sidebarGridDisabled]: !props.showSidebarRight,
+          })}>
+          {props.sidebarRightComponent}
+        </Sidebar>
       </div>
-      <main>
-        <div className={layoutStyle.content}>{props.children}</div>
-      </main>
     </div>
   )
 }

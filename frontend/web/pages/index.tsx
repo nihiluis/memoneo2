@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react"
 
-import Layout from "../src/components/ui/GridLayout"
+import GridLayout from "../src/components/ui/GridLayout"
 import Auth from "../src/components/Auth"
 import { initEnvironment } from "../src/relay/relay"
 import GoalOverview from "../src/components/goal/GoalOverview"
@@ -14,10 +14,17 @@ export default function Index() {
 }
 
 function IndexInner() {
+  const [showSidebarRight, setShowSidebarRight] = useState<boolean>(false)
+
   return (
-    <Layout>
+    <GridLayout
+      showSidebarLeft={false}
+      showSidebarRight={showSidebarRight}
+      setShowSidebarRight={setShowSidebarRight}
+      sidebarLeftComponent={null}
+      sidebarRightComponent={<RightSidebar />}>
       <GoalOverview />
-    </Layout>
+    </GridLayout>
   )
 }
 

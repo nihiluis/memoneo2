@@ -1,0 +1,12 @@
+.recentlyViewedItem {
+  display: grid;
+  grid-template-columns: max-content auto;
+  grid-column-gap: 0.2rem;
+}
+.recentlyViewedItem:not(:last-child) {
+  margin-bottom: 0.2rem;
+}
+
+.sectionListItem:not(:last-child) {
+  padding-bottom: 0.2rem;
+}

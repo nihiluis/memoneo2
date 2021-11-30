@@ -92,14 +92,17 @@ func (api *API) handleGraphQLQuery(c echo.Context) error {
 // At some point this endpoint might become legacy.
 func (api *API) handleGraphQLRelayQuery(c echo.Context) error {
 	var data map[string]interface{}
+	var errorData map[string]interface{}
 
 	userID := c.Get(api.config.UserIDContextKey).(uuid.UUID)
+	api.logger.Zap.Infow("handling graphql relay query", "user", userID.String())
 
 	s := sling.New().Post(api.config.GraphQLRelayEndpointURL).
 		Set(api.config.GraphQLSecretHeader, api.config.GraphQLSecret).
 		Set(api.config.GraphQLRoleHeader, api.config.GraphQLRoleName).
 		Set(api.config.GraphQLUserHeader, userID.String())
-	_, err := s.Body(c.Request().Body).ReceiveSuccess(&data)
+	_, err := s.Body(c.Request().Body).Receive(&data, &errorData)
+
 	if err != nil {
 		return err
 	}

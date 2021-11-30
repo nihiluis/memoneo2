@@ -9,6 +9,8 @@
     "relay": "yarn run relay-compiler --schema schema.graphql --language typescript --src . --watchman false $@"
   },
   "dependencies": {
+    "@radix-ui/react-dropdown-menu": "^0.1.1",
+    "@radix-ui/react-icons": "^1.0.3",
     "await-protect": "^1.0.14",
     "axios": "^0.24.0",
     "classnames": "^2.3.1",
