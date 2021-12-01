@@ -4,9 +4,10 @@ import Head from "next/head"
 
 import layoutStyle from "./Layout.module.css"
 
-import { PRODUCT_NAME } from "../../constants/env"
-import Logo from "./Logo"
-import Sidebar from "./Sidebar"
+import { PRODUCT_NAME } from "../../../constants/env"
+import Logo from "../Logo"
+import Sidebar from "../Sidebar"
+import { GearIcon, HamburgerMenuIcon, HomeIcon, PersonIcon } from "@radix-ui/react-icons"
 
 interface Props {
   showSidebarLeft: boolean
@@ -27,14 +28,15 @@ export default function GridLayout(props: React.PropsWithChildren<Props>) {
       </Head>
       <div id={layoutStyle.gridLayout}>
         <header className={layoutStyle.headerGrid}>
-          <div className={layoutStyle.logoHeader}>
-            <Logo width={36} height={36} />
-            <p className="font-semibold" style={{ lineHeight: "24px" }}>
-              {PRODUCT_NAME}
-            </p>
+          <div className="flex gap-3 items-center pl-8">
+            <HamburgerMenuIcon color="var(--icon-color)" width={24} height={24} />
+            <HomeIcon color="var(--icon-color)" width={24} height={24} />
           </div>
           <div></div>
-          <div>burger</div>
+          <div className="flex gap-3 items-center justify-end pr-8">
+            <GearIcon color="var(--icon-color)" width={24} height={24} />
+            <PersonIcon color="var(--icon-color)" width={24} height={24} />
+          </div>
         </header>
         <Sidebar
           position="left"

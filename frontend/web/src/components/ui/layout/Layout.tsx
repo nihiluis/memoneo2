@@ -1,17 +1,14 @@
 import * as React from "react"
-import cx from "classnames"
 import Head from "next/head"
 
 import layoutStyle from "./Layout.module.css"
 
-import { PRODUCT_NAME } from "../../constants/env"
-import Logo from "./Logo"
+import { PRODUCT_NAME } from "../../../constants/env"
+import Logo from "../Logo"
 
 interface Props {}
 
 export default function Layout(props: React.PropsWithChildren<Props>) {
-  const test: any = {}
-
   return (
     <div>
       <Head>

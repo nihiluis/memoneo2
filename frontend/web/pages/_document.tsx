@@ -1,18 +1,32 @@
-import { NextPageContext } from "next"
-import Document, { Html, Head, Main, NextScript, DocumentContext } from "next/document"
+import NextDocument, {
+  Html,
+  Head,
+  Main,
+  NextScript,
+  DocumentContext,
+} from "next/document"
 import { DEV, BASE_PATH, SITE_TITLE } from "../src/constants/env"
 
-class MyDocument extends Document {
+class MyDocument extends NextDocument {
   static async getInitialProps(ctx: DocumentContext) {
-    const initialProps = await Document.getInitialProps(ctx)
-    return { ...initialProps }
+    try {
+      const initialProps = await NextDocument.getInitialProps(ctx)
+
+      return {
+        ...initialProps,
+      }
+    } finally {
+    }
   }
 
   render() {
     return (
       <Html>
         <Head>
-          <link rel="icon" href={DEV ? "/favicon.png" : BASE_PATH + "/favicon.png"} />
+          <link
+            rel="icon"
+            href={DEV ? "/favicon.png" : BASE_PATH + "/favicon.png"}
+          />
         </Head>
         <body>
           <Main />

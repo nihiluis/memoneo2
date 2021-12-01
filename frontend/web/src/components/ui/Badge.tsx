@@ -23,7 +23,7 @@ export default function Badge(props: Props): JSX.Element {
   return (
     <div
       className={cx(
-        "rounded-full px-2 py-1 text-sm border-2",
+        "rounded-full px-2 py-1 text-sm border-2 min-w-4",
         {
           "bg-gray-600 text-white border-white border-opacity-0": !props.outline,
         },

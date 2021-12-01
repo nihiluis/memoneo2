@@ -1,16 +1,15 @@
 import React, { Suspense, useEffect } from "react"
 import { SidebarCategory, SidebarTitle } from "../ui/Sidebar"
-import MiniBadge from "../ui/MiniBadge"
 import Link from "next/link"
 
 import * as rightSidebarStyle from "./RightSidebar.module.css"
 import { cx } from "../../lib/reexports"
 
-export default function RightSidebarWrapper(): JSX.Element {
-  return <RightSidebar />
+export default function RightSidebar(): JSX.Element {
+  return <RightSidebarInner />
 }
 
-function RightSidebar(): JSX.Element {
+function RightSidebarInner(): JSX.Element {
   return (
     <React.Fragment>
       <div className="mb-4" />

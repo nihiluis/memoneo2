@@ -1,6 +1,20 @@
+import {
+  ChevronDownIcon,
+  ChevronRightIcon,
+  DotsHorizontalIcon,
+} from "@radix-ui/react-icons"
 import React, { Suspense } from "react"
 import { graphql, useLazyLoadQuery } from "react-relay"
 import Badge from "../ui/Badge"
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+  DropdownMenuTriggerButton,
+} from "../ui/menu/DropdownMenu"
+import MiniBadge from "../ui/MiniBadge"
 import { GoalOverviewInnerQuery } from "./__generated__/GoalOverviewInnerQuery.graphql"
 
 export default function GoalOverview(): JSX.Element {
@@ -38,12 +52,22 @@ function GoalOverviewInner(): JSX.Element {
 
   return (
     <div className="bg-content">
-      <h2 className="mb-2">Goals</h2>
+      <div className="flex items-center gap-4 mb-4">
+        <h2 className="leading-none">Goals</h2>
+        <ChevronRightIcon color="gray" width={24} height={24} />
+        <DropdownMenuRoot>
+          <DropdownMenuTrigger>
+            <DotsHorizontalIcon color="gray" width={24} height={24} />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>Edit</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenuRoot>
+      </div>
       <div className="flex">
         {items.map(item => (
           <Badge title={item.title} />
         ))}
-        <Badge title="+" />
       </div>
     </div>
   )

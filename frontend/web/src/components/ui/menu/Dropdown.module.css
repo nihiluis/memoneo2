@@ -1,0 +1,37 @@
+.content {
+	min-width: 220;
+	background-color: white;
+	@apply border-l;
+	@apply p-2;
+	box-shadow: var(--shadow);
+}
+
+.item {
+	all: "unset";
+	font-size: 13;
+	line-height: 1;
+	@apply rounded;
+	@apply flex;
+	@apply items-center;
+	height: 25;
+	@apply py-2;
+	position: relative;
+	padding-left: 25px;
+	user-select: none;
+}
+
+.label {
+	padding-left: 25px;
+	font-size: 12;
+	line-height: 25px;
+}
+
+.trigger {
+	display: flex;
+	@apply px-2;
+	gap: 3px;
+	background-color: var(--bg-gray-contrast);
+	align-items: center;
+	font-size: 14px;
+	@apply rounded;
+}
