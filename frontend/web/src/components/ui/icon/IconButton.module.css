@@ -1,0 +1,12 @@
+.iconButton {
+	@apply rounded;
+	padding: 4px;
+	cursor: pointer;
+	width: 32px;
+	height: 32px;
+}
+
+.iconButton:hover {
+	@apply bg-white;
+	--tw-bg-opacity: 0.4;
+}

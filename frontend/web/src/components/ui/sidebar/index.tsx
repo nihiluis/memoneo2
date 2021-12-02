@@ -2,7 +2,7 @@ import * as React from "react"
 import cx from "classnames"
 
 import sidebarStyle from "./Sidebar.module.css"
-import Line from "./Line"
+import { SeparatorHorizontal } from "../Separator"
 
 interface Props {
   position: "right" | "left"
@@ -19,7 +19,7 @@ class Sidebar extends React.Component<Props, {}> {
     })
 
     return (
-      <aside className={asideClasses}>
+      <aside className={cx("p-2 pl-8", asideClasses)}>
         <div className={sidebarStyle.sidebarInner}>{children}</div>
       </aside>
     )
@@ -28,13 +28,13 @@ class Sidebar extends React.Component<Props, {}> {
 
 export const SidebarTitle: React.FunctionComponent = props => (
   <div>
-    <h2 className="text-xl font-semibold ml-4">{props.children}</h2>
-    <Line className="ml-4 mt-1 w-3/4" />
+    <h2 className="text-xl font-semibold">{props.children}</h2>
+    <SeparatorHorizontal className="mt-1" />
   </div>
 )
 
 export const SidebarCategory: React.FunctionComponent = props => (
-  <div className="py-2 px-4">{props.children}</div>
+  <div className="py-2">{props.children}</div>
 )
 
 export default Sidebar

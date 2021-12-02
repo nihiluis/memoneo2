@@ -5,6 +5,7 @@ import Auth from "../src/components/Auth"
 import { initEnvironment } from "../src/relay/relay"
 import GoalOverview from "../src/components/goal/GoalOverview"
 import RightSidebar from "../src/components/sidebar/RightSidebar"
+import LeftSidebar from "../src/components/sidebar/LeftSidebar"
 
 export default function Index() {
   return (
@@ -15,14 +16,16 @@ export default function Index() {
 }
 
 function IndexInner() {
+  const [showSidebarLeft, setShowSidebarLeft] = useState<boolean>(false)
   const [showSidebarRight, setShowSidebarRight] = useState<boolean>(false)
 
   return (
     <GridLayout
-      showSidebarLeft={false}
+      showSidebarLeft={showSidebarLeft}
+      setShowSidebarLeft={setShowSidebarLeft}
       showSidebarRight={showSidebarRight}
       setShowSidebarRight={setShowSidebarRight}
-      sidebarLeftComponent={null}
+      sidebarLeftComponent={<LeftSidebar />}
       sidebarRightComponent={<RightSidebar />}>
       <GoalOverview />
     </GridLayout>

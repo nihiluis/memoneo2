@@ -5,7 +5,7 @@ import { Formik, FormikErrors } from "formik"
 import Link from "next/link"
 
 import { PRODUCT_NAME } from "../src/constants/env"
-import Layout from "../src/components/ui/Layout"
+import Layout from "../src/components/ui/layout/Layout"
 import Auth, { AuthContext } from "../src/components/Auth"
 import FormRow from "../src/components/ui/form/FormRow"
 import { login } from "../src/lib/auth"

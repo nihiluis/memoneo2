@@ -1,0 +1,11 @@
+.miniSearch {
+	@apply w-96;
+}
+
+.miniSearch input {
+	@apply w-full;
+	@apply bg-gray-100;
+	@apply rounded;
+	@apply px-4;
+	@apply py-1;
+}

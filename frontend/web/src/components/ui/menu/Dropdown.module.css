@@ -1,7 +1,7 @@
 .content {
 	min-width: 220;
 	background-color: white;
-	@apply border-l;
+	@apply rounded;
 	@apply p-2;
 	box-shadow: var(--shadow);
 }
@@ -16,8 +16,8 @@
 	height: 25;
 	@apply py-2;
 	position: relative;
-	padding-left: 25px;
 	user-select: none;
+	outline: none;
 }
 
 .label {
@@ -34,4 +34,5 @@
 	align-items: center;
 	font-size: 14px;
 	@apply rounded;
+	outline: none;
 }

@@ -2,9 +2,10 @@
   --header-height: 54px;
   --sidebar-left-width: 260px;
   --sidebar-right-width: 200px;
-  --bg-color: white;
+	--bg-color: white;
+	--content-padding-left: 2rem;
 
-  grid-template-columns: 200px auto 200px;
+  grid-template-columns: var(--sidebar-left-width) auto var(--sidebar-right-width);
   grid-template-rows: min-content auto min-content;
 }
 
@@ -43,7 +44,7 @@
   width: 100%;
   height: var(--header-height);
   z-index: 1000;
-  background-color: var(--bg-color);
+  background-color: var(--primary-color);
 }
 
 .sidebarLeftGrid {
@@ -52,7 +53,7 @@
   left: 0;
   top: var(--header-height);
   width: var(--sidebar-left-width);
-  @apply bg-white;
+  background-color: var(--bg-content-contrast);
 }
 
 .sidebarRightGrid {
@@ -61,7 +62,7 @@
   right: 0;
   top: var(--header-height);
   width: var(--sidebar-right-width);
-  @apply bg-gray-300;
+	background-color: var(--bg-content-contrast);
 }
 
 .sidebarGridDisabled {
@@ -79,14 +80,21 @@
   padding-right: var(--sidebar-right-width);
 }
 
-.contentLeftSidebar {
+.contentGridLeftSidebar {
   padding-left: var(--sidebar-left-width);
 }
 
 .content {
-  @apply bg-gray-100;
-  height: 100%;
-  padding: 1rem 2rem 2rem 2rem;
+  background-color: var(--bg-content);
+	height: 100%;
+	padding-top: 1rem;
+	padding-right: 2rem;
+	padding-bottom: 2rem;
+	padding-left: var(--content-padding-left);
+}
+
+.contentPaddingLeft {
+	padding-left: var(--content-padding-left);
 }
 
 .footerGrid {

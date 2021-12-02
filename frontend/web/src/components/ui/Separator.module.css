@@ -1,0 +1,5 @@
+.separator[data-orientation=horizontal] {
+	height: 1;
+	width: 100%;
+	@apply bg-gray-900;
+}
