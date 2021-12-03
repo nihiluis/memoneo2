@@ -79,7 +79,7 @@ function RegisterForm(): JSX.Element {
             {registerError && <p className="error">{registerError}</p>}
             <button
               type="submit"
-              className="btn btn-secondary form-btn w-full mb-2"
+              className="btn btn-secondary form-btn rounded w-full mb-2"
               disabled={formikProps.isSubmitting || registerLoading}>
               Register
             </button>

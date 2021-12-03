@@ -1,5 +1,27 @@
 .icon {
-	width: 32px;
-	display: flex;
-	justify-content: center;
+  width: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.buttonIcon {
+  width: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.button {
+	cursor: pointer;
+}
+
+.button:hover {
+  @apply bg-gray-100;
+}
+
+.trigger:hover {
+  @apply bg-gray-100;
+}
+
+.itemInteractive:hover {
+  @apply bg-gray-100;
 }
