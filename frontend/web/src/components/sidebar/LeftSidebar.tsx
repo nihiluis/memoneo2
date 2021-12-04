@@ -6,6 +6,13 @@ import {
 } from "../ui/sidebar/Collapsible"
 import { graphql, useLazyLoadQuery } from "react-relay"
 import { LeftSidebarInnerQuery } from "./__generated__/LeftSidebarInnerQuery.graphql"
+import {
+  DialogContent,
+  DialogDescription,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "../ui/primitives/Dialog"
 
 export default function LeftSidebar(): JSX.Element {
   return (
@@ -62,6 +69,7 @@ interface ContentProps {
 
 interface ContentItem {
   title: string
+  id: string
 }
 
 function LeftSidebarContent(props: ContentProps): JSX.Element {
@@ -71,17 +79,33 @@ function LeftSidebarContent(props: ContentProps): JSX.Element {
     <SidebarCollapsible title={title}>
       <div className="mb-1">
         {items.map(item => (
-          <SidebarCollapsibleItem title={item.title}></SidebarCollapsibleItem>
+          <SidebarCollapsibleItem
+            key={item.id}
+            title={item.title}></SidebarCollapsibleItem>
         ))}
         {items.length === 0 && (
           <SidebarCollapsibleItem
             title="Nothing found."
             hideIcon
             pointer={false}
+            dots={false}
           />
         )}
       </div>
-      <SidebarCollapsibleButton title="Create new" />
+      <DialogRoot>
+        <DialogTrigger className="w-full">
+          <SidebarCollapsibleButton title="Create new" />
+        </DialogTrigger>
+        <DialogContent>
+          <DialogTitle>Create new</DialogTitle>
+          <DialogDescription>Create a new object here.</DialogDescription>
+        </DialogContent>
+        <DialogForm />
+      </DialogRoot>
     </SidebarCollapsible>
   )
+}
+
+function DialogForm(props: any): JSX.Element {
+  return <div></div>
 }

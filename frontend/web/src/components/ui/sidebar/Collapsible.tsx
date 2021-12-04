@@ -1,3 +1,4 @@
+import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -12,6 +13,11 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "../Collapsible"
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuRoot,
+} from "../menu/DropdownMenu"
 import { SeparatorHorizontal } from "../Separator"
 import style from "./Collapsible.module.css"
 
@@ -23,6 +29,7 @@ interface ItemProps {
   title: string
   hideIcon?: boolean
   pointer?: boolean
+  dots?: boolean
 }
 
 interface ButtonProps {
@@ -63,6 +70,7 @@ export function SidebarCollapsible(props: ContainerProps): JSX.Element {
 
 export function SidebarCollapsibleItem(props: ItemProps): JSX.Element {
   const pointer = props.pointer ?? true
+  const dots = props.dots ?? true
 
   return (
     <div
@@ -74,16 +82,31 @@ export function SidebarCollapsibleItem(props: ItemProps): JSX.Element {
         <DotFilledIcon color="var(--icon-color)" width={24} height={24} />
       </div>
       <p>{props.title}</p>
-      <div className="flex justify-end flex-grow pr-2">
-        <DotsHorizontalIcon color="var(--icon-color)" width={24} height={24} />
-      </div>
+      {dots && (
+        <div className="flex justify-end flex-grow pr-2">
+          <DropdownMenuRoot>
+            <DropdownMenuTrigger>
+              <DotsHorizontalIcon
+                className={style.dotsIcon}
+                width={24}
+                height={24}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuItem>Archive</DropdownMenuItem>
+              <DropdownMenuItem>Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenuRoot>
+        </div>
+      )}
     </div>
   )
 }
 
 export function SidebarCollapsibleButton(props: ButtonProps): JSX.Element {
   return (
-    <div className={cx(style.button, "flex gap-1 py-1 rounded text-gray-600")}>
+    <div className={cx(style.button, "flex gap-1 py-1 rounded w-full text-gray-600")}>
       <div className={style.buttonIcon}>
         <PlusIcon color="var(--icon-color)" width={24} height={24} />
       </div>

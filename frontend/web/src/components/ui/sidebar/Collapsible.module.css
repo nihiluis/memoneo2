@@ -14,6 +14,14 @@
 	cursor: pointer;
 }
 
+.dotsIcon {
+	color: gray;
+}
+
+.dotsIcon:hover {
+	color: var(--icon-color);
+}
+
 .button:hover {
   @apply bg-gray-100;
 }

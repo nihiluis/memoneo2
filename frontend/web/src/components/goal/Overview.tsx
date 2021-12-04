@@ -66,7 +66,7 @@ function GoalOverviewInner(): JSX.Element {
       </div>
       <div className="flex">
         {items.map(item => (
-          <Badge title={item.title} />
+          <Badge key={item.id} title={item.title} />
         ))}
       </div>
     </div>
