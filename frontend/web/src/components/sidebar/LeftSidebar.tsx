@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/primitives/Dialog"
+import MutateGoalForm from "../goal/Mutate"
 
 export default function LeftSidebar(): JSX.Element {
   return (
@@ -99,6 +100,7 @@ function LeftSidebarContent(props: ContentProps): JSX.Element {
         <DialogContent>
           <DialogTitle>Create new</DialogTitle>
           <DialogDescription>Create a new object here.</DialogDescription>
+          <MutateGoalForm onComplete={() => {}} />
         </DialogContent>
         <DialogForm />
       </DialogRoot>

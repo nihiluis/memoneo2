@@ -15,22 +15,22 @@ import {
   DropdownMenuTriggerButton,
 } from "../ui/menu/DropdownMenu"
 import MiniBadge from "../ui/MiniBadge"
-import { GoalOverviewInnerQuery } from "./__generated__/GoalOverviewInnerQuery.graphql"
+import { OverviewGoalInnerQuery } from "./__generated__/OverviewGoalInnerQuery.graphql"
 
 export default function GoalOverview(): JSX.Element {
   return (
     <Suspense fallback={null}>
-      <GoalOverviewInner />
+      <OverviewGoalInner />
     </Suspense>
   )
 }
 
-function GoalOverviewInner(): JSX.Element {
-  const data = useLazyLoadQuery<GoalOverviewInnerQuery>(
+function OverviewGoalInner(): JSX.Element {
+  const data = useLazyLoadQuery<OverviewGoalInnerQuery>(
     graphql`
-      query GoalOverviewInnerQuery {
+      query OverviewGoalInnerQuery {
         goal_connection(first: 100, order_by: { created_at: desc })
-          @connection(key: "GoalOverviewInnerQuery_goal_connection") {
+          @connection(key: "OverviewGoalInnerQuery_goal_connection") {
           edges {
             node {
               id
