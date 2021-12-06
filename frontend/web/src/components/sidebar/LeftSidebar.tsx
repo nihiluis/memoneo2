@@ -14,6 +14,10 @@ import {
   DialogTrigger,
 } from "../ui/primitives/Dialog"
 import MutateGoalForm from "../goal/Mutate"
+import { SeparatorHorizontal } from "../ui/Separator"
+import { DotsHorizontalIcon, PlusIcon } from "@radix-ui/react-icons"
+import style from "./Sidebar.module.css"
+import IconButton from "../ui/icon/IconButton"
 
 export default function LeftSidebar(): JSX.Element {
   return (
@@ -77,37 +81,41 @@ function LeftSidebarContent(props: ContentProps): JSX.Element {
   const { items, title } = props
 
   return (
-    <SidebarCollapsible title={title}>
-      <div className="mb-1">
-        {items.map(item => (
-          <SidebarCollapsibleItem
-            key={item.id}
-            title={item.title}></SidebarCollapsibleItem>
-        ))}
-        {items.length === 0 && (
-          <SidebarCollapsibleItem
-            title="Nothing found."
-            hideIcon
-            pointer={false}
-            dots={false}
-          />
-        )}
-      </div>
-      <DialogRoot>
-        <DialogTrigger className="w-full">
-          <SidebarCollapsibleButton title="Create new" />
-        </DialogTrigger>
-        <DialogContent>
-          <DialogTitle>Create new</DialogTitle>
-          <DialogDescription>Create a new object here.</DialogDescription>
-          <MutateGoalForm onComplete={() => {}} />
-        </DialogContent>
-        <DialogForm />
-      </DialogRoot>
-    </SidebarCollapsible>
+    <DialogRoot>
+      <SidebarCollapsible title={title} iconComponent={<CollapsibleAddIcon />}>
+        <div className="mb-1">
+          {items.map(item => (
+            <SidebarCollapsibleItem
+              key={item.id}
+              title={item.title}></SidebarCollapsibleItem>
+          ))}
+          {items.length === 0 && (
+            <SidebarCollapsibleItem
+              title="Nothing found."
+              hideIcon
+              pointer={false}
+              dots={false}
+            />
+          )}
+        </div>
+      </SidebarCollapsible>
+      <DialogContent>
+        <DialogTitle>Add goal</DialogTitle>
+        <SeparatorHorizontal className="mt-2 mb-1" />
+        <MutateGoalForm onComplete={() => {}} />
+      </DialogContent>
+    </DialogRoot>
   )
 }
 
-function DialogForm(props: any): JSX.Element {
-  return <div></div>
+function CollapsibleAddIcon(props: any): JSX.Element {
+  return (
+    <DialogTrigger onClick={event => event.stopPropagation()}>
+      <PlusIcon
+        width={20}
+        height={20}
+        className={style.addIcon}
+      />
+    </DialogTrigger>
+  )
 }

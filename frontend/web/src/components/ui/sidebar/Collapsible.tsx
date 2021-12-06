@@ -23,6 +23,7 @@ import style from "./Collapsible.module.css"
 
 interface ContainerProps extends PropsWithChildren<{}> {
   title: string
+  iconComponent: React.ReactNode
 }
 
 interface ItemProps {
@@ -42,23 +43,32 @@ export function SidebarCollapsible(props: ContainerProps): JSX.Element {
 
   return (
     <Collapsible className={style.container} open={open} onOpenChange={setOpen}>
-      <CollapsibleTrigger
-        className={cx(
-          style.trigger,
-          "flex pb-1 gap-1 items-center font-bold text-lg rounded-t w-full"
-        )}>
-        <div className={style.icon}>
-          {open ? (
-            <ChevronDownIcon color="var(--icon-color)" width={24} height={24} />
-          ) : (
-            <ChevronRightIcon
-              color="var(--icon-color)"
-              width={24}
-              height={24}
-            />
-          )}
+      <CollapsibleTrigger asChild>
+        <div
+          className={cx(
+            style.trigger,
+            "flex py-1 gap-1 items-center font-bold text-lg rounded-t w-full cursor-pointer"
+          )}>
+          <div className={style.icon}>
+            {open ? (
+              <ChevronDownIcon
+                color="var(--icon-color)"
+                width={24}
+                height={24}
+              />
+            ) : (
+              <ChevronRightIcon
+                color="var(--icon-color)"
+                width={24}
+                height={24}
+              />
+            )}
+          </div>
+          {props.title}
+          <div className="flex-grow flex justify-end items-center mr-2">
+            {props.iconComponent ? props.iconComponent : null}
+          </div>
         </div>
-        {props.title}
       </CollapsibleTrigger>
       <SeparatorHorizontal className="mx-auto w-11/12 mb-1" />
       <CollapsibleContent className={cx({ "pb-3": !!props.children })}>
@@ -106,7 +116,11 @@ export function SidebarCollapsibleItem(props: ItemProps): JSX.Element {
 
 export function SidebarCollapsibleButton(props: ButtonProps): JSX.Element {
   return (
-    <div className={cx(style.button, "flex gap-1 py-1 rounded w-full text-gray-600")}>
+    <div
+      className={cx(
+        style.button,
+        "flex gap-1 py-1 rounded w-full text-gray-600"
+      )}>
       <div className={style.buttonIcon}>
         <PlusIcon color="var(--icon-color)" width={24} height={24} />
       </div>

@@ -1,12 +1,14 @@
-.recentlyViewedItem {
-  display: grid;
-  grid-template-columns: max-content auto;
-  grid-column-gap: 0.2rem;
-}
-.recentlyViewedItem:not(:last-child) {
-  margin-bottom: 0.2rem;
+.addIcon {
+  @apply rounded;
+  padding: 4px;
+  cursor: pointer;
+  width: 28px;
+	height: 28px;
+	color: gray;
 }
 
-.sectionListItem:not(:last-child) {
-  padding-bottom: 0.2rem;
+.addIcon:hover {
+	color: var(--icon-color);
+  @apply bg-white;
+  --tw-bg-opacity: 0.6;
 }

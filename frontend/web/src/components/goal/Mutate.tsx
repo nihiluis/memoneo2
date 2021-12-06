@@ -8,6 +8,7 @@ import { mutation } from "./Mutate.gql"
 import { MutateGoalMutation } from "./__generated__/MutateGoalMutation.graphql"
 import { getIdFromNodeId } from "../../lib/hasura"
 import { PayloadError, ROOT_ID } from "relay-runtime"
+import { MutateGoalFormMutation } from "./__generated__/MutateGoalFormMutation.graphql"
 
 interface FormValues {
   title: string
@@ -44,8 +45,6 @@ export default function MutateGoalForm(props: Props): JSX.Element {
         description: values["description"],
       },
       onCompleted: (response, errors) => {
-        console.log("completed mutation")
-
         setLoading(false)
         setErrors(errors)
 
@@ -57,6 +56,7 @@ export default function MutateGoalForm(props: Props): JSX.Element {
         props.onComplete()
       },
       updater: store => {
+        /*
         const baseRecord = store.get(ROOT_ID)
 
         const connectionName = "MutateDocumentQuery_document_connection"
@@ -88,6 +88,8 @@ export default function MutateGoalForm(props: Props): JSX.Element {
         newEdge.setValue(uuidv4().toString(), "cursor")
 
         ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge)
+
+        */
       },
     }
 
@@ -100,23 +102,35 @@ export default function MutateGoalForm(props: Props): JSX.Element {
       validationSchema={FormSchema}
       onSubmit={submit}>
       {formikProps => (
-        <form className="form w-80" onSubmit={formikProps.handleSubmit}>
-          <FormRow {...formikProps} type="text" name="title" label="Title" />
+        <form className="py-2 w-80" onSubmit={formikProps.handleSubmit}>
           <FormRow
+            inputClassName="bg-gray-50 border border-gray-200"
+            {...formikProps}
+            type="text"
+            name="title"
+            label="Title"
+          />
+          <FormRow
+            inputClassName="bg-gray-50 border border-gray-200"
             {...formikProps}
             type="text"
             name="description"
-            label="description"
+            label="Description"
           />
           {errors.length > 0 && (
             <p className="error">Unable to create object.</p>
           )}
-          <button
-            type="submit"
-            className="btn btn-secondary form-btn rounded w-full mb-2"
-            disabled={formikProps.isSubmitting || loading}>
-            Create
-          </button>
+          <div className="flex gap-2">
+            <button className="btn btn-secondary form-btn rounded w-full mb-2">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn btn-primary form-btn rounded w-full mb-2"
+              disabled={formikProps.isSubmitting || loading}>
+              Add
+            </button>
+          </div>
         </form>
       )}
     </Formik>

@@ -235,7 +235,7 @@
 }
 
 .btn-primary {
-  @apply bg-indigo-500;
+  background-color: var(--primary-color);
   @apply text-white;
 }
 
