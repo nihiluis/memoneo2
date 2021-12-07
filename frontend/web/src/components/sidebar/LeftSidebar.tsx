@@ -70,6 +70,7 @@ function LeftSidebarInner(): JSX.Element {
 interface ContentProps {
   items: ContentItem[]
   title: string
+  defaultMaxItems?: number
 }
 
 interface ContentItem {
@@ -78,19 +79,31 @@ interface ContentItem {
 }
 
 function LeftSidebarContent(props: ContentProps): JSX.Element {
-  const { items, title } = props
+  const { items, title, defaultMaxItems = 7 } = props
 
   const [openDialog, setOpenDialog] = React.useState<boolean>(false)
+  const [showAllItems, setShowAllItems] = React.useState<boolean>(false)
+
+  const hasHiddenItems = items.length > defaultMaxItems && !showAllItems
+
+  const filteredItems = hasHiddenItems ? items.slice(0, defaultMaxItems) : items
 
   return (
     <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
       <SidebarCollapsible title={title} iconComponent={<CollapsibleAddIcon />}>
         <div className="mb-1">
-          {items.map(item => (
+          {filteredItems.map(item => (
             <SidebarCollapsibleItem
               key={item.id}
               title={item.title}></SidebarCollapsibleItem>
           ))}
+          {hasHiddenItems && (
+            <SidebarCollapsibleButton
+            className="justify-center"
+              onClick={() => setShowAllItems(!showAllItems)}>
+              Show all
+            </SidebarCollapsibleButton>
+          )}
           {items.length === 0 && (
             <SidebarCollapsibleItem
               title="Nothing found."

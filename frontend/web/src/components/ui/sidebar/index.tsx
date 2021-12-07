@@ -19,7 +19,7 @@ class Sidebar extends React.Component<Props, {}> {
     })
 
     return (
-      <aside className={cx("p-2 pl-8", asideClasses)}>
+      <aside className={cx("p-2 pl-8 overflow-y-auto", asideClasses)}>
         <div className={sidebarStyle.sidebarInner}>{children}</div>
       </aside>
     )

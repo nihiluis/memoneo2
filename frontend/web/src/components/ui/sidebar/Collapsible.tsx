@@ -33,8 +33,8 @@ interface ItemProps {
   dots?: boolean
 }
 
-interface ButtonProps {
-  title: string
+interface ButtonProps extends PropsWithChildren<{}> {
+  onClick(): void
   className?: string
 }
 
@@ -91,7 +91,7 @@ export function SidebarCollapsibleItem(props: ItemProps): JSX.Element {
       <div className={cx(style.icon, { "opacity-0": props.hideIcon })}>
         <DotFilledIcon color="var(--icon-color)" width={24} height={24} />
       </div>
-      <p>{props.title}</p>
+      <p className={style.titleText}>{props.title}</p>
       {dots && (
         <div className="flex justify-end flex-grow pr-2">
           <DropdownMenuRoot>
@@ -119,12 +119,11 @@ export function SidebarCollapsibleButton(props: ButtonProps): JSX.Element {
     <div
       className={cx(
         style.button,
-        "flex gap-1 py-1 rounded w-full text-gray-600"
-      )}>
-      <div className={style.buttonIcon}>
-        <PlusIcon color="var(--icon-color)" width={24} height={24} />
-      </div>
-      {props.title}
+        "flex gap-1 py-1 rounded w-full text-gray-600",
+        props.className
+      )}
+      onClick={props.onClick}>
+      {props.children}
     </div>
   )
 }

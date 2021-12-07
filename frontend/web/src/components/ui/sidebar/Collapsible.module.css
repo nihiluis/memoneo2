@@ -1,5 +1,6 @@
 .icon {
-  width: 32px;
+	width: 32px;
+	min-width: 32px;
   display: flex;
   justify-content: center;
 }
@@ -10,16 +11,21 @@
   justify-content: center;
 }
 
+.titleText {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 .button {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 .dotsIcon {
-	color: gray;
+  color: gray;
 }
 
 .dotsIcon:hover {
-	color: var(--icon-color);
+  color: var(--icon-color);
 }
 
 .button:hover {

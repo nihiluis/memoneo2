@@ -64,7 +64,7 @@ function OverviewGoalInner(): JSX.Element {
           </DropdownMenuContent>
         </DropdownMenuRoot>
       </div>
-      <div className="flex">
+      <div className="flex flex-wrap gap-1">
         {items.map(item => (
           <Badge key={item.id} title={item.title} />
         ))}
