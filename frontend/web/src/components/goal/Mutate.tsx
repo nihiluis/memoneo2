@@ -1,14 +1,15 @@
 import { Formik } from "formik"
-import React, { useState } from "react"
+import React, { Suspense, useContext, useState } from "react"
 import { ConnectionHandler, useMutation, UseMutationConfig } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
 import FormRow from "../ui/form/FormRow"
 import { mutation } from "./Mutate.gql"
-import { MutateGoalMutation } from "./__generated__/MutateGoalMutation.graphql"
 import { getIdFromNodeId } from "../../lib/hasura"
+import updateLocalConnection from "../../relay/updateLocalConnection"
 import { PayloadError, ROOT_ID } from "relay-runtime"
 import { MutateGoalFormMutation } from "./__generated__/MutateGoalFormMutation.graphql"
+import { AuthContext } from "../Auth"
 
 interface FormValues {
   title: string
@@ -26,27 +27,37 @@ const FormSchema = Yup.object().shape({
 interface Props {
   goal?: { id: string; title: string; description: string }
   onComplete(): void
+  onCancel(): void
 }
 
 export default function MutateGoalForm(props: Props): JSX.Element {
-  const [commit, _] = useMutation<MutateGoalMutation>(mutation)
+  const [commit, _] = useMutation<MutateGoalFormMutation>(mutation)
   const [errors, setErrors] = useState<PayloadError[]>([])
   const [loading, setLoading] = useState<boolean>(false)
+  const { auth } = useContext(AuthContext)
 
   function submit(values: FormValues) {
     const goalId = props.goal ? getIdFromNodeId(props.goal.id) : null
 
     setLoading(true)
 
+    const variables: any = {
+      id: goalId ?? uuidv4(),
+      user_id: auth.userId,
+      title: values["title"],
+      description: values["description"],
+    }
+
     const mutationConfig: UseMutationConfig<MutateGoalFormMutation> = {
-      variables: {
-        id: goalId,
-        title: values["title"],
-        description: values["description"],
+      variables,
+      onError: error => {
+        console.error(error)
+        setErrors([error])
+        setLoading(false)
       },
       onCompleted: (response, errors) => {
         setLoading(false)
-        setErrors(errors)
+        setErrors(errors ?? [])
 
         if (errors && errors.length !== 0) {
           console.error("found errors " + JSON.stringify(errors))
@@ -56,40 +67,16 @@ export default function MutateGoalForm(props: Props): JSX.Element {
         props.onComplete()
       },
       updater: store => {
-        /*
-        const baseRecord = store.get(ROOT_ID)
+        const connectionName = "LeftSidebarInnerQuery_goal_connection"
 
-        const connectionName = "MutateDocumentQuery_document_connection"
-
-        const connectionRecord = ConnectionHandler.getConnection(
-          baseRecord,
-          connectionName,
-          {
-            order_by: { name: "desc" },
-            where: { id: { _eq: goalId } },
-          }
-        )
-
-        if (!connectionRecord) {
-          throw Error("connectionRecord may not be empty")
-        }
-
-        const payload = store.getRootField("insert_goal_one")
-
-        //const newRecord = store.create(id, "recently_viewed_document")
-
-        const newEdge = ConnectionHandler.createEdge(
+        updateLocalConnection(
           store,
-          connectionRecord,
-          payload,
-          "goalEdge"
+          connectionName,
+          props.goal?.id || null,
+          "insert_goal_one",
+          "GoalEdge",
+          uuidv4()
         )
-
-        newEdge.setValue(uuidv4().toString(), "cursor")
-
-        ConnectionHandler.insertEdgeBefore(connectionRecord, newEdge)
-
-        */
       },
     }
 
@@ -97,42 +84,47 @@ export default function MutateGoalForm(props: Props): JSX.Element {
   }
 
   return (
-    <Formik<FormValues>
-      initialValues={{ title: "", description: "" }}
-      validationSchema={FormSchema}
-      onSubmit={submit}>
-      {formikProps => (
-        <form className="py-2 w-80" onSubmit={formikProps.handleSubmit}>
-          <FormRow
-            inputClassName="bg-gray-50 border border-gray-200"
-            {...formikProps}
-            type="text"
-            name="title"
-            label="Title"
-          />
-          <FormRow
-            inputClassName="bg-gray-50 border border-gray-200"
-            {...formikProps}
-            type="text"
-            name="description"
-            label="Description"
-          />
-          {errors.length > 0 && (
-            <p className="error">Unable to create object.</p>
-          )}
-          <div className="flex gap-2">
-            <button className="btn btn-secondary form-btn rounded w-full mb-2">
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary form-btn rounded w-full mb-2"
-              disabled={formikProps.isSubmitting || loading}>
-              Add
-            </button>
-          </div>
-        </form>
-      )}
-    </Formik>
+    <Suspense fallback={null}>
+      <Formik<FormValues>
+        initialValues={{ title: "", description: "" }}
+        validationSchema={FormSchema}
+        onSubmit={submit}>
+        {formikProps => (
+          <form className="py-2 w-80" onSubmit={formikProps.handleSubmit}>
+            <FormRow
+              inputClassName="bg-gray-50 border border-gray-200"
+              {...formikProps}
+              type="text"
+              name="title"
+              label="Title"
+            />
+            <FormRow
+              inputClassName="bg-gray-50 border border-gray-200"
+              {...formikProps}
+              type="text"
+              name="description"
+              label="Description"
+            />
+            {errors.length > 0 && (
+              <p className="error">Unable to create object.</p>
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={props.onCancel}
+                type="button"
+                className="btn btn-secondary form-btn rounded w-full mb-2">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary form-btn rounded w-full mb-2"
+                disabled={formikProps.isSubmitting || loading}>
+                Add
+              </button>
+            </div>
+          </form>
+        )}
+      </Formik>
+    </Suspense>
   )
 }

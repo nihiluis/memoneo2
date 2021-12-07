@@ -6,12 +6,14 @@ export const mutation = graphql`
     $title: String!
     $description: String!
     $id: uuid
+    $user_id: uuid
   ) {
     insert_goal_one(
       object: {
         title: $title
         description: $description
         id: $id
+        user_id: $user_id
       }
       on_conflict: {
         constraint: goal_pkey
@@ -19,6 +21,9 @@ export const mutation = graphql`
       }
     ) {
       id
+      title
+      description
+      status
     }
   }
 `

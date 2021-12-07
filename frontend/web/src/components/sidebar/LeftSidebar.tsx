@@ -31,7 +31,7 @@ function LeftSidebarInner(): JSX.Element {
   const data = useLazyLoadQuery<LeftSidebarInnerQuery>(
     graphql`
       query LeftSidebarInnerQuery {
-        goal_connection(first: 100, order_by: { created_at: desc })
+        goal_connection(first: 100, order_by: { title: asc })
           @connection(key: "LeftSidebarInnerQuery_goal_connection") {
           edges {
             node {
@@ -80,8 +80,10 @@ interface ContentItem {
 function LeftSidebarContent(props: ContentProps): JSX.Element {
   const { items, title } = props
 
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false)
+
   return (
-    <DialogRoot>
+    <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
       <SidebarCollapsible title={title} iconComponent={<CollapsibleAddIcon />}>
         <div className="mb-1">
           {items.map(item => (
@@ -102,7 +104,10 @@ function LeftSidebarContent(props: ContentProps): JSX.Element {
       <DialogContent>
         <DialogTitle>Add goal</DialogTitle>
         <SeparatorHorizontal className="mt-2 mb-1" />
-        <MutateGoalForm onComplete={() => {}} />
+        <MutateGoalForm
+          onComplete={() => setOpenDialog(false)}
+          onCancel={() => setOpenDialog(false)}
+        />
       </DialogContent>
     </DialogRoot>
   )
@@ -111,11 +116,7 @@ function LeftSidebarContent(props: ContentProps): JSX.Element {
 function CollapsibleAddIcon(props: any): JSX.Element {
   return (
     <DialogTrigger onClick={event => event.stopPropagation()}>
-      <PlusIcon
-        width={20}
-        height={20}
-        className={style.addIcon}
-      />
+      <PlusIcon width={20} height={20} className={style.addIcon} />
     </DialogTrigger>
   )
 }
