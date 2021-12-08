@@ -15,8 +15,8 @@ directive @cached(
 
 # columns and relationships of "activity"
 type activity implements Node {
+  archived: Boolean!
   created_at: timestamptz!
-  deleted: Boolean!
   description: String!
   id: ID!
   title: String!
@@ -29,8 +29,8 @@ input activity_bool_exp {
   _and: [activity_bool_exp!]
   _not: activity_bool_exp
   _or: [activity_bool_exp!]
+  archived: Boolean_comparison_exp
   created_at: timestamptz_comparison_exp
-  deleted: Boolean_comparison_exp
   description: String_comparison_exp
   id: uuid_comparison_exp
   title: String_comparison_exp
@@ -46,8 +46,8 @@ enum activity_constraint {
 
 # input type for inserting data into table "activity"
 input activity_insert_input {
+  archived: Boolean
   created_at: timestamptz
-  deleted: Boolean
   description: String
   id: uuid
   title: String
@@ -73,8 +73,8 @@ input activity_on_conflict {
 
 # Ordering options when selecting data from "activity".
 input activity_order_by {
+  archived: order_by
   created_at: order_by
-  deleted: order_by
   description: order_by
   id: order_by
   title: order_by
@@ -90,10 +90,10 @@ input activity_pk_columns_input {
 # select columns of table "activity"
 enum activity_select_column {
   # column name
-  created_at
+  archived
 
   # column name
-  deleted
+  created_at
 
   # column name
   description
@@ -113,8 +113,8 @@ enum activity_select_column {
 
 # input type for updating data in table "activity"
 input activity_set_input {
+  archived: Boolean
   created_at: timestamptz
-  deleted: Boolean
   description: String
   id: uuid
   title: String
@@ -125,10 +125,10 @@ input activity_set_input {
 # update columns of table "activity"
 enum activity_update_column {
   # column name
-  created_at
+  archived
 
   # column name
-  deleted
+  created_at
 
   # column name
   description
@@ -187,8 +187,8 @@ input date_comparison_exp {
 
 # columns and relationships of "goal"
 type goal implements Node {
+  archived: Boolean!
   created_at: timestamptz
-  deleted: Boolean!
   description: String!
   id: ID!
   progress: Int!
@@ -260,8 +260,8 @@ input goal_bool_exp {
   _and: [goal_bool_exp!]
   _not: goal_bool_exp
   _or: [goal_bool_exp!]
+  archived: Boolean_comparison_exp
   created_at: timestamptz_comparison_exp
-  deleted: Boolean_comparison_exp
   description: String_comparison_exp
   id: uuid_comparison_exp
   progress: Int_comparison_exp
@@ -286,8 +286,8 @@ input goal_inc_input {
 
 # input type for inserting data into table "goal"
 input goal_insert_input {
+  archived: Boolean
   created_at: timestamptz
-  deleted: Boolean
   description: String
   id: uuid
   progress: Int
@@ -364,8 +364,8 @@ input goal_on_conflict {
 
 # Ordering options when selecting data from "goal".
 input goal_order_by {
+  archived: order_by
   created_at: order_by
-  deleted: order_by
   description: order_by
   id: order_by
   progress: order_by
@@ -384,10 +384,10 @@ input goal_pk_columns_input {
 # select columns of table "goal"
 enum goal_select_column {
   # column name
-  created_at
+  archived
 
   # column name
-  deleted
+  created_at
 
   # column name
   description
@@ -416,8 +416,8 @@ enum goal_select_column {
 
 # input type for updating data in table "goal"
 input goal_set_input {
+  archived: Boolean
   created_at: timestamptz
-  deleted: Boolean
   description: String
   id: uuid
   progress: Int
@@ -479,10 +479,10 @@ input goal_sum_order_by {
 # update columns of table "goal"
 enum goal_update_column {
   # column name
-  created_at
+  archived
 
   # column name
-  deleted
+  created_at
 
   # column name
   description
@@ -1162,10 +1162,10 @@ interface Node {
 
 # columns and relationships of "note"
 type note implements Node {
+  archived: Boolean!
   body: String!
   created_at: timestamptz!
   date: date!
-  deleted: Boolean!
   id: ID!
   pinned: Boolean!
   title: String!
@@ -1206,10 +1206,10 @@ input note_bool_exp {
   _and: [note_bool_exp!]
   _not: note_bool_exp
   _or: [note_bool_exp!]
+  archived: Boolean_comparison_exp
   body: String_comparison_exp
   created_at: timestamptz_comparison_exp
   date: date_comparison_exp
-  deleted: Boolean_comparison_exp
   id: uuid_comparison_exp
   pinned: Boolean_comparison_exp
   title: String_comparison_exp
@@ -1225,10 +1225,10 @@ enum note_constraint {
 
 # input type for inserting data into table "note"
 input note_insert_input {
+  archived: Boolean
   body: String
   created_at: timestamptz
   date: date
-  deleted: Boolean
   id: uuid
   pinned: Boolean
   title: String
@@ -1298,10 +1298,10 @@ input note_on_conflict {
 
 # Ordering options when selecting data from "note".
 input note_order_by {
+  archived: order_by
   body: order_by
   created_at: order_by
   date: order_by
-  deleted: order_by
   id: order_by
   pinned: order_by
   title: order_by
@@ -1317,6 +1317,9 @@ input note_pk_columns_input {
 # select columns of table "note"
 enum note_select_column {
   # column name
+  archived
+
+  # column name
   body
 
   # column name
@@ -1324,9 +1327,6 @@ enum note_select_column {
 
   # column name
   date
-
-  # column name
-  deleted
 
   # column name
   id
@@ -1346,10 +1346,10 @@ enum note_select_column {
 
 # input type for updating data in table "note"
 input note_set_input {
+  archived: Boolean
   body: String
   created_at: timestamptz
   date: date
-  deleted: Boolean
   id: uuid
   pinned: Boolean
   title: String
@@ -1360,6 +1360,9 @@ input note_set_input {
 # update columns of table "note"
 enum note_update_column {
   # column name
+  archived
+
+  # column name
   body
 
   # column name
@@ -1367,9 +1370,6 @@ enum note_update_column {
 
   # column name
   date
-
-  # column name
-  deleted
 
   # column name
   id
@@ -1796,6 +1796,7 @@ input timestamptz_comparison_exp {
 
 # columns and relationships of "todo"
 type todo implements Node {
+  archived: Boolean!
   created_at: timestamptz!
   id: ID!
   title: String!
@@ -1836,6 +1837,7 @@ input todo_bool_exp {
   _and: [todo_bool_exp!]
   _not: todo_bool_exp
   _or: [todo_bool_exp!]
+  archived: Boolean_comparison_exp
   created_at: timestamptz_comparison_exp
   id: uuid_comparison_exp
   title: String_comparison_exp
@@ -1851,6 +1853,7 @@ enum todo_constraint {
 
 # input type for inserting data into table "todo"
 input todo_insert_input {
+  archived: Boolean
   created_at: timestamptz
   id: uuid
   title: String
@@ -1912,6 +1915,7 @@ input todo_on_conflict {
 
 # Ordering options when selecting data from "todo".
 input todo_order_by {
+  archived: order_by
   created_at: order_by
   id: order_by
   title: order_by
@@ -1926,6 +1930,9 @@ input todo_pk_columns_input {
 
 # select columns of table "todo"
 enum todo_select_column {
+  # column name
+  archived
+
   # column name
   created_at
 
@@ -1944,6 +1951,7 @@ enum todo_select_column {
 
 # input type for updating data in table "todo"
 input todo_set_input {
+  archived: Boolean
   created_at: timestamptz
   id: uuid
   title: String
@@ -1953,6 +1961,9 @@ input todo_set_input {
 
 # update columns of table "todo"
 enum todo_update_column {
+  # column name
+  archived
+
   # column name
   created_at
 

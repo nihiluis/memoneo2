@@ -39,7 +39,7 @@ function OverviewGoalInner(): JSX.Element {
               status
               progress
               rank
-              deleted
+              archived
             }
           }
         }

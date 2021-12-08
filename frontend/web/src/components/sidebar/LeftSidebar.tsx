@@ -26,6 +26,7 @@ import style from "./Sidebar.module.css"
 import IconButton from "../ui/icon/IconButton"
 import { DropdownMenuItem } from "../ui/menu/DropdownMenu"
 import LeftSidebarItemMenu from "./LeftSidebarItemMenu"
+import { MemoObjectType } from "../types"
 
 export default function LeftSidebar(): JSX.Element {
   return (
@@ -50,7 +51,7 @@ function LeftSidebarInner(): JSX.Element {
               status
               progress
               rank
-              deleted
+              archived
             }
           }
         }
@@ -70,21 +71,25 @@ function LeftSidebarInner(): JSX.Element {
     <div>
       <LeftSidebarContent
         title="Notes"
+        type="note"
         items={notes}
         targetConnection=""
         targetConnectionConfig={defaultConfig}></LeftSidebarContent>
       <LeftSidebarContent
         title="Todos"
+        type="todo"
         items={todos}
         targetConnection=""
         targetConnectionConfig={defaultConfig}></LeftSidebarContent>
       <LeftSidebarContent
         title="Goals"
+        type="goal"
         items={goals}
         targetConnection="LeftSidebarInnerQuery_goal_connection"
         targetConnectionConfig={defaultConfig}></LeftSidebarContent>
       <LeftSidebarContent
         title="Activities"
+        type="activity"
         items={activities}
         targetConnection=""
         targetConnectionConfig={defaultConfig}></LeftSidebarContent>
@@ -96,24 +101,30 @@ interface ContentProps {
   items: ContentItem[]
   title: string
   defaultMaxItems?: number
+  type: MemoObjectType
   targetConnection: string
   targetConnectionConfig: any
 }
 
 interface ContentItem {
   title: string
+  archived: boolean
   id: string
 }
 
 function LeftSidebarContent(props: ContentProps): JSX.Element {
-  const { items, title, defaultMaxItems = 7 } = props
+  const { items, type, title, defaultMaxItems = 7 } = props
 
   const [openDialog, setOpenDialog] = React.useState<boolean>(false)
   const [showAllItems, setShowAllItems] = React.useState<boolean>(false)
 
-  const hasHiddenItems = items.length > defaultMaxItems && !showAllItems
+  const prefilteredItems = items.filter(item => !item.archived)
+  const hasHiddenItems =
+    prefilteredItems.length > defaultMaxItems && !showAllItems
 
-  const filteredItems = hasHiddenItems ? items.slice(0, defaultMaxItems) : items
+  const filteredItems = hasHiddenItems
+    ? prefilteredItems.slice(0, defaultMaxItems)
+    : prefilteredItems
 
   return (
     <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
@@ -126,6 +137,7 @@ function LeftSidebarContent(props: ContentProps): JSX.Element {
               dropdownContent={
                 <LeftSidebarItemMenu
                   item={item}
+                  type={type}
                   targetConnection={props.targetConnection}
                   targetConnectionConfig={props.targetConnectionConfig}
                 />
