@@ -4,23 +4,16 @@ import {
   ROOT_ID,
 } from "relay-runtime"
 
-export default function updateLocalConnection<T>(
+export default function insertIntoConnection<T>(
   store: RecordSourceSelectorProxy<T>,
   connectionName: string,
+  connectionConfig: any,
   id: string,
   rootField: string,
   edgeType: string,
   newId: string
 ) {
   const baseRecord = store.get(ROOT_ID)
-
-  const connectionConfig = {
-    order_by: { title: "asc" },
-  }
-
-  if (id) {
-    connectionConfig["where"] = { id: { _eq: id } }
-  }
 
   const connectionRecord = ConnectionHandler.getConnection(
     baseRecord,

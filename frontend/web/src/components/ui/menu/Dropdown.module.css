@@ -2,7 +2,6 @@
 	min-width: 220;
 	background-color: white;
 	@apply rounded;
-	@apply p-2;
 	box-shadow: var(--shadow);
 }
 
@@ -10,15 +9,24 @@
 	all: "unset";
 	font-size: 13;
 	line-height: 1;
-	@apply rounded;
 	@apply flex;
 	@apply items-center;
 	height: 25;
 	@apply py-2;
+	@apply px-2;
 	position: relative;
 	user-select: none;
 	outline: none;
 }
+
+.itemInteractive {
+	cursor: pointer;
+}
+
+.itemInteractive:hover {
+  @apply bg-gray-100;
+}
+
 
 .label {
 	padding-left: 25px;

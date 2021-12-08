@@ -1,10 +1,13 @@
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import {
+  ArchiveIcon,
   ChevronDownIcon,
   ChevronRightIcon,
   DotFilledIcon,
   DotsHorizontalIcon,
+  Pencil1Icon,
   PlusIcon,
+  TrashIcon,
 } from "@radix-ui/react-icons"
 import React, { PropsWithChildren, useState } from "react"
 import { cx } from "../../../lib/reexports"
@@ -31,6 +34,7 @@ interface ItemProps {
   hideIcon?: boolean
   pointer?: boolean
   dots?: boolean
+  dropdownContent?: React.ReactNode
 }
 
 interface ButtonProps extends PropsWithChildren<{}> {
@@ -102,11 +106,7 @@ export function SidebarCollapsibleItem(props: ItemProps): JSX.Element {
                 height={24}
               />
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Archive</DropdownMenuItem>
-              <DropdownMenuItem>Delete</DropdownMenuItem>
-            </DropdownMenuContent>
+            <DropdownMenuContent>{props.dropdownContent}</DropdownMenuContent>
           </DropdownMenuRoot>
         </div>
       )}

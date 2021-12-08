@@ -15,9 +15,17 @@ import {
 } from "../ui/primitives/Dialog"
 import MutateGoalForm from "../goal/Mutate"
 import { SeparatorHorizontal } from "../ui/Separator"
-import { DotsHorizontalIcon, PlusIcon } from "@radix-ui/react-icons"
+import {
+  ArchiveIcon,
+  DotsHorizontalIcon,
+  Pencil1Icon,
+  PlusIcon,
+  TrashIcon,
+} from "@radix-ui/react-icons"
 import style from "./Sidebar.module.css"
 import IconButton from "../ui/icon/IconButton"
+import { DropdownMenuItem } from "../ui/menu/DropdownMenu"
+import LeftSidebarItemMenu from "./LeftSidebarItemMenu"
 
 export default function LeftSidebar(): JSX.Element {
   return (
@@ -28,6 +36,7 @@ export default function LeftSidebar(): JSX.Element {
 }
 
 function LeftSidebarInner(): JSX.Element {
+  // should probably be preload query
   const data = useLazyLoadQuery<LeftSidebarInnerQuery>(
     graphql`
       query LeftSidebarInnerQuery {
@@ -50,6 +59,8 @@ function LeftSidebarInner(): JSX.Element {
     {}
   )
 
+  const defaultConfig = { order_by: { title: "asc" } }
+
   const notes = []
   const goals = data.goal_connection.edges.map(edge => edge.node)
   const activities = []
@@ -57,12 +68,26 @@ function LeftSidebarInner(): JSX.Element {
 
   return (
     <div>
-      <LeftSidebarContent title="Notes" items={notes}></LeftSidebarContent>
-      <LeftSidebarContent title="Todos" items={todos}></LeftSidebarContent>
-      <LeftSidebarContent title="Goals" items={goals}></LeftSidebarContent>
+      <LeftSidebarContent
+        title="Notes"
+        items={notes}
+        targetConnection=""
+        targetConnectionConfig={defaultConfig}></LeftSidebarContent>
+      <LeftSidebarContent
+        title="Todos"
+        items={todos}
+        targetConnection=""
+        targetConnectionConfig={defaultConfig}></LeftSidebarContent>
+      <LeftSidebarContent
+        title="Goals"
+        items={goals}
+        targetConnection="LeftSidebarInnerQuery_goal_connection"
+        targetConnectionConfig={defaultConfig}></LeftSidebarContent>
       <LeftSidebarContent
         title="Activities"
-        items={activities}></LeftSidebarContent>
+        items={activities}
+        targetConnection=""
+        targetConnectionConfig={defaultConfig}></LeftSidebarContent>
     </div>
   )
 }
@@ -71,6 +96,8 @@ interface ContentProps {
   items: ContentItem[]
   title: string
   defaultMaxItems?: number
+  targetConnection: string
+  targetConnectionConfig: any
 }
 
 interface ContentItem {
@@ -95,11 +122,18 @@ function LeftSidebarContent(props: ContentProps): JSX.Element {
           {filteredItems.map(item => (
             <SidebarCollapsibleItem
               key={item.id}
-              title={item.title}></SidebarCollapsibleItem>
+              title={item.title}
+              dropdownContent={
+                <LeftSidebarItemMenu
+                  item={item}
+                  targetConnection={props.targetConnection}
+                  targetConnectionConfig={props.targetConnectionConfig}
+                />
+              }></SidebarCollapsibleItem>
           ))}
           {hasHiddenItems && (
             <SidebarCollapsibleButton
-            className="justify-center"
+              className="justify-center"
               onClick={() => setShowAllItems(!showAllItems)}>
               Show all
             </SidebarCollapsibleButton>

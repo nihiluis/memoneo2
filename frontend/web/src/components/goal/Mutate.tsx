@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid"
 import FormRow from "../ui/form/FormRow"
 import { mutation } from "./Mutate.gql"
 import { getIdFromNodeId } from "../../lib/hasura"
-import updateLocalConnection from "../../relay/updateLocalConnection"
+import insertIntoConnection from "../../relay/insertIntoConnection"
 import { PayloadError, ROOT_ID } from "relay-runtime"
 import { MutateGoalFormMutation } from "./__generated__/MutateGoalFormMutation.graphql"
 import { AuthContext } from "../Auth"
@@ -68,10 +68,14 @@ export default function MutateGoalForm(props: Props): JSX.Element {
       },
       updater: store => {
         const connectionName = "LeftSidebarInnerQuery_goal_connection"
+        const connectionConfig = {
+          order_by: { title: "asc" },
+        }
 
-        updateLocalConnection(
+        insertIntoConnection(
           store,
           connectionName,
+          connectionConfig,
           props.goal?.id || null,
           "insert_goal_one",
           "GoalEdge",
