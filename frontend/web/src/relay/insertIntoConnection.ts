@@ -4,6 +4,19 @@ import {
   ROOT_ID,
 } from "relay-runtime"
 
+interface ConnectionInfo {
+  config: any
+  name: string
+  rootField: string
+}
+
+export function insertIntoConnections<T>(
+  store: RecordSourceSelectorProxy<T>,
+  infos: ConnectionInfo[],
+  id: string,
+  edgeType: string
+) {}
+
 export default function insertIntoConnection<T>(
   store: RecordSourceSelectorProxy<T>,
   connectionName: string,

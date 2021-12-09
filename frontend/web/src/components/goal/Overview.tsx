@@ -3,18 +3,13 @@ import {
   ChevronRightIcon,
   DotsHorizontalIcon,
 } from "@radix-ui/react-icons"
-import React, { Suspense } from "react"
+import React, { Suspense, useEffect, useState } from "react"
 import { graphql, useLazyLoadQuery } from "react-relay"
+import { GOAL_OVERVIEW_CONNECTION } from "../../constants/connections"
+import { useFilterStore } from "../../stores/filter"
 import Badge from "../ui/Badge"
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-  DropdownMenuTriggerButton,
-} from "../ui/menu/DropdownMenu"
-import MiniBadge from "../ui/MiniBadge"
+import { DropdownMenuRoot, DropdownMenuTrigger } from "../ui/menu/DropdownMenu"
+import OverviewDropdownMenuContent from "./OverviewDropdownMenuContent"
 import { OverviewGoalInnerQuery } from "./__generated__/OverviewGoalInnerQuery.graphql"
 
 export default function GoalOverview(): JSX.Element {
@@ -26,11 +21,16 @@ export default function GoalOverview(): JSX.Element {
 }
 
 function OverviewGoalInner(): JSX.Element {
+  const [showArchived, setShowArchived] = useState(false)
+
   const data = useLazyLoadQuery<OverviewGoalInnerQuery>(
     graphql`
-      query OverviewGoalInnerQuery {
-        goal_connection(first: 100, order_by: { created_at: desc })
-          @connection(key: "OverviewGoalInnerQuery_goal_connection") {
+      query OverviewGoalInnerQuery($archived: [Boolean!]!) {
+        goal_connection(
+          first: 100
+          order_by: { created_at: desc }
+          where: { archived: { _in: $archived } }
+        ) @connection(key: "OverviewGoalInnerQuery_goal_connection") {
           edges {
             node {
               id
@@ -45,8 +45,17 @@ function OverviewGoalInner(): JSX.Element {
         }
       }
     `,
-    {}
+    { archived: showArchived ? [false, true] : [false] }
   )
+
+  /*
+  useEffect(() => {
+    setFilter(GOAL_OVERVIEW_CONNECTION, {
+      order_by: { created_at: "desc" },
+      where: { archived: { _eq: showArchived } },
+    })
+  }, [showArchived])
+  */
 
   const items = data.goal_connection.edges.map(edge => edge.node)
 
@@ -59,9 +68,10 @@ function OverviewGoalInner(): JSX.Element {
           <DropdownMenuTrigger>
             <DotsHorizontalIcon color="gray" width={24} height={24} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
-          </DropdownMenuContent>
+          <OverviewDropdownMenuContent
+            showArchived={showArchived}
+            setShowArchived={setShowArchived}
+          />
         </DropdownMenuRoot>
       </div>
       <div className="flex flex-wrap gap-1">

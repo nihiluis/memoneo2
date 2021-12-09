@@ -1,5 +1,5 @@
 import { ArchiveIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons"
-import React, { useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { graphql, useMutation, UseMutationConfig } from "react-relay"
 import { PayloadError } from "relay-runtime"
 import { getIdFromNodeId } from "../../lib/hasura"
@@ -10,7 +10,6 @@ import { archiveAllMutation, deleteMutation } from "./LeftSidebarItemMenu.gql"
 import { LeftSidebarItemMenuArchiveAllMutation } from "./__generated__/LeftSidebarItemMenuArchiveAllMutation.graphql"
 import { LeftSidebarItemMenuDeleteMutation } from "./__generated__/LeftSidebarItemMenuDeleteMutation.graphql"
 
-
 interface Props {
   item: { id: string; archived: boolean }
   type: MemoObjectType
@@ -19,6 +18,8 @@ interface Props {
 }
 
 export default function LeftSidebarItemMenu(props: Props): JSX.Element {
+  const componentMounted = useRef(true)
+
   const [commitDelete] = useMutation<LeftSidebarItemMenuDeleteMutation>(
     deleteMutation
   )
@@ -28,28 +29,36 @@ export default function LeftSidebarItemMenu(props: Props): JSX.Element {
   const [errors, setErrors] = useState<PayloadError[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
-  function onDelete() {
-    console.log("big")
+  const { targetConnection, type, targetConnectionConfig } = props
+
+  const { id, archived } = props.item
+
+  useEffect(() => {
+    return () => {
+      componentMounted.current = false
+    }
+  })
+
+  const onDelete = useCallback(() => {
     setLoading(true)
-    console.log("boy")
 
     const variables: any = {
-      id: getIdFromNodeId(props.item.id),
+      id: getIdFromNodeId(id),
     }
 
     const mutationConfig: UseMutationConfig<LeftSidebarItemMenuDeleteMutation> = {
       variables,
       onError: error => {
-        console.error(error)
-        console.log("HEHEHEHE")
+        if (!componentMounted.current) return
+
         setErrors([error])
         setLoading(false)
       },
       onCompleted: (response, errors) => {
-        console.log("ODJYD")
+        if (!componentMounted.current) return
+
         setLoading(false)
         setErrors(errors ?? [])
-        console.log("BABHAHHA")
 
         if (errors && errors.length !== 0) {
           console.error("found errors " + JSON.stringify(errors))
@@ -57,42 +66,35 @@ export default function LeftSidebarItemMenu(props: Props): JSX.Element {
         }
       },
       updater: store => {
-        deleteInConnection(
-          store,
-          props.targetConnection,
-          props.targetConnectionConfig,
-          props.item.id
-        )
+        deleteInConnection(store, targetConnection, targetConnectionConfig, id)
       },
     }
 
     commitDelete(mutationConfig)
-  }
+  }, [id, targetConnection, targetConnectionConfig, setLoading, setErrors])
+  
 
-  function onArchive() {
-    console.log("OMG")
+  const onArchive = useCallback(() => {
     setLoading(true)
-    console.log("UDASJKD")
 
     const variables = {
-      id: getIdFromNodeId(props.item.id),
-      archived: !props.item.archived,
+      id: getIdFromNodeId(id),
+      archived: !archived,
     }
 
     const mutationConfig: UseMutationConfig<LeftSidebarItemMenuArchiveAllMutation> = {
       variables,
       onError: error => {
-        console.log("BURR)")
-        console.error(error)
+        if (!componentMounted.current) return
+
         setErrors([error])
         setLoading(false)
-        console.log("KDKADS")
       },
       onCompleted: (response, errors) => {
-        console.log("DHJASD")
+        if (!componentMounted.current) return
+
         setLoading(false)
         setErrors(errors ?? [])
-        console.log("HEAL")
 
         if (errors && errors.length !== 0) {
           console.error("found errors " + JSON.stringify(errors))
@@ -100,22 +102,19 @@ export default function LeftSidebarItemMenu(props: Props): JSX.Element {
         }
       },
       optimisticUpdater: store => {
-        const record = store.get(props.item.id)
+        const record = store.get(id)
 
         if (!record) {
-          console.error(`unable to find record for item ${props.item.id}`)
+          console.error(`unable to find record for item ${id}`)
           return
         }
 
-        console.log("LOOOL")
         record.setValue(variables.archived, "archived")
-        console.log("BIG")
       },
-      
     }
 
     commitArchive(mutationConfig)
-  }
+  }, [id, archived, setLoading, setErrors])
 
   return (
     <React.Fragment>

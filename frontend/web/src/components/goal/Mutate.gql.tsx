@@ -1,15 +1,15 @@
 import { graphql } from "relay-runtime"
 
-
 export const mutation = graphql`
   mutation MutateGoalFormMutation(
     $title: String!
     $description: String!
     $id: uuid
     $user_id: uuid
+    $connections: [ID!]!
   ) {
-    insert_goal_one(
-      object: {
+    insert_goal(
+      objects: {
         title: $title
         description: $description
         id: $id
@@ -20,10 +20,13 @@ export const mutation = graphql`
         update_columns: [title, description]
       }
     ) {
-      id
-      title
-      description
-      status
+      returning @appendNode(connections: $connections, edgeTypeName: "goalEdge") {
+        id
+        title
+        description
+        status
+        archived
+      }
     }
   }
 `

@@ -7,7 +7,11 @@ import { useMemo } from "react"
 // to call our fetchGraphQL utility with params.text.
 async function fetchRelay(params: any, variables: any) {
   console.log(`fetching query ${params.name} with ${JSON.stringify(variables)}`)
-  return fetchGraphQL(params.text, variables)
+
+  const vars = { ...variables }
+  delete vars.connections
+
+  return fetchGraphQL(params.text, vars)
 }
 
 let relayEnvironment: RelayModernEnvironment

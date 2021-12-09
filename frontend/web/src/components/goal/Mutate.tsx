@@ -6,10 +6,15 @@ import { v4 as uuidv4 } from "uuid"
 import FormRow from "../ui/form/FormRow"
 import { mutation } from "./Mutate.gql"
 import { getIdFromNodeId } from "../../lib/hasura"
-import insertIntoConnection from "../../relay/insertIntoConnection"
 import { PayloadError, ROOT_ID } from "relay-runtime"
 import { MutateGoalFormMutation } from "./__generated__/MutateGoalFormMutation.graphql"
 import { AuthContext } from "../Auth"
+import { useFilterStore } from "../../stores/filter"
+import {
+  GOAL_OVERVIEW_CONNECTION,
+  SIDEBAR_GOAL_CONNECTION,
+} from "../../constants/connections"
+import { getRootConnectionIds } from "../../relay/getConnection"
 
 interface FormValues {
   title: string
@@ -36,6 +41,13 @@ export default function MutateGoalForm(props: Props): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const { auth } = useContext(AuthContext)
 
+  const sidebarFilters = useFilterStore(state =>
+    state.getFilters(SIDEBAR_GOAL_CONNECTION)
+  )
+  const overviewFilters = useFilterStore(state =>
+    state.getFilters(GOAL_OVERVIEW_CONNECTION)
+  )
+
   function submit(values: FormValues) {
     const goalId = props.goal ? getIdFromNodeId(props.goal.id) : null
 
@@ -46,6 +58,10 @@ export default function MutateGoalForm(props: Props): JSX.Element {
       user_id: auth.userId,
       title: values["title"],
       description: values["description"],
+      connections: [
+        ...getRootConnectionIds(SIDEBAR_GOAL_CONNECTION, sidebarFilters),
+        ...getRootConnectionIds(GOAL_OVERVIEW_CONNECTION, overviewFilters),
+      ],
     }
 
     const mutationConfig: UseMutationConfig<MutateGoalFormMutation> = {
@@ -55,7 +71,7 @@ export default function MutateGoalForm(props: Props): JSX.Element {
         setErrors([error])
         setLoading(false)
       },
-      onCompleted: (response, errors) => {
+      onCompleted: (_, errors) => {
         setLoading(false)
         setErrors(errors ?? [])
 
@@ -65,22 +81,6 @@ export default function MutateGoalForm(props: Props): JSX.Element {
         }
 
         props.onComplete()
-      },
-      updater: store => {
-        const connectionName = "LeftSidebarInnerQuery_goal_connection"
-        const connectionConfig = {
-          order_by: { title: "asc" },
-        }
-
-        insertIntoConnection(
-          store,
-          connectionName,
-          connectionConfig,
-          props.goal?.id || null,
-          "insert_goal_one",
-          "GoalEdge",
-          uuidv4()
-        )
       },
     }
 
