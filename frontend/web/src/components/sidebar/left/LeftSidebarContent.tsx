@@ -1,6 +1,6 @@
 import { PlusIcon } from "@radix-ui/react-icons"
 import React from "react"
-import MutateGoalForm from "../../goal/Mutate"
+import MutateGoal from "../../goal/Mutate"
 import { MemoObjectType } from "../../types"
 import {
   DialogContent,
@@ -86,7 +86,7 @@ export default function LeftSidebarContent(props: ContentProps): JSX.Element {
       <DialogContent>
         <DialogTitle>Add goal</DialogTitle>
         <SeparatorHorizontal className="mt-2 mb-1" />
-        <MutateGoalForm
+        <MutateGoal
           onComplete={() => setOpenDialog(false)}
           onCancel={() => setOpenDialog(false)}
         />

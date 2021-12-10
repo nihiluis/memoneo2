@@ -7,15 +7,18 @@ import FormRow from "../ui/form/FormRow"
 import { mutation } from "./Mutate.gql"
 import { getIdFromNodeId } from "../../lib/hasura"
 import { PayloadError, ROOT_ID } from "relay-runtime"
-import { MutateGoalFormMutation } from "./__generated__/MutateGoalFormMutation.graphql"
+import {
+  MutateGoalFormMutation,
+  MutateGoalFormMutationVariables,
+} from "./__generated__/MutateGoalFormMutation.graphql"
 import { AuthContext } from "../Auth"
 import { useFilterStore } from "../../stores/filter"
 import {
   DEFAULT_GOAL_CONNECTION,
-  GOAL_OVERVIEW_CONNECTION,
-  SIDEBAR_GOAL_CONNECTION,
 } from "../../constants/connections"
 import { getRootConnectionIds } from "../../relay/getConnection"
+import MutationFormWrapper from "../mutation/MutationFormWrapper"
+import getMutationConfig from "../mutation/getMutationConfig"
 
 interface FormValues {
   title: string
@@ -36,22 +39,26 @@ interface Props {
   onCancel(): void
 }
 
-export default function MutateGoalForm(props: Props): JSX.Element {
+export default function MutateGoal(props: Props): JSX.Element {
   const [commit, _] = useMutation<MutateGoalFormMutation>(mutation)
   const [errors, setErrors] = useState<PayloadError[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const { auth } = useContext(AuthContext)
+
+  const { goal, onComplete, onCancel } = props
+
+  const type = !!goal ? "edit" : "add"
 
   const defaultGoalFilters = useFilterStore(state =>
     state.getFilters(DEFAULT_GOAL_CONNECTION)
   )
 
   function submit(values: FormValues) {
-    const goalId = props.goal ? getIdFromNodeId(props.goal.id) : null
+    const goalId = goal ? getIdFromNodeId(goal.id) : null
 
     setLoading(true)
 
-    const variables: any = {
+    const variables: MutateGoalFormMutationVariables = {
       id: goalId ?? uuidv4(),
       user_id: auth.userId,
       title: values["title"],
@@ -61,25 +68,14 @@ export default function MutateGoalForm(props: Props): JSX.Element {
       ],
     }
 
-    const mutationConfig: UseMutationConfig<MutateGoalFormMutation> = {
+    const mutationConfig = getMutationConfig<MutateGoalFormMutation>(
       variables,
-      onError: error => {
-        console.error(error)
-        setErrors([error])
-        setLoading(false)
-      },
-      onCompleted: (_, errors) => {
-        setLoading(false)
-        setErrors(errors ?? [])
-
-        if (errors && errors.length !== 0) {
-          console.error("found errors " + JSON.stringify(errors))
-          return
-        }
-
-        props.onComplete()
-      },
-    }
+      {
+        setErrors,
+        setLoading,
+        onComplete,
+      }
+    )
 
     commit(mutationConfig)
   }
@@ -87,11 +83,19 @@ export default function MutateGoalForm(props: Props): JSX.Element {
   return (
     <Suspense fallback={null}>
       <Formik<FormValues>
-        initialValues={{ title: "", description: "" }}
+        initialValues={{
+          title: goal?.title ?? "",
+          description: goal?.description ?? "",
+        }}
         validationSchema={FormSchema}
         onSubmit={submit}>
         {formikProps => (
-          <form className="py-2 w-80" onSubmit={formikProps.handleSubmit}>
+          <MutationFormWrapper
+            formikProps={formikProps}
+            error={errors.length > 0 ? "error" : ""}
+            onCancel={props.onCancel}
+            type={type}
+            loading={loading}>
             <FormRow
               inputClassName="bg-gray-50 border border-gray-200"
               {...formikProps}
@@ -106,24 +110,7 @@ export default function MutateGoalForm(props: Props): JSX.Element {
               name="description"
               label="Description"
             />
-            {errors.length > 0 && (
-              <p className="error">Unable to create object.</p>
-            )}
-            <div className="flex gap-2">
-              <button
-                onClick={props.onCancel}
-                type="button"
-                className="btn btn-secondary form-btn rounded w-full mb-2">
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary form-btn rounded w-full mb-2"
-                disabled={formikProps.isSubmitting || loading}>
-                Add
-              </button>
-            </div>
-          </form>
+          </MutationFormWrapper>
         )}
       </Formik>
     </Suspense>

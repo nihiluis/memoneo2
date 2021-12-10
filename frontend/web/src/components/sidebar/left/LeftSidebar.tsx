@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../ui/primitives/Dialog"
-import MutateGoalForm from "../../goal/Mutate"
+import MutateGoal from "../../goal/Mutate"
 import { SeparatorHorizontal } from "../../ui/Separator"
 import {
   ArchiveIcon,

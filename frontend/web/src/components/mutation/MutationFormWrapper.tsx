@@ -1,7 +1,6 @@
 import { FormikProps } from "formik"
 import React, { PropsWithChildren, Suspense, useContext, useState } from "react"
 
-
 interface Props extends PropsWithChildren<{}> {
   error: string
   type: "edit" | "add"

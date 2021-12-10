@@ -11,8 +11,17 @@ import { DataLoaderContext } from "../DataLoader"
 import { defaultGoalQuery } from "../DataLoader.gql"
 import Badge from "../ui/Badge"
 import { DropdownMenuRoot, DropdownMenuTrigger } from "../ui/menu/DropdownMenu"
-import { DataLoaderInnerGoalQuery } from "../__generated__/DataLoaderInnerGoalQuery.graphql"
+import { DialogContent, DialogRoot, DialogTitle } from "../ui/primitives/Dialog"
+import { SeparatorHorizontal } from "../ui/Separator"
+import {
+  DataLoaderInnerGoalQuery,
+  DataLoaderInnerGoalQueryResponse,
+} from "../__generated__/DataLoaderInnerGoalQuery.graphql"
+import MutateGoal from "./Mutate"
 import OverviewDropdownMenuContent from "./OverviewDropdownMenuContent"
+import OverviewItem from "./OverviewItem"
+
+type Item = DataLoaderInnerGoalQueryResponse["goal_connection"]["edges"][0]["node"]
 
 export default function GoalOverview(): JSX.Element {
   return (
@@ -24,6 +33,8 @@ export default function GoalOverview(): JSX.Element {
 
 function OverviewGoalInner(): JSX.Element {
   const [showArchived, setShowArchived] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false)
+  const [activeItem, setActiveItem] = useState<Item>()
 
   const { goalQueryRef } = useContext(DataLoaderContext)
 
@@ -51,11 +62,24 @@ function OverviewGoalInner(): JSX.Element {
           />
         </DropdownMenuRoot>
       </div>
-      <div className="flex flex-wrap gap-1">
-        {items.map(item => (
-          <Badge key={item.id} title={item.title} />
-        ))}
-      </div>
+      <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
+        <div className="flex flex-wrap gap-1">
+          {items.map(item => (
+            <OverviewItem<Item> item={item} setActiveItem={item => setActiveItem(item)} />
+          ))}
+        </div>
+        <DialogContent>
+          <DialogTitle>Mutate goal</DialogTitle>
+          <SeparatorHorizontal className="mt-2 mb-1" />
+          {activeItem && (
+            <MutateGoal
+              goal={activeItem}
+              onComplete={() => setOpenDialog(false)}
+              onCancel={() => setOpenDialog(false)}
+            />
+          )}
+        </DialogContent>
+      </DialogRoot>
     </div>
   )
 }
