@@ -12,6 +12,7 @@
 	@apply flex;
 	@apply items-center;
 	height: 25;
+	@apply rounded;
 	@apply py-2;
 	@apply px-2;
 	position: relative;

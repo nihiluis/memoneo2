@@ -9,6 +9,7 @@ import { IS_SERVER, PRODUCT_NAME } from "../src/constants/env"
 import { RelayEnvironmentProvider } from "react-relay/hooks"
 import { useEnvironment } from "../src/relay/relay"
 
+
 function MemoApp({ Component, pageProps }) {
   const environment = useEnvironment()
 
@@ -27,7 +28,7 @@ function MemoApp({ Component, pageProps }) {
         <Head>
           <title>{PRODUCT_NAME}</title>
         </Head>
-        <Component {...pageProps} />
+          <Component {...pageProps} />
       </AuthContext.Provider>
     </RelayEnvironmentProvider>
   )

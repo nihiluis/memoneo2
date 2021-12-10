@@ -11,6 +11,7 @@ import { MutateGoalFormMutation } from "./__generated__/MutateGoalFormMutation.g
 import { AuthContext } from "../Auth"
 import { useFilterStore } from "../../stores/filter"
 import {
+  DEFAULT_GOAL_CONNECTION,
   GOAL_OVERVIEW_CONNECTION,
   SIDEBAR_GOAL_CONNECTION,
 } from "../../constants/connections"
@@ -41,11 +42,8 @@ export default function MutateGoalForm(props: Props): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const { auth } = useContext(AuthContext)
 
-  const sidebarFilters = useFilterStore(state =>
-    state.getFilters(SIDEBAR_GOAL_CONNECTION)
-  )
-  const overviewFilters = useFilterStore(state =>
-    state.getFilters(GOAL_OVERVIEW_CONNECTION)
+  const defaultGoalFilters = useFilterStore(state =>
+    state.getFilters(DEFAULT_GOAL_CONNECTION)
   )
 
   function submit(values: FormValues) {
@@ -59,8 +57,7 @@ export default function MutateGoalForm(props: Props): JSX.Element {
       title: values["title"],
       description: values["description"],
       connections: [
-        ...getRootConnectionIds(SIDEBAR_GOAL_CONNECTION, sidebarFilters),
-        ...getRootConnectionIds(GOAL_OVERVIEW_CONNECTION, overviewFilters),
+        ...getRootConnectionIds(DEFAULT_GOAL_CONNECTION, defaultGoalFilters),
       ],
     }
 

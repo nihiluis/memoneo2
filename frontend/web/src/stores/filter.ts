@@ -1,5 +1,6 @@
 import create from "zustand"
 import {
+  DEFAULT_GOAL_CONNECTION,
   GOAL_OVERVIEW_CONNECTION,
   SIDEBAR_GOAL_CONNECTION,
 } from "../constants/connections"
@@ -14,6 +15,7 @@ interface FilterStore {
 
 export const useFilterStore = create<FilterStore>((set, get) => ({
   filters: {
+    [DEFAULT_GOAL_CONNECTION]: [],
     [SIDEBAR_GOAL_CONNECTION]: [
       {
         order_by: { title: "asc" },

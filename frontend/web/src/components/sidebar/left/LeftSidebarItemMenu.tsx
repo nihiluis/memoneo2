@@ -2,10 +2,10 @@ import { ArchiveIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import { graphql, useMutation, UseMutationConfig } from "react-relay"
 import { PayloadError } from "relay-runtime"
-import { getIdFromNodeId } from "../../lib/hasura"
-import deleteInConnection from "../../relay/deleteInConnection"
-import { MemoObjectType } from "../types"
-import { DropdownMenuItem } from "../ui/menu/DropdownMenu"
+import { getIdFromNodeId } from "../../../lib/hasura"
+import deleteInConnection from "../../../relay/deleteInConnection"
+import { MemoObjectType } from "../../types"
+import { DropdownMenuItem } from "../../ui/menu/DropdownMenu"
 import { archiveAllMutation, deleteMutation } from "./LeftSidebarItemMenu.gql"
 import { LeftSidebarItemMenuArchiveAllMutation } from "./__generated__/LeftSidebarItemMenuArchiveAllMutation.graphql"
 import { LeftSidebarItemMenuDeleteMutation } from "./__generated__/LeftSidebarItemMenuDeleteMutation.graphql"
@@ -72,7 +72,6 @@ export default function LeftSidebarItemMenu(props: Props): JSX.Element {
 
     commitDelete(mutationConfig)
   }, [id, targetConnection, targetConnectionConfig, setLoading, setErrors])
-  
 
   const onArchive = useCallback(() => {
     setLoading(true)

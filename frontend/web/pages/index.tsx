@@ -5,12 +5,15 @@ import Auth from "../src/components/Auth"
 import { initEnvironment } from "../src/relay/relay"
 import GoalOverview from "../src/components/goal/Overview"
 import RightSidebar from "../src/components/sidebar/RightSidebar"
-import LeftSidebar from "../src/components/sidebar/LeftSidebar"
+import LeftSidebar from "../src/components/sidebar/left/LeftSidebar"
+import DataLoader from "../src/components/DataLoader"
 
 export default function Index() {
   return (
     <Auth require>
-      <IndexInner />
+      <DataLoader>
+        <IndexInner />
+      </DataLoader>
     </Auth>
   )
 }

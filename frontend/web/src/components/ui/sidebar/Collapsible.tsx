@@ -69,7 +69,7 @@ export function SidebarCollapsible(props: ContainerProps): JSX.Element {
             )}
           </div>
           {props.title}
-          <div className="flex-grow flex justify-end items-center mr-2">
+          <div className="flex-grow flex justify-end items-center mr-2 gap-1">
             {props.iconComponent ? props.iconComponent : null}
           </div>
         </div>
@@ -101,9 +101,9 @@ export function SidebarCollapsibleItem(props: ItemProps): JSX.Element {
           <DropdownMenuRoot>
             <DropdownMenuTrigger>
               <DotsHorizontalIcon
-                className={style.dotsIcon}
-                width={24}
-                height={24}
+                className="icon-alt icon-20-x"
+                width={20}
+                height={20}
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>{props.dropdownContent}</DropdownMenuContent>
