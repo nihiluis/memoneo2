@@ -4,8 +4,16 @@ import { graphql, useMutation, UseMutationConfig } from "react-relay"
 import { PayloadError } from "relay-runtime"
 import { getIdFromNodeId } from "../../../lib/hasura"
 import deleteInConnection from "../../../relay/deleteInConnection"
+import MutateGoal from "../../goal/GoalMutate"
 import { MemoObjectType } from "../../types"
 import { DropdownMenuItem } from "../../ui/menu/DropdownMenu"
+import {
+  DialogContent,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "../../ui/primitives/Dialog"
+import { SeparatorHorizontal } from "../../ui/Separator"
 import { archiveAllMutation, deleteMutation } from "./LeftSidebarItemMenu.gql"
 import { LeftSidebarItemMenuArchiveAllMutation } from "./__generated__/LeftSidebarItemMenuArchiveAllMutation.graphql"
 import { LeftSidebarItemMenuDeleteMutation } from "./__generated__/LeftSidebarItemMenuDeleteMutation.graphql"
@@ -26,6 +34,8 @@ export default function LeftSidebarItemMenu(props: Props): JSX.Element {
   const [commitArchive] = useMutation<LeftSidebarItemMenuArchiveAllMutation>(
     archiveAllMutation
   )
+
+  const [openDialog, setOpenDialog] = useState(false)
   const [errors, setErrors] = useState<PayloadError[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -115,17 +125,31 @@ export default function LeftSidebarItemMenu(props: Props): JSX.Element {
     commitArchive(mutationConfig)
   }, [id, archived, setLoading, setErrors])
 
+
   return (
     <React.Fragment>
-      <DropdownMenuItem className="flex gap-2">
-        <Pencil1Icon color="var(--icon-color)" />
-        Edit
-      </DropdownMenuItem>
-      <DropdownMenuItem className="flex gap-2" onClick={onArchive}>
+      <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
+        <DropdownMenuItem>
+          <DialogTrigger
+            onClick={event => event.stopPropagation()}
+            className="flex gap-2 w-full items-center">
+            <Pencil1Icon color="var(--icon-color)" />
+            Edit
+          </DialogTrigger>
+        </DropdownMenuItem>
+        <DialogContent>
+          <MutateGoal
+            goal={props.item as any}
+            onComplete={() => setOpenDialog(false)}
+            onCancel={() => setOpenDialog(false)}
+          />
+        </DialogContent>
+      </DialogRoot>
+      <DropdownMenuItem className="flex gap-2 items-center" onClick={onArchive}>
         <ArchiveIcon color="var(--icon-color)" />
         {props.item.archived ? "Recover" : "Archive"}
       </DropdownMenuItem>
-      <DropdownMenuItem className="flex gap-2" onClick={onDelete}>
+      <DropdownMenuItem className="flex gap-2 items-center" onClick={onDelete}>
         <TrashIcon color="var(--icon-color)" />
         Delete
       </DropdownMenuItem>

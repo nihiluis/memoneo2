@@ -1,21 +1,20 @@
 import { PlusIcon } from "@radix-ui/react-icons"
 import React from "react"
-import MutateGoal from "../../goal/Mutate"
+import GoalMutate from "../../goal/GoalMutate"
 import { MemoObjectType } from "../../types"
 import {
   DialogContent,
   DialogRoot,
-  DialogTitle,
   DialogTrigger,
 } from "../../ui/primitives/Dialog"
-import { SeparatorHorizontal } from "../../ui/Separator"
 import {
   SidebarCollapsible,
   SidebarCollapsibleButton,
   SidebarCollapsibleItem,
 } from "../../ui/sidebar/Collapsible"
 import LeftSidebarItemMenu from "./LeftSidebarItemMenu"
-import style from "./LeftSidebar.module.css"
+import ActivityMutate from "../../activity/ActivityMutate"
+import TodoMutate from "../../todo/TodoMutate"
 
 interface ContentProps {
   items: ContentItem[]
@@ -36,7 +35,6 @@ interface ContentItem {
 export default function LeftSidebarContent(props: ContentProps): JSX.Element {
   const { items, type, title, defaultMaxItems = 7, showArchived } = props
 
-  const [openDialog, setOpenDialog] = React.useState<boolean>(false)
   const [showAllItems, setShowAllItems] = React.useState<boolean>(false)
 
   const prefilteredItems = items.filter(item =>
@@ -50,57 +48,92 @@ export default function LeftSidebarContent(props: ContentProps): JSX.Element {
     : prefilteredItems
 
   return (
-    <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
-      <SidebarCollapsible title={title} iconComponent={<CollapsibleItems />}>
-        <div className="mb-1">
-          {filteredItems.map(item => (
-            <SidebarCollapsibleItem
-              key={item.id}
-              title={item.title}
-              dropdownContent={
-                <LeftSidebarItemMenu
-                  item={item}
-                  type={type}
-                  targetConnection={props.targetConnection}
-                  targetConnectionConfig={props.targetConnectionConfig}
-                />
-              }></SidebarCollapsibleItem>
-          ))}
-          {hasHiddenItems && (
-            <SidebarCollapsibleButton
-              className="justify-center"
-              onClick={() => setShowAllItems(!showAllItems)}>
-              Show all
-            </SidebarCollapsibleButton>
-          )}
-          {items.length === 0 && (
-            <SidebarCollapsibleItem
-              title="Nothing found."
-              hideIcon
-              pointer={false}
-              dots={false}
-            />
-          )}
-        </div>
-      </SidebarCollapsible>
-      <DialogContent>
-        <DialogTitle>Add goal</DialogTitle>
-        <SeparatorHorizontal className="mt-2 mb-1" />
-        <MutateGoal
-          onComplete={() => setOpenDialog(false)}
-          onCancel={() => setOpenDialog(false)}
-        />
-      </DialogContent>
-    </DialogRoot>
+    <SidebarCollapsible
+      title={title}
+      iconComponent={<CollapsibleMenu type={type} />}>
+      <div className="mb-1">
+        {filteredItems.map(item => (
+          <SidebarCollapsibleItem
+            key={item.id}
+            title={item.title}
+            dropdownContent={
+              <LeftSidebarItemMenu
+                item={item}
+                type={type}
+                targetConnection={props.targetConnection}
+                targetConnectionConfig={props.targetConnectionConfig}
+              />
+            }></SidebarCollapsibleItem>
+        ))}
+        {hasHiddenItems && (
+          <SidebarCollapsibleButton
+            className="justify-center"
+            onClick={() => setShowAllItems(!showAllItems)}>
+            Show all
+          </SidebarCollapsibleButton>
+        )}
+        {items.length === 0 && (
+          <SidebarCollapsibleItem
+            title="Nothing found."
+            hideIcon
+            pointer={false}
+            dots={false}
+          />
+        )}
+      </div>
+    </SidebarCollapsible>
   )
 }
 
-function CollapsibleItems(): JSX.Element {
+function CollapsibleMenu(props: { type: MemoObjectType }): JSX.Element {
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false)
+
   return (
     <React.Fragment>
-      <CollapsibleAddIcon />
+      <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
+        <CollapsibleAddIcon />
+        <DialogContent onClick={event => event.stopPropagation()}>
+          <CollapsibleMenuDialogContent
+            type={props.type}
+            setOpenDialog={setOpenDialog}
+          />
+        </DialogContent>
+      </DialogRoot>
     </React.Fragment>
   )
+}
+
+function CollapsibleMenuDialogContent(props: {
+  type: MemoObjectType
+  setOpenDialog: (open: boolean) => void
+}) {
+  const { type, setOpenDialog } = props
+
+  switch (type) {
+    case "activity":
+      return (
+        <ActivityMutate
+          onComplete={() => setOpenDialog(false)}
+          onCancel={() => setOpenDialog(false)}
+        />
+      )
+    case "goal":
+      return (
+        <GoalMutate
+          onComplete={() => setOpenDialog(false)}
+          onCancel={() => setOpenDialog(false)}
+        />
+      )
+    case "todo":
+      return (
+        <TodoMutate
+          onComplete={() => setOpenDialog(false)}
+          onCancel={() => setOpenDialog(false)}
+        />
+      )
+    default:
+      return null
+  }
 }
 
 function CollapsibleAddIcon(): JSX.Element {

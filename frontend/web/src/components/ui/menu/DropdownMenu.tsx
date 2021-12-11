@@ -38,7 +38,7 @@ interface ItemProps {
 export function DropdownMenuItem(
   props: PropsWithChildren<ItemProps>
 ): JSX.Element {
-  return (
+  return props.onClick ? (
     <DropdownMenuPrimitive.Item
       className={cx(
         dropdownStyle.item,
@@ -46,6 +46,15 @@ export function DropdownMenuItem(
         props.className
       )}
       onClick={props.onClick}>
+      {props.children}
+    </DropdownMenuPrimitive.Item>
+  ) : (
+    <DropdownMenuPrimitive.Item
+      className={cx(
+        dropdownStyle.item,
+        { [dropdownStyle.itemInteractive]: props.interactive ?? true },
+        props.className
+      )}>
       {props.children}
     </DropdownMenuPrimitive.Item>
   )

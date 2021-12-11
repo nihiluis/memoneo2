@@ -1,43 +1,21 @@
-import React, { Suspense, useContext, useEffect, useState } from "react"
-import {
-  SidebarCollapsible,
-  SidebarCollapsibleButton,
-  SidebarCollapsibleItem,
-} from "../../ui/sidebar/Collapsible"
-import { graphql, useLazyLoadQuery, usePreloadedQuery } from "react-relay"
-import { LeftSidebarInnerQuery } from "../__generated__/LeftSidebarInnerQuery.graphql"
-import {
-  DialogContent,
-  DialogDescription,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from "../../ui/primitives/Dialog"
-import MutateGoal from "../../goal/Mutate"
-import { SeparatorHorizontal } from "../../ui/Separator"
-import {
-  ArchiveIcon,
-  DotsHorizontalIcon,
-  Pencil1Icon,
-  PlusIcon,
-  TrashIcon,
-} from "@radix-ui/react-icons"
-import style from "./Sidebar.module.css"
-import IconButton from "../../ui/icon/IconButton"
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuRoot,
-  DropdownMenuTrigger,
-} from "../../ui/menu/DropdownMenu"
-import LeftSidebarItemMenu from "./LeftSidebarItemMenu"
-import { MemoObjectType } from "../../types"
+import React, { Suspense, useContext, useState } from "react"
+import { usePreloadedQuery } from "react-relay"
 import { DataLoaderContext } from "../../DataLoader"
 import { DataLoaderInnerGoalQuery } from "../../__generated__/DataLoaderInnerGoalQuery.graphql"
-import { defaultGoalQuery } from "../../DataLoader.gql"
-import { DEFAULT_GOAL_CONNECTION } from "../../../constants/connections"
+import {
+  defaultActivityQuery,
+  defaultGoalQuery,
+  defaultTodoQuery,
+} from "../../DataLoader.gql"
+import {
+  DEFAULT_ACTIVITY_CONNECTION,
+  DEFAULT_GOAL_CONNECTION,
+  DEFAULT_TODO_CONNECTION,
+} from "../../../constants/connections"
 import LeftSidebarContent from "./LeftSidebarContent"
 import LeftSidebarHeader from "./LeftSidebarHeader"
+import { DataLoaderInnerActivityQuery } from "../../__generated__/DataLoaderInnerActivityQuery.graphql"
+import { DataLoaderInnerTodoQuery } from "../../__generated__/DataLoaderInnerTodoQuery.graphql"
 
 export default function LeftSidebar(): JSX.Element {
   return (
@@ -49,20 +27,33 @@ export default function LeftSidebar(): JSX.Element {
 
 function LeftSidebarInner(): JSX.Element {
   const [showArchived, setShowArchived] = useState(false)
-  const { goalQueryRef } = useContext(DataLoaderContext)
+  const { goalQueryRef, todoQueryRef, activityQueryRef } = useContext(
+    DataLoaderContext
+  )
 
   const goalsData = usePreloadedQuery<DataLoaderInnerGoalQuery>(
     defaultGoalQuery,
     goalQueryRef
   )
 
+  const activitiesData = usePreloadedQuery<DataLoaderInnerActivityQuery>(
+    defaultActivityQuery,
+    activityQueryRef
+  )
+
+  const todosData = usePreloadedQuery<DataLoaderInnerTodoQuery>(
+    defaultTodoQuery,
+    todoQueryRef
+  )
+
   const defaultConfig = {}
 
   const notes = []
-  const goals = goalsData.goal_connection.edges
-    .map(edge => edge.node)
-  const activities = []
-  const todos = []
+  const goals = goalsData.goal_connection.edges.map(edge => edge.node)
+  const activities = activitiesData.activity_connection.edges.map(
+    edge => edge.node
+  )
+  const todos = todosData.todo_connection.edges.map(edge => edge.node)
 
   return (
     <div>
@@ -82,7 +73,7 @@ function LeftSidebarInner(): JSX.Element {
         type="todo"
         items={todos}
         showArchived={showArchived}
-        targetConnection=""
+        targetConnection={DEFAULT_TODO_CONNECTION}
         targetConnectionConfig={defaultConfig}></LeftSidebarContent>
       <LeftSidebarContent
         title="Goals"
@@ -96,7 +87,7 @@ function LeftSidebarInner(): JSX.Element {
         type="activity"
         showArchived={showArchived}
         items={activities}
-        targetConnection=""
+        targetConnection={DEFAULT_ACTIVITY_CONNECTION}
         targetConnectionConfig={defaultConfig}></LeftSidebarContent>
     </div>
   )

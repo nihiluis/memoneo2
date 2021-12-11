@@ -17,23 +17,22 @@ import {
   DataLoaderInnerGoalQuery,
   DataLoaderInnerGoalQueryResponse,
 } from "../__generated__/DataLoaderInnerGoalQuery.graphql"
-import MutateGoal from "./Mutate"
-import OverviewDropdownMenuContent from "./OverviewDropdownMenuContent"
-import OverviewItem from "./OverviewItem"
+import GoalMutate from "./GoalMutate"
+import OverviewDropdownMenuContent from "../overview/DropdownMenuContent"
+import GoalOverviewItem from "./GoalOverviewItem"
 
 type Item = DataLoaderInnerGoalQueryResponse["goal_connection"]["edges"][0]["node"]
 
 export default function GoalOverview(): JSX.Element {
   return (
     <Suspense fallback={null}>
-      <OverviewGoalInner />
+      <GoalOverviewInner />
     </Suspense>
   )
 }
 
-function OverviewGoalInner(): JSX.Element {
+function GoalOverviewInner(): JSX.Element {
   const [showArchived, setShowArchived] = useState(false)
-  const [openDialog, setOpenDialog] = useState(false)
   const [activeItem, setActiveItem] = useState<Item>()
 
   const { goalQueryRef } = useContext(DataLoaderContext)
@@ -62,24 +61,11 @@ function OverviewGoalInner(): JSX.Element {
           />
         </DropdownMenuRoot>
       </div>
-      <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
-        <div className="flex flex-wrap gap-1">
-          {items.map(item => (
-            <OverviewItem<Item> item={item} setActiveItem={item => setActiveItem(item)} />
-          ))}
-        </div>
-        <DialogContent>
-          <DialogTitle>Mutate goal</DialogTitle>
-          <SeparatorHorizontal className="mt-2 mb-1" />
-          {activeItem && (
-            <MutateGoal
-              goal={activeItem}
-              onComplete={() => setOpenDialog(false)}
-              onCancel={() => setOpenDialog(false)}
-            />
-          )}
-        </DialogContent>
-      </DialogRoot>
+      <div className="flex flex-wrap gap-1">
+        {items.map(item => (
+          <GoalOverviewItem<Item> key={`overview-item-${item.id}`} item={item} />
+        ))}
+      </div>
     </div>
   )
 }

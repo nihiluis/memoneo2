@@ -19,6 +19,7 @@ type activity implements Node {
   created_at: timestamptz!
   description: String!
   id: ID!
+  rank: Int!
   title: String!
   updated_at: timestamptz!
   user_id: uuid!
@@ -33,6 +34,7 @@ input activity_bool_exp {
   created_at: timestamptz_comparison_exp
   description: String_comparison_exp
   id: uuid_comparison_exp
+  rank: Int_comparison_exp
   title: String_comparison_exp
   updated_at: timestamptz_comparison_exp
   user_id: uuid_comparison_exp
@@ -44,12 +46,18 @@ enum activity_constraint {
   activity_pkey
 }
 
+# input type for incrementing numeric columns in table "activity"
+input activity_inc_input {
+  rank: Int
+}
+
 # input type for inserting data into table "activity"
 input activity_insert_input {
   archived: Boolean
   created_at: timestamptz
   description: String
   id: uuid
+  rank: Int
   title: String
   updated_at: timestamptz
   user_id: uuid
@@ -77,6 +85,7 @@ input activity_order_by {
   created_at: order_by
   description: order_by
   id: order_by
+  rank: order_by
   title: order_by
   updated_at: order_by
   user_id: order_by
@@ -102,6 +111,9 @@ enum activity_select_column {
   id
 
   # column name
+  rank
+
+  # column name
   title
 
   # column name
@@ -117,6 +129,7 @@ input activity_set_input {
   created_at: timestamptz
   description: String
   id: uuid
+  rank: Int
   title: String
   updated_at: timestamptz
   user_id: uuid
@@ -135,6 +148,9 @@ enum activity_update_column {
 
   # column name
   id
+
+  # column name
+  rank
 
   # column name
   title
@@ -1047,6 +1063,9 @@ type mutation_root {
 
   # update data of the table: "activity"
   update_activity(
+    # increments the numeric columns with given value of the filtered values
+    _inc: activity_inc_input
+
     # sets the columns of the filtered rows to the given values
     _set: activity_set_input
 
@@ -1056,6 +1075,9 @@ type mutation_root {
 
   # update single row of the table: "activity"
   update_activity_by_pk(
+    # increments the numeric columns with given value of the filtered values
+    _inc: activity_inc_input
+
     # sets the columns of the filtered rows to the given values
     _set: activity_set_input
     pk_columns: activity_pk_columns_input!
@@ -1139,6 +1161,9 @@ type mutation_root {
 
   # update data of the table: "todo"
   update_todo(
+    # increments the numeric columns with given value of the filtered values
+    _inc: todo_inc_input
+
     # sets the columns of the filtered rows to the given values
     _set: todo_set_input
 
@@ -1148,6 +1173,9 @@ type mutation_root {
 
   # update single row of the table: "todo"
   update_todo_by_pk(
+    # increments the numeric columns with given value of the filtered values
+    _inc: todo_inc_input
+
     # sets the columns of the filtered rows to the given values
     _set: todo_set_input
     pk_columns: todo_pk_columns_input!
@@ -1799,6 +1827,7 @@ type todo implements Node {
   archived: Boolean!
   created_at: timestamptz!
   id: ID!
+  rank: Int!
   title: String!
   updated_at: timestamptz!
   user_id: uuid!
@@ -1812,16 +1841,32 @@ type todo_aggregate {
 
 # aggregate fields of "todo"
 type todo_aggregate_fields {
+  avg: todo_avg_fields
   count(columns: [todo_select_column!], distinct: Boolean): Int!
   max: todo_max_fields
   min: todo_min_fields
+  stddev: todo_stddev_fields
+  stddev_pop: todo_stddev_pop_fields
+  stddev_samp: todo_stddev_samp_fields
+  sum: todo_sum_fields
+  var_pop: todo_var_pop_fields
+  var_samp: todo_var_samp_fields
+  variance: todo_variance_fields
 }
 
 # order by aggregate values of table "todo"
 input todo_aggregate_order_by {
+  avg: todo_avg_order_by
   count: order_by
   max: todo_max_order_by
   min: todo_min_order_by
+  stddev: todo_stddev_order_by
+  stddev_pop: todo_stddev_pop_order_by
+  stddev_samp: todo_stddev_samp_order_by
+  sum: todo_sum_order_by
+  var_pop: todo_var_pop_order_by
+  var_samp: todo_var_samp_order_by
+  variance: todo_variance_order_by
 }
 
 # input type for inserting array relation for remote table "todo"
@@ -1832,6 +1877,16 @@ input todo_arr_rel_insert_input {
   on_conflict: todo_on_conflict
 }
 
+# aggregate avg on columns
+type todo_avg_fields {
+  rank: Float
+}
+
+# order by avg() on columns of table "todo"
+input todo_avg_order_by {
+  rank: order_by
+}
+
 # Boolean expression to filter rows from the table "todo". All fields are combined with a logical 'AND'.
 input todo_bool_exp {
   _and: [todo_bool_exp!]
@@ -1840,6 +1895,7 @@ input todo_bool_exp {
   archived: Boolean_comparison_exp
   created_at: timestamptz_comparison_exp
   id: uuid_comparison_exp
+  rank: Int_comparison_exp
   title: String_comparison_exp
   updated_at: timestamptz_comparison_exp
   user_id: uuid_comparison_exp
@@ -1851,11 +1907,17 @@ enum todo_constraint {
   todo_pkey
 }
 
+# input type for incrementing numeric columns in table "todo"
+input todo_inc_input {
+  rank: Int
+}
+
 # input type for inserting data into table "todo"
 input todo_insert_input {
   archived: Boolean
   created_at: timestamptz
   id: uuid
+  rank: Int
   title: String
   updated_at: timestamptz
   user_id: uuid
@@ -1865,6 +1927,7 @@ input todo_insert_input {
 type todo_max_fields {
   created_at: timestamptz
   id: uuid
+  rank: Int
   title: String
   updated_at: timestamptz
   user_id: uuid
@@ -1874,6 +1937,7 @@ type todo_max_fields {
 input todo_max_order_by {
   created_at: order_by
   id: order_by
+  rank: order_by
   title: order_by
   updated_at: order_by
   user_id: order_by
@@ -1883,6 +1947,7 @@ input todo_max_order_by {
 type todo_min_fields {
   created_at: timestamptz
   id: uuid
+  rank: Int
   title: String
   updated_at: timestamptz
   user_id: uuid
@@ -1892,6 +1957,7 @@ type todo_min_fields {
 input todo_min_order_by {
   created_at: order_by
   id: order_by
+  rank: order_by
   title: order_by
   updated_at: order_by
   user_id: order_by
@@ -1918,6 +1984,7 @@ input todo_order_by {
   archived: order_by
   created_at: order_by
   id: order_by
+  rank: order_by
   title: order_by
   updated_at: order_by
   user_id: order_by
@@ -1940,6 +2007,9 @@ enum todo_select_column {
   id
 
   # column name
+  rank
+
+  # column name
   title
 
   # column name
@@ -1954,9 +2024,50 @@ input todo_set_input {
   archived: Boolean
   created_at: timestamptz
   id: uuid
+  rank: Int
   title: String
   updated_at: timestamptz
   user_id: uuid
+}
+
+# aggregate stddev on columns
+type todo_stddev_fields {
+  rank: Float
+}
+
+# order by stddev() on columns of table "todo"
+input todo_stddev_order_by {
+  rank: order_by
+}
+
+# aggregate stddev_pop on columns
+type todo_stddev_pop_fields {
+  rank: Float
+}
+
+# order by stddev_pop() on columns of table "todo"
+input todo_stddev_pop_order_by {
+  rank: order_by
+}
+
+# aggregate stddev_samp on columns
+type todo_stddev_samp_fields {
+  rank: Float
+}
+
+# order by stddev_samp() on columns of table "todo"
+input todo_stddev_samp_order_by {
+  rank: order_by
+}
+
+# aggregate sum on columns
+type todo_sum_fields {
+  rank: Int
+}
+
+# order by sum() on columns of table "todo"
+input todo_sum_order_by {
+  rank: order_by
 }
 
 # update columns of table "todo"
@@ -1971,6 +2082,9 @@ enum todo_update_column {
   id
 
   # column name
+  rank
+
+  # column name
   title
 
   # column name
@@ -1978,6 +2092,36 @@ enum todo_update_column {
 
   # column name
   user_id
+}
+
+# aggregate var_pop on columns
+type todo_var_pop_fields {
+  rank: Float
+}
+
+# order by var_pop() on columns of table "todo"
+input todo_var_pop_order_by {
+  rank: order_by
+}
+
+# aggregate var_samp on columns
+type todo_var_samp_fields {
+  rank: Float
+}
+
+# order by var_samp() on columns of table "todo"
+input todo_var_samp_order_by {
+  rank: order_by
+}
+
+# aggregate variance on columns
+type todo_variance_fields {
+  rank: Float
+}
+
+# order by variance() on columns of table "todo"
+input todo_variance_order_by {
+  rank: order_by
 }
 
 # A Relay connection object on "todo"

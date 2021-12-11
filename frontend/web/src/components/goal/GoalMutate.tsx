@@ -1,24 +1,25 @@
 import { Formik } from "formik"
 import React, { Suspense, useContext, useState } from "react"
-import { ConnectionHandler, useMutation, UseMutationConfig } from "react-relay"
+import { useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
 import FormRow from "../ui/form/FormRow"
-import { mutation } from "./Mutate.gql"
+import { mutation } from "./GoalMutate.gql"
 import { getIdFromNodeId } from "../../lib/hasura"
-import { PayloadError, ROOT_ID } from "relay-runtime"
-import {
-  MutateGoalFormMutation,
-  MutateGoalFormMutationVariables,
-} from "./__generated__/MutateGoalFormMutation.graphql"
+import { PayloadError } from "relay-runtime"
 import { AuthContext } from "../Auth"
 import { useFilterStore } from "../../stores/filter"
-import {
-  DEFAULT_GOAL_CONNECTION,
-} from "../../constants/connections"
+import { DEFAULT_GOAL_CONNECTION } from "../../constants/connections"
 import { getRootConnectionIds } from "../../relay/getConnection"
 import MutationFormWrapper from "../mutation/MutationFormWrapper"
 import getMutationConfig from "../mutation/getMutationConfig"
+import MutationHeader from "../mutation/MutationHeader"
+
+import {
+  GoalMutateMutation,
+  GoalMutateMutationVariables,
+} from "./__generated__/GoalMutateMutation.graphql"
+import MutationFormRow from "../mutation/MutationFormRow"
 
 interface FormValues {
   title: string
@@ -39,15 +40,15 @@ interface Props {
   onCancel(): void
 }
 
-export default function MutateGoal(props: Props): JSX.Element {
-  const [commit, _] = useMutation<MutateGoalFormMutation>(mutation)
+export default function GoalMutate(props: Props): JSX.Element {
+  const [commit, _] = useMutation<GoalMutateMutation>(mutation)
   const [errors, setErrors] = useState<PayloadError[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const { auth } = useContext(AuthContext)
 
   const { goal, onComplete, onCancel } = props
 
-  const type = !!goal ? "edit" : "add"
+  const operationType = !!goal ? "edit" : "add"
 
   const defaultGoalFilters = useFilterStore(state =>
     state.getFilters(DEFAULT_GOAL_CONNECTION)
@@ -58,7 +59,7 @@ export default function MutateGoal(props: Props): JSX.Element {
 
     setLoading(true)
 
-    const variables: MutateGoalFormMutationVariables = {
+    const variables: GoalMutateMutationVariables = {
       id: goalId ?? uuidv4(),
       user_id: auth.userId,
       title: values["title"],
@@ -68,20 +69,18 @@ export default function MutateGoal(props: Props): JSX.Element {
       ],
     }
 
-    const mutationConfig = getMutationConfig<MutateGoalFormMutation>(
-      variables,
-      {
-        setErrors,
-        setLoading,
-        onComplete,
-      }
-    )
+    const mutationConfig = getMutationConfig<GoalMutateMutation>(variables, {
+      setErrors,
+      setLoading,
+      onComplete,
+    })
 
     commit(mutationConfig)
   }
 
   return (
     <Suspense fallback={null}>
+      <MutationHeader operationType={operationType} objectType="goal" />
       <Formik<FormValues>
         initialValues={{
           title: goal?.title ?? "",
@@ -93,18 +92,16 @@ export default function MutateGoal(props: Props): JSX.Element {
           <MutationFormWrapper
             formikProps={formikProps}
             error={errors.length > 0 ? "error" : ""}
-            onCancel={props.onCancel}
-            type={type}
+            onCancel={onCancel}
+            type={operationType}
             loading={loading}>
-            <FormRow
-              inputClassName="bg-gray-50 border border-gray-200"
+            <MutationFormRow
               {...formikProps}
               type="text"
               name="title"
               label="Title"
             />
-            <FormRow
-              inputClassName="bg-gray-50 border border-gray-200"
+            <MutationFormRow
               {...formikProps}
               type="text"
               name="description"

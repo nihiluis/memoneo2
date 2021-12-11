@@ -1,14 +1,14 @@
 import { graphql } from "relay-runtime"
 
 export const mutation = graphql`
-  mutation MutateGoalFormMutation(
+  mutation ActivityMutateMutation(
     $title: String!
     $description: String!
     $id: uuid
     $user_id: uuid
     $connections: [ID!]!
   ) {
-    insert_goal(
+    insert_activity(
       objects: {
         title: $title
         description: $description
@@ -16,7 +16,7 @@ export const mutation = graphql`
         user_id: $user_id
       }
       on_conflict: {
-        constraint: goal_pkey
+        constraint: activity_pkey
         update_columns: [title, description]
       }
     ) {
@@ -24,7 +24,7 @@ export const mutation = graphql`
         id
         title
         description
-        status
+        rank
         archived
       }
     }
