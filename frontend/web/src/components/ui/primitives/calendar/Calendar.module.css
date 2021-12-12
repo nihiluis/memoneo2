@@ -1,0 +1,23 @@
+.day {
+  display: flex;
+  align-items: center;
+}
+
+.dayInner {
+  @apply p-2;
+  @apply my-2;
+  @apply rounded-full;
+}
+
+.dayInnerFocused {
+  background-color: var(--bg-content);
+  box-shadow: 0 0 2px black;
+}
+
+.monthName {
+  width: 140px;
+  @apply rounded-full;
+  @apply py-1;
+  @apply px-3;
+  @apply bg-gray-300;
+}

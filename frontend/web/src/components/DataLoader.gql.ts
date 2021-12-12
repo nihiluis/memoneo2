@@ -2,7 +2,7 @@ import { graphql } from "react-relay"
 
 export const defaultGoalQuery = graphql`
   query DataLoaderInnerGoalQuery {
-    goal_connection(first: 10000)
+    goal_connection(first: 10000, order_by: { updated_at: desc })
       @connection(key: "DataLoaderInnerGoalQuery_goal_connection") {
       edges {
         node {
@@ -27,6 +27,8 @@ export const defaultNoteQuery = graphql`
         node {
           id
           title
+          pinned
+          date
           archived
         }
       }

@@ -7,7 +7,7 @@ interface Props {
   objectType: MemoObjectType
 }
 
-export default function MutationHeader(props: Props): JSX.Element {
+export default function EditorHeader(props: Props): JSX.Element {
   const { operationType, objectType } = props
 
   const operationText = operationType === "edit" ? "Edit" : "Add"

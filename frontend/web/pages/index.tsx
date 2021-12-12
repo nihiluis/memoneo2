@@ -7,6 +7,8 @@ import GoalOverview from "../src/components/goal/GoalOverview"
 import RightSidebar from "../src/components/sidebar/RightSidebar"
 import LeftSidebar from "../src/components/sidebar/left/LeftSidebar"
 import DataLoader from "../src/components/DataLoader"
+import TodoOverview from "../src/components/todo/TodoOverview"
+import ActivityOverview from "../src/components/activity/ActivityOverview"
 
 export default function Index() {
   return (
@@ -30,7 +32,11 @@ function IndexInner() {
       setShowSidebarRight={setShowSidebarRight}
       sidebarLeftComponent={<LeftSidebar />}
       sidebarRightComponent={<RightSidebar />}>
-      <GoalOverview />
+      <div className="flex flex-wrap gap-6">
+        <GoalOverview />
+        <TodoOverview />
+        <ActivityOverview />
+      </div>
     </GridLayout>
   )
 }

@@ -3,7 +3,6 @@ import React, { Suspense, useContext, useState } from "react"
 import { useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
-import FormRow from "../ui/form/FormRow"
 import { mutation } from "./GoalMutate.gql"
 import { getIdFromNodeId } from "../../lib/hasura"
 import { PayloadError } from "relay-runtime"
@@ -11,15 +10,15 @@ import { AuthContext } from "../Auth"
 import { useFilterStore } from "../../stores/filter"
 import { DEFAULT_GOAL_CONNECTION } from "../../constants/connections"
 import { getRootConnectionIds } from "../../relay/getConnection"
-import MutationFormWrapper from "../mutation/MutationFormWrapper"
+import EditorFormWrapper from "../mutation/EditorFormWrapper"
 import getMutationConfig from "../mutation/getMutationConfig"
-import MutationHeader from "../mutation/MutationHeader"
+import EditorHeader from "../mutation/EditorHeader"
 
 import {
   GoalMutateMutation,
   GoalMutateMutationVariables,
 } from "./__generated__/GoalMutateMutation.graphql"
-import MutationFormRow from "../mutation/MutationFormRow"
+import EditorFormRowText from "../mutation/EditorFormRowText"
 
 interface FormValues {
   title: string
@@ -80,7 +79,7 @@ export default function GoalMutate(props: Props): JSX.Element {
 
   return (
     <Suspense fallback={null}>
-      <MutationHeader operationType={operationType} objectType="goal" />
+      <EditorHeader operationType={operationType} objectType="goal" />
       <Formik<FormValues>
         initialValues={{
           title: goal?.title ?? "",
@@ -89,25 +88,25 @@ export default function GoalMutate(props: Props): JSX.Element {
         validationSchema={FormSchema}
         onSubmit={submit}>
         {formikProps => (
-          <MutationFormWrapper
+          <EditorFormWrapper
             formikProps={formikProps}
             error={errors.length > 0 ? "error" : ""}
             onCancel={onCancel}
             type={operationType}
             loading={loading}>
-            <MutationFormRow
+            <EditorFormRowText
               {...formikProps}
               type="text"
               name="title"
               label="Title"
             />
-            <MutationFormRow
+            <EditorFormRowText
               {...formikProps}
               type="text"
               name="description"
               label="Description"
             />
-          </MutationFormWrapper>
+          </EditorFormWrapper>
         )}
       </Formik>
     </Suspense>

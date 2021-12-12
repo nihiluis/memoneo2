@@ -1,6 +1,6 @@
 import { FormikProps } from "formik"
 import React from "react"
-import FormRow from "../ui/form/FormRow"
+import FormRowInput from "../ui/form/FormRowInput"
 
 interface Props extends FormikProps<any> {
   type: string
@@ -8,12 +8,12 @@ interface Props extends FormikProps<any> {
   label: string
 }
 
-export default function MutationFormRow(props: Props): JSX.Element {
+export default function EditorFormRowText(props: Props): JSX.Element {
   const { type, name, label, ...formikProps } = props
 
   return (
-    <FormRow
-      inputClassName="bg-gray-50 border border-gray-200"
+    <FormRowInput
+      innerClassName="bg-gray-50 border border-gray-200"
       {...formikProps}
       type={type}
       name={name}

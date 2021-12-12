@@ -1,0 +1,32 @@
+.root {
+	all: unset;
+	width: 42px;
+	height: 25px;
+	@apply bg-gray-300;
+	@apply rounded-full;
+	position: relative;
+}
+
+.root:focus {
+	box-shadow: 0 0 0 2px black;
+}
+
+.root[data-state="checked"] {
+	@apply bg-gray-600;
+}
+
+.thumb {
+  display: block;
+  width: 21px;
+  height: 21px;
+  background-color: white;
+  @apply rounded-full;
+  box-shadow: 0 0 2px #838383;
+  transition: transform 100ms;
+  transform: translateX(2px);
+  will-change: transform;
+}
+
+.thumb[data-state="checked"] {
+  transform: translateX(19px);
+}

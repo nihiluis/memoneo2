@@ -7,3 +7,5 @@ export const DEFAULT_ACTIVITY_CONNECTION =
   "DataLoaderInnerActivityQuery_activity_connection"
 export const DEFAULT_TODO_CONNECTION =
   "DataLoaderInnerTodoQuery_todo_connection"
+export const DEFAULT_NOTE_CONNECTION =
+"DataLoaderInnerNoteQuery_note_connection"

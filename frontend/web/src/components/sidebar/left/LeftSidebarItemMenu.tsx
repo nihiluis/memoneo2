@@ -4,7 +4,7 @@ import { graphql, useMutation, UseMutationConfig } from "react-relay"
 import { PayloadError } from "relay-runtime"
 import { getIdFromNodeId } from "../../../lib/hasura"
 import deleteInConnection from "../../../relay/deleteInConnection"
-import MutateGoal from "../../goal/GoalMutate"
+import GoalMutate from "../../goal/GoalMutate"
 import { MemoObjectType } from "../../types"
 import { DropdownMenuItem } from "../../ui/menu/DropdownMenu"
 import {
@@ -138,7 +138,7 @@ export default function LeftSidebarItemMenu(props: Props): JSX.Element {
           </DialogTrigger>
         </DropdownMenuItem>
         <DialogContent>
-          <MutateGoal
+          <GoalMutate
             goal={props.item as any}
             onComplete={() => setOpenDialog(false)}
             onCancel={() => setOpenDialog(false)}

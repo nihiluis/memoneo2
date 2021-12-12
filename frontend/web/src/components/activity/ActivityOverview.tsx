@@ -36,7 +36,7 @@ function GoalOverviewInner(): JSX.Element {
     .filter(node => (showArchived ? node : !node.archived))
 
   return (
-    <div className="bg-content">
+    <div className="bg-content w-full">
       <div className="flex items-center gap-4 mb-4">
         <h2 className="leading-none">Activities</h2>
         <ChevronRightIcon color="gray" width={24} height={24} />

@@ -12,13 +12,13 @@
   --focused-color: #8575ff;
   --unfocused-color: #9996a9;
   --bg-content: #fff;
-	--bg-content-contrast: #fbfbfb;
-	--bg-gray-contrast: #e2e2e2;
+  --bg-content-contrast: #fbfbfb;
+  --bg-gray-contrast: #e2e2e2;
   --button-color: #586e8e;
   --border-color: #fefefe;
   --section-left-column-width: 8rem;
-	--section-left-column-gap: 1.5rem;
-	--icon-color: #4d496b;
+  --section-left-column-gap: 1.5rem;
+  --icon-color: #4d496b;
 
   --text-color-light: #fff;
   --text-color-dark: rgba(31, 41, 55, var(--tw-text-opacity));
@@ -89,8 +89,6 @@ h4 {
   @apply py-4;
 }
 
-
-
 .title-big {
   @apply text-2xl;
   @apply font-semibold;
@@ -118,6 +116,15 @@ h4 {
 }
 
 .form-input {
+  @apply block;
+  @apply mb-2;
+  @apply w-full;
+  @apply px-4;
+  @apply py-2;
+  @apply rounded-sm;
+}
+
+.form-textarea {
   @apply block;
   @apply mb-2;
   @apply w-full;

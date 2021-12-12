@@ -9,7 +9,7 @@ interface Props extends PropsWithChildren<{}> {
   loading: boolean
 }
 
-export default function MutationFormWrapper(props: Props): JSX.Element {
+export default function EditorFormWrapper(props: Props): JSX.Element {
   const { error, formikProps, type, loading } = props
 
   return (

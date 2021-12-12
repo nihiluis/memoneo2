@@ -1,13 +1,13 @@
 import React, { useContext, useState } from "react"
 import dynamic from "next/dynamic"
 import * as Yup from "yup"
-import { Formik, FormikErrors } from "formik"
+import { Formik } from "formik"
 import Link from "next/link"
 
 import { PRODUCT_NAME } from "../src/constants/env"
 import Layout from "../src/components/ui/layout/Layout"
 import Auth, { AuthContext } from "../src/components/Auth"
-import FormRow from "../src/components/ui/form/FormRow"
+import FormRowInput from "../src/components/ui/form/FormRowInput"
 import { login } from "../src/lib/auth"
 import Logo from "../src/components/ui/Logo"
 
@@ -23,10 +23,6 @@ const LoginFormSchema = Yup.object().shape({
     .required("Password is required."),
   mail: Yup.string().email("Invalid mail").required("Mail is required."),
 })
-
-function validate(values: FormValues): FormikErrors<FormValues> {
-  return {}
-}
 
 function Login() {
   return (
@@ -73,8 +69,13 @@ function LoginForm(): JSX.Element {
         onSubmit={submit}>
         {formikProps => (
           <form className="form w-80" onSubmit={formikProps.handleSubmit}>
-            <FormRow {...formikProps} type="email" name="mail" label="Mail" />
-            <FormRow
+            <FormRowInput
+              {...formikProps}
+              type="email"
+              name="mail"
+              label="Mail"
+            />
+            <FormRowInput
               {...formikProps}
               type="password"
               name="password"

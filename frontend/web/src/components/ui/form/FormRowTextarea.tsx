@@ -4,30 +4,27 @@ import { cx } from "../../../lib/reexports"
 
 interface Props<T> extends FormikProps<T> {
   label: string
-  type: string
   name: string
-  inputClassName?: string
+  innerClassName?: string
 }
 
-export default function FormRow<T>(props: Props<T>) {
+export default function FormRowTextarea<T>(props: Props<T>) {
   const {
     label,
-    type,
     name,
     handleChange,
     handleBlur,
     values,
     errors,
     touched,
-    inputClassName = "",
+    innerClassName = "",
   } = props
 
   return (
     <div className="form-row">
       <label className="form-label">{label}</label>
-      <input
-        className={cx("form-input", inputClassName)}
-        type={type}
+      <textarea
+        className={cx("form-textarea", innerClassName)}
         name={name}
         onChange={handleChange}
         onBlur={handleBlur}

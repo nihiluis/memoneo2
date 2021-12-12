@@ -18,7 +18,7 @@ export const mutation = graphql`
         update_columns: [title]
       }
     ) {
-      returning @appendNode(connections: $connections, edgeTypeName: "goalEdge") {
+      returning @appendNode(connections: $connections, edgeTypeName: "todoEdge") {
         id
         title
         rank

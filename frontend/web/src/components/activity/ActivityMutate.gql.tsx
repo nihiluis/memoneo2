@@ -20,7 +20,7 @@ export const mutation = graphql`
         update_columns: [title, description]
       }
     ) {
-      returning @appendNode(connections: $connections, edgeTypeName: "goalEdge") {
+      returning @appendNode(connections: $connections, edgeTypeName: "activityEdge") {
         id
         title
         description

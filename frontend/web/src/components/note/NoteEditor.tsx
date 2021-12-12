@@ -3,24 +3,30 @@ import React, { Suspense, useContext, useState } from "react"
 import { useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
-import { mutation } from "./TodoMutate.gql"
+import { mutation } from "./NoteEditor.gql"
 import { getIdFromNodeId } from "../../lib/hasura"
 import { PayloadError } from "relay-runtime"
 import { AuthContext } from "../Auth"
 import { useFilterStore } from "../../stores/filter"
-import { DEFAULT_TODO_CONNECTION } from "../../constants/connections"
+import { DEFAULT_NOTE_CONNECTION } from "../../constants/connections"
 import { getRootConnectionIds } from "../../relay/getConnection"
 import EditorFormWrapper from "../mutation/EditorFormWrapper"
 import getMutationConfig from "../mutation/getMutationConfig"
 import EditorHeader from "../mutation/EditorHeader"
-import {
-  TodoMutateMutation,
-  TodoMutateMutationVariables,
-} from "./__generated__/TodoMutateMutation.graphql"
 import EditorFormRowText from "../mutation/EditorFormRowText"
+import EditorFormRowTextarea from "../mutation/EditorFormRowTextarea"
+import {
+  NoteEditorMutation,
+  NoteEditorMutationVariables,
+} from "./__generated__/NoteEditorMutation.graphql"
+import EditorSwitch from "../mutation/EditorSwitch"
+import FormRowCalendar from "../ui/form/FormRowCalendar"
 
 interface FormValues {
   title: string
+  body: string
+  pinned: boolean
+  date?: Date
 }
 
 const FormSchema = Yup.object().shape({
@@ -28,43 +34,57 @@ const FormSchema = Yup.object().shape({
     .min(3, "Too short.")
     .max(32, "Too long.")
     .required("Required."),
+  body: Yup.string(),
+  pinned: Yup.boolean(),
+  date: Yup.date(),
 })
 
+interface Note {
+  id: string
+  title: string
+  body: string
+  date: Date
+  pinned: boolean
+}
+
 interface Props {
-  todo?: { id: string; title: string; description: string }
+  note?: Note
   onComplete(): void
   onCancel(): void
 }
 
-export default function TodoMutate(props: Props): JSX.Element {
-  const [commit, _] = useMutation<TodoMutateMutation>(mutation)
+export default function NoteEditor(props: Props): JSX.Element {
+  const [commit, _] = useMutation<NoteEditorMutation>(mutation)
   const [errors, setErrors] = useState<PayloadError[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const { auth } = useContext(AuthContext)
 
-  const { todo, onComplete, onCancel } = props
+  const { note, onComplete, onCancel } = props
 
-  const operationType = !!todo ? "edit" : "add"
+  const noteId = note ? getIdFromNodeId(note.id) : null
 
-  const defaultTodoFilters = useFilterStore(state =>
-    state.getFilters(DEFAULT_TODO_CONNECTION)
+  const operationType = !!note ? "edit" : "add"
+
+  const defaultNoteFilters = useFilterStore(state =>
+    state.getFilters(DEFAULT_NOTE_CONNECTION)
   )
 
   function submit(values: FormValues) {
-    const todoId = todo ? getIdFromNodeId(todo.id) : null
-
     setLoading(true)
 
-    const variables: TodoMutateMutationVariables = {
-      id: todoId ?? uuidv4(),
+    const variables: NoteEditorMutationVariables = {
+      id: noteId ?? uuidv4(),
       user_id: auth.userId,
       title: values["title"],
+      body: values["body"],
+      pinned: values["pinned"] ?? false,
+      date: values["date"],
       connections: [
-        ...getRootConnectionIds(DEFAULT_TODO_CONNECTION, defaultTodoFilters),
+        ...getRootConnectionIds(DEFAULT_NOTE_CONNECTION, defaultNoteFilters),
       ],
     }
 
-    const mutationConfig = getMutationConfig<TodoMutateMutation>(variables, {
+    const mutationConfig = getMutationConfig<NoteEditorMutation>(variables, {
       setErrors,
       setLoading,
       onComplete,
@@ -75,10 +95,13 @@ export default function TodoMutate(props: Props): JSX.Element {
 
   return (
     <Suspense fallback={null}>
-      <EditorHeader operationType={operationType} objectType="todo" />
+      <EditorHeader operationType={operationType} objectType="note" />
       <Formik<FormValues>
         initialValues={{
-          title: todo?.title ?? "",
+          title: note?.title ?? "",
+          body: note?.body ?? "",
+          pinned: note?.pinned ?? false,
+          date: note?.date,
         }}
         validationSchema={FormSchema}
         onSubmit={submit}>
@@ -95,6 +118,9 @@ export default function TodoMutate(props: Props): JSX.Element {
               name="title"
               label="Title"
             />
+            <EditorFormRowTextarea {...formikProps} name="body" label="Body" />
+            <EditorSwitch {...formikProps} name="pinned" label="Pin" />
+            <FormRowCalendar {...formikProps} name="date" label="Date" />
           </EditorFormWrapper>
         )}
       </Formik>

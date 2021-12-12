@@ -15,6 +15,7 @@ import {
 import LeftSidebarItemMenu from "./LeftSidebarItemMenu"
 import ActivityMutate from "../../activity/ActivityMutate"
 import TodoMutate from "../../todo/TodoMutate"
+import NoteEditor from "../../note/NoteEditor"
 
 interface ContentProps {
   items: ContentItem[]
@@ -127,6 +128,13 @@ function CollapsibleMenuDialogContent(props: {
     case "todo":
       return (
         <TodoMutate
+          onComplete={() => setOpenDialog(false)}
+          onCancel={() => setOpenDialog(false)}
+        />
+      )
+    case "note":
+      return (
+        <NoteEditor
           onComplete={() => setOpenDialog(false)}
           onCancel={() => setOpenDialog(false)}
         />
