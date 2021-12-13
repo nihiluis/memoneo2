@@ -20,18 +20,23 @@ import {
 import GoalMutate from "./GoalMutate"
 import OverviewDropdownMenuContent from "../overview/DropdownMenuContent"
 import GoalOverviewItem from "./GoalOverviewItem"
+import OverviewSimpleWrapper from "../overview/OverviewSimpleWrapper"
 
 type Item = DataLoaderInnerGoalQueryResponse["goal_connection"]["edges"][0]["node"]
 
-export default function GoalOverview(): JSX.Element {
+interface Props {
+  className?: string
+}
+
+export default function GoalOverview(props: Props): JSX.Element {
   return (
     <Suspense fallback={null}>
-      <GoalOverviewInner />
+      <GoalOverviewInner {...props} />
     </Suspense>
   )
 }
 
-function GoalOverviewInner(): JSX.Element {
+function GoalOverviewInner(props: Props): JSX.Element {
   const [showArchived, setShowArchived] = useState(false)
 
   const { goalQueryRef } = useContext(DataLoaderContext)
@@ -46,25 +51,14 @@ function GoalOverviewInner(): JSX.Element {
     .filter(node => (showArchived ? node : !node.archived))
 
   return (
-    <div className="bg-content w-full">
-      <div className="flex items-center gap-4 mb-4">
-        <h2 className="leading-none">Goals</h2>
-        <ChevronRightIcon color="gray" width={24} height={24} />
-        <DropdownMenuRoot>
-          <DropdownMenuTrigger>
-            <DotsHorizontalIcon color="gray" width={24} height={24} />
-          </DropdownMenuTrigger>
-          <OverviewDropdownMenuContent
-            showArchived={showArchived}
-            setShowArchived={setShowArchived}
-          />
-        </DropdownMenuRoot>
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {items.map(item => (
-          <GoalOverviewItem<Item> key={`overview-item-${item.id}`} item={item} />
-        ))}
-      </div>
-    </div>
+    <OverviewSimpleWrapper
+      title="Goals"
+      showArchived={showArchived}
+      setShowArchived={setShowArchived}
+      className={props.className}>
+      {items.map(item => (
+        <GoalOverviewItem<Item> key={`overview-item-${item.id}`} item={item} />
+      ))}
+    </OverviewSimpleWrapper>
   )
 }

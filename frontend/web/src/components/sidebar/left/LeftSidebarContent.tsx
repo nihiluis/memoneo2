@@ -12,10 +12,11 @@ import {
   SidebarCollapsibleButton,
   SidebarCollapsibleItem,
 } from "../../ui/sidebar/Collapsible"
-import LeftSidebarItemMenu from "./LeftSidebarItemMenu"
+import LeftSidebarItemMenuGoal from "./LeftSidebarItemMenuGoal"
 import ActivityMutate from "../../activity/ActivityMutate"
 import TodoMutate from "../../todo/TodoMutate"
 import NoteEditor from "../../note/NoteEditor"
+import LeftSidebarItemMenu from "./LeftSidebarItemMenu"
 
 interface ContentProps {
   items: ContentItem[]
@@ -23,8 +24,6 @@ interface ContentProps {
   defaultMaxItems?: number
   type: MemoObjectType
   showArchived: boolean
-  targetConnection: string
-  targetConnectionConfig: any
 }
 
 interface ContentItem {
@@ -58,12 +57,7 @@ export default function LeftSidebarContent(props: ContentProps): JSX.Element {
             key={item.id}
             title={item.title}
             dropdownContent={
-              <LeftSidebarItemMenu
-                item={item}
-                type={type}
-                targetConnection={props.targetConnection}
-                targetConnectionConfig={props.targetConnectionConfig}
-              />
+              <LeftSidebarItemMenu item={item} type={type} />
             }></SidebarCollapsibleItem>
         ))}
         {hasHiddenItems && (

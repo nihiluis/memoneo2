@@ -28,6 +28,7 @@ export const mutation = graphql`
         @appendNode(connections: $connections, edgeTypeName: "noteEdge") {
         id
         title
+        pinned
         date
         body
         archived

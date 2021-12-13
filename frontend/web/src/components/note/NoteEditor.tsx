@@ -1,6 +1,6 @@
 import { Formik } from "formik"
 import React, { Suspense, useContext, useState } from "react"
-import { useMutation } from "react-relay"
+import { useLazyLoadQuery, useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
 import { mutation } from "./NoteEditor.gql"
@@ -20,13 +20,13 @@ import {
   NoteEditorMutationVariables,
 } from "./__generated__/NoteEditorMutation.graphql"
 import EditorSwitch from "../mutation/EditorSwitch"
-import FormRowCalendar from "../ui/form/FormRowCalendar"
+import dayjs from "dayjs"
 
 interface FormValues {
   title: string
   body: string
   pinned: boolean
-  date?: Date
+  date?: string
 }
 
 const FormSchema = Yup.object().shape({
@@ -36,14 +36,14 @@ const FormSchema = Yup.object().shape({
     .required("Required."),
   body: Yup.string(),
   pinned: Yup.boolean(),
-  date: Yup.date(),
+  date: Yup.string().required(),
 })
 
 interface Note {
   id: string
   title: string
   body: string
-  date: Date
+  date: string
   pinned: boolean
 }
 
@@ -68,6 +68,8 @@ export default function NoteEditor(props: Props): JSX.Element {
   const defaultNoteFilters = useFilterStore(state =>
     state.getFilters(DEFAULT_NOTE_CONNECTION)
   )
+
+  useLazyLoadQuery()
 
   function submit(values: FormValues) {
     setLoading(true)
@@ -101,7 +103,7 @@ export default function NoteEditor(props: Props): JSX.Element {
           title: note?.title ?? "",
           body: note?.body ?? "",
           pinned: note?.pinned ?? false,
-          date: note?.date,
+          date: note?.date ?? dayjs().format("YYYY-MM-DD"),
         }}
         validationSchema={FormSchema}
         onSubmit={submit}>
@@ -118,9 +120,14 @@ export default function NoteEditor(props: Props): JSX.Element {
               name="title"
               label="Title"
             />
+            <EditorFormRowText
+              {...formikProps}
+              type="date"
+              name="date"
+              label="Date"
+            />
             <EditorFormRowTextarea {...formikProps} name="body" label="Body" />
             <EditorSwitch {...formikProps} name="pinned" label="Pin" />
-            <FormRowCalendar {...formikProps} name="date" label="Date" />
           </EditorFormWrapper>
         )}
       </Formik>

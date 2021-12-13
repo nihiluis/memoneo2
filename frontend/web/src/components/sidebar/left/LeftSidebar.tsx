@@ -57,8 +57,6 @@ function LeftSidebarInner(): JSX.Element {
     noteQueryRef
   )
 
-  const defaultConfig = {}
-
   const notes = notesData.note_connection.edges
     .map(edge => edge.node)
     .filter(node => node.pinned)
@@ -78,30 +76,22 @@ function LeftSidebarInner(): JSX.Element {
         title="Notes"
         type="note"
         items={notes}
-        showArchived={showArchived}
-        targetConnection={DEFAULT_NOTE_CONNECTION}
-        targetConnectionConfig={defaultConfig}></LeftSidebarContent>
+        showArchived={showArchived}></LeftSidebarContent>
       <LeftSidebarContent
         title="Todos"
         type="todo"
         items={todos}
-        showArchived={showArchived}
-        targetConnection={DEFAULT_TODO_CONNECTION}
-        targetConnectionConfig={defaultConfig}></LeftSidebarContent>
+        showArchived={showArchived}></LeftSidebarContent>
       <LeftSidebarContent
         title="Goals"
         type="goal"
         items={goals}
-        showArchived={showArchived}
-        targetConnection={DEFAULT_GOAL_CONNECTION}
-        targetConnectionConfig={defaultConfig}></LeftSidebarContent>
+        showArchived={showArchived}></LeftSidebarContent>
       <LeftSidebarContent
         title="Activities"
         type="activity"
         showArchived={showArchived}
-        items={activities}
-        targetConnection={DEFAULT_ACTIVITY_CONNECTION}
-        targetConnectionConfig={defaultConfig}></LeftSidebarContent>
+        items={activities}></LeftSidebarContent>
     </div>
   )
 }

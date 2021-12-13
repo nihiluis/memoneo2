@@ -32,10 +32,10 @@ function IndexInner() {
       setShowSidebarRight={setShowSidebarRight}
       sidebarLeftComponent={<LeftSidebar />}
       sidebarRightComponent={<RightSidebar />}>
-      <div className="flex flex-wrap gap-6">
-        <GoalOverview />
-        <TodoOverview />
-        <ActivityOverview />
+      <div className="flex gap-10">
+        <GoalOverview className="w-1/3" />
+        <TodoOverview className="w-1/3" />
+        <ActivityOverview className="w-1/3" />
       </div>
     </GridLayout>
   )

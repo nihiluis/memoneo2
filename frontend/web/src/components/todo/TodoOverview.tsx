@@ -10,18 +10,23 @@ import {
 } from "../__generated__/DataLoaderInnerTodoQuery.graphql"
 import OverviewDropdownMenuContent from "../overview/DropdownMenuContent"
 import TodoOverviewItem from "./TodoOverviewItem"
+import OverviewSimpleWrapper from "../overview/OverviewSimpleWrapper"
 
 type Item = DataLoaderInnerTodoQueryResponse["todo_connection"]["edges"][0]["node"]
 
-export default function TodoOverview(): JSX.Element {
+interface Props {
+  className?: string
+}
+
+export default function TodoOverview(props: Props): JSX.Element {
   return (
     <Suspense fallback={null}>
-      <TodoOverviewInner />
+      <TodoOverviewInner {...props} />
     </Suspense>
   )
 }
 
-function TodoOverviewInner(): JSX.Element {
+function TodoOverviewInner(props: Props): JSX.Element {
   const [showArchived, setShowArchived] = useState(false)
 
   const { todoQueryRef } = useContext(DataLoaderContext)
@@ -36,28 +41,14 @@ function TodoOverviewInner(): JSX.Element {
     .filter(node => (showArchived ? node : !node.archived))
 
   return (
-    <div className="bg-content w-full">
-      <div className="flex items-center gap-4 mb-4">
-        <h2 className="leading-none">Todos</h2>
-        <ChevronRightIcon color="gray" width={24} height={24} />
-        <DropdownMenuRoot>
-          <DropdownMenuTrigger>
-            <DotsHorizontalIcon color="gray" width={24} height={24} />
-          </DropdownMenuTrigger>
-          <OverviewDropdownMenuContent
-            showArchived={showArchived}
-            setShowArchived={setShowArchived}
-          />
-        </DropdownMenuRoot>
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {items.map(item => (
-          <TodoOverviewItem<Item>
-            key={`overview-item-${item.id}`}
-            item={item}
-          />
-        ))}
-      </div>
-    </div>
+    <OverviewSimpleWrapper
+      title="Todos"
+      showArchived={showArchived}
+      setShowArchived={setShowArchived}
+      className={props.className}>
+      {items.map(item => (
+        <TodoOverviewItem<Item> key={`overview-item-${item.id}`} item={item} />
+      ))}
+    </OverviewSimpleWrapper>
   )
 }

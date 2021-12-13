@@ -1,6 +1,5 @@
 import {
   ConnectionHandler,
-  RecordProxy,
   RecordSourceSelectorProxy,
   ROOT_ID,
 } from "relay-runtime"
