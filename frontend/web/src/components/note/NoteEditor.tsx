@@ -1,9 +1,9 @@
 import { Formik } from "formik"
 import React, { Suspense, useContext, useState } from "react"
-import { useLazyLoadQuery, useMutation } from "react-relay"
+import { useFragment, useLazyLoadQuery, useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
-import { mutation } from "./NoteEditor.gql"
+import { mutation, query } from "./NoteEditor.gql"
 import { getIdFromNodeId } from "../../lib/hasura"
 import { PayloadError } from "relay-runtime"
 import { AuthContext } from "../Auth"
@@ -21,6 +21,13 @@ import {
 } from "./__generated__/NoteEditorMutation.graphql"
 import EditorSwitch from "../mutation/EditorSwitch"
 import dayjs from "dayjs"
+import {
+  NoteEditorDataQuery,
+  NoteEditorDataQueryResponse,
+} from "./__generated__/NoteEditorDataQuery.graphql"
+import { noteFragment } from "./NoteFragment.gql"
+import { NoteFragment$key } from "./__generated__/NoteFragment.graphql"
+import { nullUuid } from "../../constants/other"
 
 interface FormValues {
   title: string
@@ -48,28 +55,61 @@ interface Note {
 }
 
 interface Props {
-  note?: Note
+  preloadedNote?: Note
   onComplete(): void
   onCancel(): void
 }
 
 export default function NoteEditor(props: Props): JSX.Element {
+  return (
+    <Suspense fallback={null}>
+      <NoteEditorLoader {...props} />
+    </Suspense>
+  )
+}
+
+function NoteEditorLoader(props: Props): JSX.Element {
+  const { preloadedNote } = props
+  const [nullId] = useState(nullUuid)
+
+  const noteId = preloadedNote ? getIdFromNodeId(preloadedNote.id) : null
+
+  const data = useLazyLoadQuery<NoteEditorDataQuery>(query, {
+    id: noteId ?? nullId,
+  })
+
+  const noteRef =
+    data.note_connection.edges.length === 1
+      ? data.note_connection.edges[0].node
+      : null
+
+  return (
+    <NoteEditorInner {...props} noteId={noteId ?? nullId} noteRef={noteRef} />
+  )
+}
+
+type NoteRef = NoteEditorDataQueryResponse["note_connection"]["edges"][0]["node"]
+
+interface InnerProps {
+  noteId?: string
+  noteRef?: NoteRef
+}
+
+function NoteEditorInner(props: Props & InnerProps): JSX.Element {
   const [commit, _] = useMutation<NoteEditorMutation>(mutation)
   const [errors, setErrors] = useState<PayloadError[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const { auth } = useContext(AuthContext)
 
-  const { note, onComplete, onCancel } = props
+  const { preloadedNote, onComplete, onCancel, noteId, noteRef } = props
 
-  const noteId = note ? getIdFromNodeId(note.id) : null
-
-  const operationType = !!note ? "edit" : "add"
+  const operationType = !!preloadedNote ? "edit" : "add"
 
   const defaultNoteFilters = useFilterStore(state =>
     state.getFilters(DEFAULT_NOTE_CONNECTION)
   )
 
-  useLazyLoadQuery()
+  const note = useFragment<NoteFragment$key>(noteFragment, noteRef)
 
   function submit(values: FormValues) {
     setLoading(true)
@@ -103,7 +143,7 @@ export default function NoteEditor(props: Props): JSX.Element {
           title: note?.title ?? "",
           body: note?.body ?? "",
           pinned: note?.pinned ?? false,
-          date: note?.date ?? dayjs().format("YYYY-MM-DD"),
+          date: (note?.date as string) ?? dayjs().format("YYYY-MM-DD"),
         }}
         validationSchema={FormSchema}
         onSubmit={submit}>

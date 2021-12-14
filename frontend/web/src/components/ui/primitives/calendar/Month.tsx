@@ -6,6 +6,9 @@ import { cx } from "../../../../lib/reexports"
 import Label from "../Label"
 import Day from "./Day"
 import Weekdays from "./Weekdays"
+import style from "./Calendar.module.css"
+import IconButton from "../../icon/IconButton"
+import { SeparatorHorizontal } from "../../Separator"
 
 interface Props {
   month: Dayjs
@@ -47,24 +50,33 @@ export default function Month(props: Props): JSX.Element {
       <div className="mb-4 flex items-center justify-center">
         <ChevronLeftIcon
           color="var(--icon-color)"
-          className="mx-3"
+          width={20}
+          height={20}
+          className="icon-bg icon-20"
           onClick={() => setMonth(month.month() - 1)}
         />
-        <div className={cx()}>
+        <div className={style.monthName}>
           <Label className="text-center text-white">
             {month.format("MMMM, YYYY")}
           </Label>
         </div>
         <ChevronRightIcon
           color="var(--icon-color)"
-          className="mx-3"
-          onClick={() => setMonth(month.month() - 1)}
+          width={20}
+          height={20}
+          className="icon-bg icon-20"
+          onClick={() => setMonth(month.month() + 1)}
         />
       </div>
-      {showWeekdays && <Weekdays days={dayNames} />}
+      {showWeekdays && (
+        <React.Fragment>
+          <Weekdays days={dayNames} />
+          <SeparatorHorizontal />
+        </React.Fragment>
+      )}
       <div>
         {weeks.map((week, idx) => (
-          <div key={`week-${idx}`} className="flex">
+          <div key={`week-${idx}`} className={style.week}>
             {week.map(day => {
               return (
                 <Day

@@ -9,6 +9,7 @@ import LeftSidebar from "../src/components/sidebar/left/LeftSidebar"
 import DataLoader from "../src/components/DataLoader"
 import TodoOverview from "../src/components/todo/TodoOverview"
 import ActivityOverview from "../src/components/activity/ActivityOverview"
+import NoteCalendarOverview from "../src/components/note/NoteCalendarOverview"
 
 export default function Index() {
   return (
@@ -32,6 +33,9 @@ function IndexInner() {
       setShowSidebarRight={setShowSidebarRight}
       sidebarLeftComponent={<LeftSidebar />}
       sidebarRightComponent={<RightSidebar />}>
+      <div>
+        <NoteCalendarOverview />
+      </div>
       <div className="flex gap-10">
         <GoalOverview className="w-1/3" />
         <TodoOverview className="w-1/3" />

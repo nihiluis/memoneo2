@@ -153,7 +153,7 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
         </DropdownMenuItem>
         <DialogContent>
           <NoteEditor
-            note={item as any}
+            preloadedNote={item as any}
             onComplete={() => setOpenDialog(false)}
             onCancel={() => setOpenDialog(false)}
           />

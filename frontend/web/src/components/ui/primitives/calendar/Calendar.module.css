@@ -1,21 +1,54 @@
+.calendar {
+  --column-width: 32px;
+  --column-height: 32px;
+  background-color: var(--bg-content-contrast);
+  @apply p-4;
+  @apply rounded;
+}
+
 .day {
+}
+
+.week {
+  @apply flex;
+  @apply gap-2;
+}
+
+.weekdays {
+  @apply flex;
+  @apply gap-2;
+}
+
+.weekColumn {
+  @apply p-1;
+  @apply rounded-full;
+  width: var(--column-width);
   display: flex;
   align-items: center;
+	justify-content: center;
+	font-weight: 700;
 }
 
 .dayInner {
-  @apply p-2;
-  @apply my-2;
+  @apply p-1;
   @apply rounded-full;
+  width: var(--column-width);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dayInnerFocused {
   background-color: var(--bg-content);
   box-shadow: 0 0 2px black;
+  font-weight: 700;
 }
 
 .monthName {
-  width: 140px;
+  width: 160px;
+  font-weight: 700;
+  justify-content: center;
+  text-align: center;
   @apply rounded-full;
   @apply py-1;
   @apply px-3;

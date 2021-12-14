@@ -1,5 +1,18 @@
 import { graphql } from "relay-runtime"
 
+export const query = graphql`
+  query NoteEditorDataQuery($id: uuid) {
+    note_connection(first: 1, where: { id: { _eq: $id } })
+      @connection(key: "NoteEditorDataQuery_note_connection") {
+      edges {
+        node {
+          ...NoteFragment
+        }
+      }
+    }
+  }
+`
+
 export const mutation = graphql`
   mutation NoteEditorMutation(
     $title: String!

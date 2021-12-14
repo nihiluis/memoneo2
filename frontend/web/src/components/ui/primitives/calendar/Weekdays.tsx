@@ -1,6 +1,8 @@
 import React from "react"
 import Label from "../Label"
 
+import style from "./Calendar.module.css"
+
 const SHOULD_NOT_UPDATE = true
 
 interface WeekColumnProps {
@@ -9,7 +11,7 @@ interface WeekColumnProps {
 
 const WeekColumn = React.memo<WeekColumnProps>(
   (props: WeekColumnProps) => (
-    <div className="flex items-center mb-2">
+    <div className={style.weekColumn}>
       <Label>{props.day}</Label>
     </div>
   ),
@@ -22,7 +24,7 @@ interface WeekColumnsProps {
 
 export default React.memo<WeekColumnsProps>(
   (props: WeekColumnsProps) => (
-    <div className="flex gap-2">
+    <div className={style.weekdays}>
       {props.days.map((day: string) => (
         <WeekColumn key={day} day={day} />
       ))}
