@@ -2,15 +2,14 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
 import { Dayjs } from "dayjs"
 import React from "react"
 import { DayType, getDayNames, getMonthDays } from "../../../../lib/month"
-import { cx } from "../../../../lib/reexports"
 import Label from "../Label"
 import Day from "./Day"
 import Weekdays from "./Weekdays"
 import style from "./Calendar.module.css"
-import IconButton from "../../icon/IconButton"
 import { SeparatorHorizontal } from "../../Separator"
+import { ContextMenuItemComponent } from "./Calendar"
 
-interface Props {
+interface Props<ContextProps> {
   month: Dayjs
   onPress?: () => void
   showWeekdays?: boolean
@@ -18,9 +17,12 @@ interface Props {
   focusedDay: Dayjs
   focusDay: (day: Dayjs) => void
   setMonth: (month: number) => void
+  contextMenuItems?: ContextMenuItemComponent<ContextProps>
 }
 
-export default function Month(props: Props): JSX.Element {
+export default function Month<ContextProps>(
+  props: Props<ContextProps>
+): JSX.Element {
   const {
     month,
     firstDayMonday = true,
@@ -28,6 +30,7 @@ export default function Month(props: Props): JSX.Element {
     focusDay,
     setMonth,
     showWeekdays = true,
+    contextMenuItems,
   } = props
 
   const days = getMonthDays(
@@ -85,6 +88,7 @@ export default function Month(props: Props): JSX.Element {
                   month={month}
                   onClick={() => focusDay(day.date)}
                   isFocused={day.date.isSame(focusedDay, "day")}
+                  contextMenuItems={contextMenuItems}
                 />
               )
             })}

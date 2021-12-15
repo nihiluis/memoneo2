@@ -7,6 +7,7 @@
 }
 
 .day {
+  cursor: pointer;
 }
 
 .week {
@@ -25,8 +26,8 @@
   width: var(--column-width);
   display: flex;
   align-items: center;
-	justify-content: center;
-	font-weight: 700;
+  justify-content: center;
+  font-weight: 700;
 }
 
 .dayInner {

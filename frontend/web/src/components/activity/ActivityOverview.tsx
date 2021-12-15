@@ -46,12 +46,14 @@ function ActivityOverviewInner(props: Props): JSX.Element {
       showArchived={showArchived}
       setShowArchived={setShowArchived}
       className={props.className}>
-      {items.map(item => (
-        <ActivityOverviewItem<Item>
-          key={`overview-item-${item.id}`}
-          item={item}
-        />
-      ))}
+      <div className="flex flex-wrap gap-1">
+        {items.map(item => (
+          <ActivityOverviewItem<Item>
+            key={`overview-item-${item.id}`}
+            item={item}
+          />
+        ))}
+      </div>
     </OverviewSimpleWrapper>
   )
 }

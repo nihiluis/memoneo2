@@ -29,7 +29,7 @@ export default function OverviewSimpleWrapper(props: Props): JSX.Element {
           />
         </DropdownMenuRoot>
       </div>
-      <div className="flex flex-wrap gap-1">{children}</div>
+      {children}
     </div>
   )
 }

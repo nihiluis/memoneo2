@@ -5,26 +5,63 @@ import Label from "../Label"
 import { cx } from "../../../../lib/reexports"
 
 import style from "./Calendar.module.css"
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuTrigger,
+} from "../ContextMenu"
+import { ContextMenuItemComponent } from "./Calendar"
 
-interface Props {
+interface Props<ContextProps> {
   day: DayType
   month: Dayjs
   isFocused: boolean
   onClick?: () => void
+  contextMenuItems?: ContextMenuItemComponent<ContextProps>
 }
 
-export default function Day(props: Props): JSX.Element {
-  const { day, month, isFocused, onClick } = props
+export default function Day<ContextProps>(
+  props: Props<ContextProps>
+): JSX.Element {
+  const { day, month, contextMenuItems } = props
 
   const isSameMonth = day.date.month() === month.month()
 
   return (
     <div className={style.day}>
-      <div
-        className={cx(style.dayInner, { [style.dayInnerFocused]: isFocused })}
-        onClick={onClick}>
-        <Label className="text-sm text-center">{day.date.format("D")}</Label>
-      </div>
+      {contextMenuItems && <DayInnerContext {...props} />}
+      {!contextMenuItems && <DayInnerNoContext {...props} />}
     </div>
+  )
+}
+
+function DayInnerNoContext(props: Props<any>): JSX.Element {
+  const { day, onClick, isFocused } = props
+
+  return (
+    <div
+      className={cx(style.dayInner, {
+        [style.dayInnerFocused]: isFocused,
+      })}
+      onClick={onClick}>
+      <Label className="text-sm text-center">{day.date.format("D")}</Label>
+    </div>
+  )
+}
+
+function DayInnerContext<ContextProps>(
+  props: Props<ContextProps>
+): JSX.Element {
+  const ItemComponent = props.contextMenuItems
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <DayInnerNoContext {...props} />
+      </ContextMenuTrigger>
+      <ContextMenuContent>
+        <ItemComponent {...({} as ContextProps)} />
+      </ContextMenuContent>
+    </ContextMenu>
   )
 }

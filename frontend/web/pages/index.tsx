@@ -33,13 +33,15 @@ function IndexInner() {
       setShowSidebarRight={setShowSidebarRight}
       sidebarLeftComponent={<LeftSidebar />}
       sidebarRightComponent={<RightSidebar />}>
-      <div>
-        <NoteCalendarOverview />
-      </div>
       <div className="flex gap-10">
-        <GoalOverview className="w-1/3" />
-        <TodoOverview className="w-1/3" />
-        <ActivityOverview className="w-1/3" />
+        <div className="flex">
+          <NoteCalendarOverview />
+        </div>
+        <div className="">
+          <GoalOverview className="mb-8" />
+          <TodoOverview className="mb-8" />
+          <ActivityOverview />
+        </div>
       </div>
     </GridLayout>
   )
