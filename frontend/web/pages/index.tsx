@@ -3,13 +3,13 @@ import React, { useEffect, useState, useContext } from "react"
 import GridLayout from "../src/components/ui/layout/GridLayout"
 import Auth from "../src/components/Auth"
 import { initEnvironment } from "../src/relay/relay"
-import GoalOverview from "../src/components/goal/GoalOverview"
+import GoalOverview from "../src/components/object/goal/GoalOverview"
 import RightSidebar from "../src/components/sidebar/RightSidebar"
 import LeftSidebar from "../src/components/sidebar/left/LeftSidebar"
 import DataLoader from "../src/components/DataLoader"
-import TodoOverview from "../src/components/todo/TodoOverview"
-import ActivityOverview from "../src/components/activity/ActivityOverview"
-import NoteCalendarOverview from "../src/components/note/NoteCalendarOverview"
+import TodoOverview from "../src/components/object/todo/TodoOverview"
+import ActivityOverview from "../src/components/object/activity/ActivityOverview"
+import NoteCalendarOverview from "../src/components/object/note/NoteCalendarOverview"
 
 export default function Index() {
   return (
@@ -38,9 +38,9 @@ function IndexInner() {
           <NoteCalendarOverview />
         </div>
         <div className="">
-          <GoalOverview className="mb-8" />
-          <TodoOverview className="mb-8" />
-          <ActivityOverview />
+          <GoalOverview className="mb-8 max-w-screen-md" />
+          <TodoOverview className="mb-8 max-w-screen-md" />
+          <ActivityOverview className="max-w-screen-md" />
         </div>
       </div>
     </GridLayout>

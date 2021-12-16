@@ -10,7 +10,22 @@
 .icon-bg:hover {
   color: var(--icon-color);
   @apply bg-white;
-  --tw-bg-opacity: 0.6;
+  --tw-bg-opacity: 0.8;
+}
+
+.icon-bg-dark {
+  @apply rounded;
+  @apply p-1;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  color: gray;
+}
+
+
+.icon-bg-dark:hover {
+  color: var(--icon-color);
+  @apply bg-gray-200;
 }
 
 .icon-20 {

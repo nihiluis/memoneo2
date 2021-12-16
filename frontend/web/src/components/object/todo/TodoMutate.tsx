@@ -4,20 +4,20 @@ import { useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
 import { mutation } from "./TodoMutate.gql"
-import { getIdFromNodeId } from "../../lib/hasura"
+import { getIdFromNodeId } from "../../../lib/hasura"
 import { PayloadError } from "relay-runtime"
-import { AuthContext } from "../Auth"
-import { useFilterStore } from "../../stores/filter"
-import { DEFAULT_TODO_CONNECTION } from "../../constants/connections"
-import { getRootConnectionIds } from "../../relay/getConnection"
-import EditorFormWrapper from "../mutation/EditorFormWrapper"
-import getMutationConfig from "../mutation/getMutationConfig"
-import EditorHeader from "../mutation/EditorHeader"
+import { AuthContext } from "../../Auth"
+import { useFilterStore } from "../../../stores/filter"
+import { DEFAULT_TODO_CONNECTION } from "../../../constants/connections"
+import { getRootConnectionIds } from "../../../relay/getConnection"
+import EditorFormWrapper from "../../mutation/EditorFormWrapper"
+import getMutationConfig from "../../mutation/getMutationConfig"
+import EditorHeader from "../../mutation/EditorHeader"
 import {
   TodoMutateMutation,
   TodoMutateMutationVariables,
 } from "./__generated__/TodoMutateMutation.graphql"
-import EditorFormRowText from "../mutation/EditorFormRowText"
+import EditorFormRowText from "../../mutation/EditorFormRowText"
 
 interface FormValues {
   title: string
@@ -31,7 +31,7 @@ const FormSchema = Yup.object().shape({
 })
 
 interface Props {
-  todo?: { id: string; title: string; description: string }
+  item?: { id: string; title: string; description: string }
   onComplete(): void
   onCancel(): void
 }
@@ -42,16 +42,16 @@ export default function TodoMutate(props: Props): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const { auth } = useContext(AuthContext)
 
-  const { todo, onComplete, onCancel } = props
+  const { item, onComplete, onCancel } = props
 
-  const operationType = !!todo ? "edit" : "add"
+  const operationType = !!item ? "edit" : "add"
 
   const defaultTodoFilters = useFilterStore(state =>
     state.getFilters(DEFAULT_TODO_CONNECTION)
   )
 
   function submit(values: FormValues) {
-    const todoId = todo ? getIdFromNodeId(todo.id) : null
+    const todoId = item ? getIdFromNodeId(item.id) : null
 
     setLoading(true)
 
@@ -78,7 +78,7 @@ export default function TodoMutate(props: Props): JSX.Element {
       <EditorHeader operationType={operationType} objectType="todo" />
       <Formik<FormValues>
         initialValues={{
-          title: todo?.title ?? "",
+          title: item?.title ?? "",
         }}
         validationSchema={FormSchema}
         onSubmit={submit}>

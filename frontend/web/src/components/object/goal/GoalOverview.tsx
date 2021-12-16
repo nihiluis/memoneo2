@@ -5,22 +5,22 @@ import {
 } from "@radix-ui/react-icons"
 import React, { Suspense, useContext, useEffect, useState } from "react"
 import { graphql, useLazyLoadQuery, usePreloadedQuery } from "react-relay"
-import { GOAL_OVERVIEW_CONNECTION } from "../../constants/connections"
-import { useFilterStore } from "../../stores/filter"
-import { DataLoaderContext } from "../DataLoader"
-import { defaultGoalQuery } from "../DataLoader.gql"
-import Badge from "../ui/Badge"
-import { DropdownMenuRoot, DropdownMenuTrigger } from "../ui/menu/DropdownMenu"
-import { DialogContent, DialogRoot, DialogTitle } from "../ui/primitives/Dialog"
-import { SeparatorHorizontal } from "../ui/Separator"
+import { GOAL_OVERVIEW_CONNECTION } from "../../../constants/connections"
+import { useFilterStore } from "../../../stores/filter"
+import { DataLoaderContext } from "../../DataLoader"
+import { defaultGoalQuery } from "../../DataLoader.gql"
+import Badge from "../../ui/Badge"
+import { DropdownMenuRoot, DropdownMenuTrigger } from "../../ui/menu/DropdownMenu"
+import { DialogContent, DialogRoot, DialogTitle } from "../../ui/primitives/Dialog"
+import { SeparatorHorizontal } from "../../ui/Separator"
 import {
   DataLoaderInnerGoalQuery,
   DataLoaderInnerGoalQueryResponse,
-} from "../__generated__/DataLoaderInnerGoalQuery.graphql"
+} from "../../__generated__/DataLoaderInnerGoalQuery.graphql"
 import GoalMutate from "./GoalMutate"
-import OverviewDropdownMenuContent from "../overview/DropdownMenuContent"
+import OverviewDropdownMenuContent from "../../overview/DropdownMenuContent"
 import GoalOverviewItem from "./GoalOverviewItem"
-import OverviewSimpleWrapper from "../overview/OverviewSimpleWrapper"
+import OverviewSimpleWrapper from "../../overview/OverviewSimpleWrapper"
 
 type Item = DataLoaderInnerGoalQueryResponse["goal_connection"]["edges"][0]["node"]
 

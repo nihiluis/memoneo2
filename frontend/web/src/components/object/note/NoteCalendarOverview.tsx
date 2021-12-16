@@ -2,19 +2,21 @@ import { PlusIcon } from "@radix-ui/react-icons"
 import dayjs, { Dayjs } from "dayjs"
 import React, { Suspense, useContext, useEffect, useState } from "react"
 import { usePreloadedQuery } from "react-relay"
-import { DataLoaderContext } from "../DataLoader"
-import { defaultNoteQuery } from "../DataLoader.gql"
-import OverviewSimpleWrapper from "../overview/OverviewSimpleWrapper"
-import Button from "../ui/primitives/Button"
-import Calendar from "../ui/primitives/calendar/Calendar"
-import { ContextMenuItem } from "../ui/primitives/ContextMenu"
-import { SeparatorHorizontal } from "../ui/Separator"
+import NoteListItem from "./NoteListItem"
+import { DataLoaderContext } from "../../DataLoader"
+import { defaultNoteQuery } from "../../DataLoader.gql"
+import List from "../../list/List"
+import OverviewSimpleWrapper from "../../overview/OverviewSimpleWrapper"
+import Calendar from "../../ui/primitives/calendar/Calendar"
+import { ContextMenuItem } from "../../ui/primitives/ContextMenu"
 import {
   DataLoaderInnerNoteQuery,
   DataLoaderInnerNoteQueryResponse,
-} from "../__generated__/DataLoaderInnerNoteQuery.graphql"
+} from "../../__generated__/DataLoaderInnerNoteQuery.graphql"
 
 import style from "./Overview.module.css"
+import NoteEditor from "./NoteEditor"
+import { DEFAULT_NOTE_CONNECTION } from "../../../constants/connections"
 
 interface Props {
   className?: string
@@ -47,13 +49,7 @@ function NoteCalendarOverviewInner(props: Props): JSX.Element {
   useEffect(() => {
     const items: Item[] = data.note_connection.edges
       .map(edge => edge.node)
-      .filter(node => {
-        if (!showArchived && node.archived) {
-          return false
-        }
-
-        return node.date === focusedDay.format("YYYY-MM-DD")
-      })
+      .filter(node => node.date === focusedDay.format("YYYY-MM-DD"))
 
     setShownItems(items)
   }, [data, focusedDay, showArchived])
@@ -73,26 +69,16 @@ function NoteCalendarOverviewInner(props: Props): JSX.Element {
         contextMenuItems={ContextMenuItems}
       />
       <div className="mt-4">
-        {shownItems.map(item => (
-          <NoteCalendarItem key={`item-${item.id}`} item={item} />
-        ))}
+        <List<Item>
+          items={shownItems}
+          type="note"
+          ItemComponent={NoteListItem}
+          MutateComponent={NoteEditor}
+          connection={DEFAULT_NOTE_CONNECTION}
+          showArchived={showArchived}
+        />
       </div>
     </OverviewSimpleWrapper>
-  )
-}
-
-interface ItemProps {
-  item: Item
-}
-
-function NoteCalendarItem(props: ItemProps): JSX.Element {
-  const { item } = props
-
-  return (
-    <div className="mt-2">
-      <SeparatorHorizontal className="mb-2" />
-      <p>{item.title}</p>
-    </div>
   )
 }
 

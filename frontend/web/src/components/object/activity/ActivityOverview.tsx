@@ -1,16 +1,16 @@
 import { ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons"
 import React, { Suspense, useContext, useEffect, useState } from "react"
 import { usePreloadedQuery } from "react-relay"
-import { DataLoaderContext } from "../DataLoader"
-import { defaultActivityQuery, defaultGoalQuery } from "../DataLoader.gql"
-import { DropdownMenuRoot, DropdownMenuTrigger } from "../ui/menu/DropdownMenu"
+import { DataLoaderContext } from "../../DataLoader"
+import { defaultActivityQuery, defaultGoalQuery } from "../../DataLoader.gql"
+import { DropdownMenuRoot, DropdownMenuTrigger } from "../../ui/menu/DropdownMenu"
 import {
   DataLoaderInnerActivityQuery,
   DataLoaderInnerActivityQueryResponse,
-} from "../__generated__/DataLoaderInnerActivityQuery.graphql"
-import OverviewDropdownMenuContent from "../overview/DropdownMenuContent"
+} from "../../__generated__/DataLoaderInnerActivityQuery.graphql"
+import OverviewDropdownMenuContent from "../../overview/DropdownMenuContent"
 import ActivityOverviewItem from "./ActivityOverviewItem"
-import OverviewSimpleWrapper from "../overview/OverviewSimpleWrapper"
+import OverviewSimpleWrapper from "../../overview/OverviewSimpleWrapper"
 
 type Item = DataLoaderInnerActivityQueryResponse["activity_connection"]["edges"][0]["node"]
 

@@ -1,16 +1,16 @@
 import { ChevronRightIcon, DotsHorizontalIcon } from "@radix-ui/react-icons"
 import React, { Suspense, useContext, useState } from "react"
 import { usePreloadedQuery } from "react-relay"
-import { DataLoaderContext } from "../DataLoader"
-import { defaultTodoQuery } from "../DataLoader.gql"
-import { DropdownMenuRoot, DropdownMenuTrigger } from "../ui/menu/DropdownMenu"
+import { DataLoaderContext } from "../../DataLoader"
+import { defaultTodoQuery } from "../../DataLoader.gql"
+import { DropdownMenuRoot, DropdownMenuTrigger } from "../../ui/menu/DropdownMenu"
 import {
   DataLoaderInnerTodoQuery,
   DataLoaderInnerTodoQueryResponse,
-} from "../__generated__/DataLoaderInnerTodoQuery.graphql"
-import OverviewDropdownMenuContent from "../overview/DropdownMenuContent"
+} from "../../__generated__/DataLoaderInnerTodoQuery.graphql"
+import OverviewDropdownMenuContent from "../../overview/DropdownMenuContent"
 import TodoOverviewItem from "./TodoOverviewItem"
-import OverviewSimpleWrapper from "../overview/OverviewSimpleWrapper"
+import OverviewSimpleWrapper from "../../overview/OverviewSimpleWrapper"
 
 type Item = DataLoaderInnerTodoQueryResponse["todo_connection"]["edges"][0]["node"]
 

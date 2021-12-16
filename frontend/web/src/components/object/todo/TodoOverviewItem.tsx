@@ -1,18 +1,18 @@
 import React, { useState } from "react"
-import Badge from "../ui/Badge"
+import Badge from "../../ui/Badge"
 import {
   DialogContent,
   DialogRoot,
   DialogTrigger,
-} from "../ui/primitives/Dialog"
-import GoalMutate from "./GoalMutate"
+} from "../../ui/primitives/Dialog"
+import TodoMutate from "./TodoMutate"
 
 interface ItemPart {
   id: string
   title: string
 }
 
-export default function GoalOverviewItem<Item extends ItemPart>(props: {
+export default function TodoOverviewItem<Item extends ItemPart>(props: {
   item: Item
 }): JSX.Element {
   const { item } = props
@@ -30,8 +30,8 @@ export default function GoalOverviewItem<Item extends ItemPart>(props: {
         <Badge key={item.id} title={item.title} />
       </DialogTrigger>
       <DialogContent>
-        <GoalMutate
-          goal={item as any}
+        <TodoMutate
+          item={item as any}
           onComplete={() => setOpenDialog(false)}
           onCancel={() => setOpenDialog(false)}
         />

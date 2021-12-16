@@ -1,6 +1,6 @@
 import { PlusIcon } from "@radix-ui/react-icons"
 import React from "react"
-import GoalMutate from "../../goal/GoalMutate"
+import GoalMutate from "../../object/goal/GoalMutate"
 import { MemoObjectType } from "../../types"
 import {
   DialogContent,
@@ -13,9 +13,9 @@ import {
   SidebarCollapsibleItem,
 } from "../../ui/sidebar/Collapsible"
 import LeftSidebarItemMenuGoal from "./LeftSidebarItemMenuGoal"
-import ActivityMutate from "../../activity/ActivityMutate"
-import TodoMutate from "../../todo/TodoMutate"
-import NoteEditor from "../../note/NoteEditor"
+import ActivityMutate from "../../object/activity/ActivityMutate"
+import TodoMutate from "../../object/todo/TodoMutate"
+import NoteEditor from "../../object/note/NoteEditor"
 import LeftSidebarItemMenu from "./LeftSidebarItemMenu"
 
 interface ContentProps {

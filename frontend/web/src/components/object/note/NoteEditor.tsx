@@ -4,22 +4,22 @@ import { useFragment, useLazyLoadQuery, useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
 import { mutation, query } from "./NoteEditor.gql"
-import { getIdFromNodeId } from "../../lib/hasura"
+import { getIdFromNodeId } from "../../../lib/hasura"
 import { PayloadError } from "relay-runtime"
-import { AuthContext } from "../Auth"
-import { useFilterStore } from "../../stores/filter"
-import { DEFAULT_NOTE_CONNECTION } from "../../constants/connections"
-import { getRootConnectionIds } from "../../relay/getConnection"
-import EditorFormWrapper from "../mutation/EditorFormWrapper"
-import getMutationConfig from "../mutation/getMutationConfig"
-import EditorHeader from "../mutation/EditorHeader"
-import EditorFormRowText from "../mutation/EditorFormRowText"
-import EditorFormRowTextarea from "../mutation/EditorFormRowTextarea"
+import { AuthContext } from "../../Auth"
+import { useFilterStore } from "../../../stores/filter"
+import { DEFAULT_NOTE_CONNECTION } from "../../../constants/connections"
+import { getRootConnectionIds } from "../../../relay/getConnection"
+import EditorFormWrapper from "../../mutation/EditorFormWrapper"
+import getMutationConfig from "../../mutation/getMutationConfig"
+import EditorHeader from "../../mutation/EditorHeader"
+import EditorFormRowText from "../../mutation/EditorFormRowText"
+import EditorFormRowTextarea from "../../mutation/EditorFormRowTextarea"
 import {
   NoteEditorMutation,
   NoteEditorMutationVariables,
 } from "./__generated__/NoteEditorMutation.graphql"
-import EditorSwitch from "../mutation/EditorSwitch"
+import EditorSwitch from "../../mutation/EditorSwitch"
 import dayjs from "dayjs"
 import {
   NoteEditorDataQuery,
@@ -27,7 +27,7 @@ import {
 } from "./__generated__/NoteEditorDataQuery.graphql"
 import { noteFragment } from "./NoteFragment.gql"
 import { NoteFragment$key } from "./__generated__/NoteFragment.graphql"
-import { nullUuid } from "../../constants/other"
+import { nullUuid } from "../../../constants/other"
 
 interface FormValues {
   title: string
@@ -49,13 +49,13 @@ const FormSchema = Yup.object().shape({
 interface Note {
   id: string
   title: string
-  body: string
-  date: string
+  body?: string
+  date: string | unknown
   pinned: boolean
 }
 
 interface Props {
-  preloadedNote?: Note
+  item?: Note
   onComplete(): void
   onCancel(): void
 }
@@ -69,7 +69,7 @@ export default function NoteEditor(props: Props): JSX.Element {
 }
 
 function NoteEditorLoader(props: Props): JSX.Element {
-  const { preloadedNote } = props
+  const { item: preloadedNote } = props
   const [nullId] = useState(nullUuid)
 
   const noteId = preloadedNote ? getIdFromNodeId(preloadedNote.id) : null
@@ -101,7 +101,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const { auth } = useContext(AuthContext)
 
-  const { preloadedNote, onComplete, onCancel, noteId, noteRef } = props
+  const { item: preloadedNote, onComplete, onCancel, noteId, noteRef } = props
 
   const operationType = !!preloadedNote ? "edit" : "add"
 

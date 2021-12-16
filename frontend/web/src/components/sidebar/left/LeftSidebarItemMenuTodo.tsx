@@ -8,7 +8,7 @@ import deleteInConnection from "../../../relay/deleteInConnection"
 import { getRootConnectionIds } from "../../../relay/getConnection"
 import { useFilterStore } from "../../../stores/filter"
 import getMutationConfig from "../../mutation/getMutationConfig"
-import TodoMutate from "../../todo/TodoMutate"
+import TodoMutate from "../../object/todo/TodoMutate"
 import { MemoObjectType } from "../../types"
 import { DropdownMenuItem } from "../../ui/menu/DropdownMenu"
 import {
@@ -153,7 +153,7 @@ function LeftSidebarItemMenuTodoInner(props: Props): JSX.Element {
         </DropdownMenuItem>
         <DialogContent>
           <TodoMutate
-            todo={item as any}
+            item={item as any}
             onComplete={() => setOpenDialog(false)}
             onCancel={() => setOpenDialog(false)}
           />

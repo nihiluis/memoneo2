@@ -7,7 +7,7 @@ import { getIdFromNodeId } from "../../../lib/hasura"
 import deleteInConnection from "../../../relay/deleteInConnection"
 import { getRootConnectionIds } from "../../../relay/getConnection"
 import { useFilterStore } from "../../../stores/filter"
-import GoalMutate from "../../goal/GoalMutate"
+import GoalMutate from "../../object/goal/GoalMutate"
 import getMutationConfig from "../../mutation/getMutationConfig"
 import { MemoObjectType } from "../../types"
 import { DropdownMenuItem } from "../../ui/menu/DropdownMenu"
@@ -153,7 +153,7 @@ function LeftSidebarItemMenuGoalInner(props: Props): JSX.Element {
         </DropdownMenuItem>
         <DialogContent>
           <GoalMutate
-            goal={item as any}
+            item={item as any}
             onComplete={() => setOpenDialog(false)}
             onCancel={() => setOpenDialog(false)}
           />

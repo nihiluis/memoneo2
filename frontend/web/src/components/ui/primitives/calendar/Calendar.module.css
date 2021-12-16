@@ -40,11 +40,13 @@
 }
 
 .dayInnerFocused {
-  background-color: var(--bg-content);
-  box-shadow: 0 0 2px black;
+	background-color: black;
+	color: white;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.205);
   font-weight: 700;
 }
 
+ 
 .monthName {
   width: 160px;
   font-weight: 700;

@@ -4,20 +4,20 @@ import { useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
 import { mutation } from "./ActivityMutate.gql"
-import { getIdFromNodeId } from "../../lib/hasura"
+import { getIdFromNodeId } from "../../../lib/hasura"
 import { PayloadError } from "relay-runtime"
-import { AuthContext } from "../Auth"
-import { useFilterStore } from "../../stores/filter"
-import { DEFAULT_ACTIVITY_CONNECTION } from "../../constants/connections"
-import { getRootConnectionIds } from "../../relay/getConnection"
-import EditorFormWrapper from "../mutation/EditorFormWrapper"
-import getMutationConfig from "../mutation/getMutationConfig"
-import EditorHeader from "../mutation/EditorHeader"
+import { AuthContext } from "../../Auth"
+import { useFilterStore } from "../../../stores/filter"
+import { DEFAULT_ACTIVITY_CONNECTION } from "../../../constants/connections"
+import { getRootConnectionIds } from "../../../relay/getConnection"
+import EditorFormWrapper from "../../mutation/EditorFormWrapper"
+import getMutationConfig from "../../mutation/getMutationConfig"
+import EditorHeader from "../../mutation/EditorHeader"
 import {
   ActivityMutateMutation,
   ActivityMutateMutationVariables,
 } from "./__generated__/ActivityMutateMutation.graphql"
-import EditorFormRowText from "../mutation/EditorFormRowText"
+import EditorFormRowText from "../../mutation/EditorFormRowText"
 
 interface FormValues {
   title: string
@@ -33,7 +33,7 @@ const FormSchema = Yup.object().shape({
 })
 
 interface Props {
-  activity?: { id: string; title: string; description: string }
+  item?: { id: string; title: string; description: string }
   onComplete(): void
   onCancel(): void
 }
@@ -44,16 +44,16 @@ export default function ActivityMutate(props: Props): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const { auth } = useContext(AuthContext)
 
-  const { activity, onComplete, onCancel } = props
+  const { item, onComplete, onCancel } = props
 
-  const operationType = !!activity ? "edit" : "add"
+  const operationType = !!item ? "edit" : "add"
 
   const defaultActivityFilters = useFilterStore(state =>
     state.getFilters(DEFAULT_ACTIVITY_CONNECTION)
   )
 
   function submit(values: FormValues) {
-    const activityId = activity ? getIdFromNodeId(activity.id) : null
+    const activityId = item ? getIdFromNodeId(item.id) : null
 
     setLoading(true)
 
@@ -87,8 +87,8 @@ export default function ActivityMutate(props: Props): JSX.Element {
       <EditorHeader operationType={operationType} objectType="activity" />
       <Formik<FormValues>
         initialValues={{
-          title: activity?.title ?? "",
-          description: activity?.description ?? "",
+          title: item?.title ?? "",
+          description: item?.description ?? "",
         }}
         validationSchema={FormSchema}
         onSubmit={submit}>
