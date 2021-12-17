@@ -7,6 +7,7 @@ interface Props<T> extends FormikProps<T> {
   type: string
   name: string
   innerClassName?: string
+  style?: React.CSSProperties
 }
 
 export default function FormRowInput<T>(props: Props<T>) {
@@ -19,11 +20,12 @@ export default function FormRowInput<T>(props: Props<T>) {
     values,
     errors,
     touched,
+    style,
     innerClassName = "",
   } = props
 
   return (
-    <div className="form-row">
+    <div className="form-row" style={style}>
       <label className="form-label">{label}</label>
       <input
         className={cx("form-input", innerClassName)}

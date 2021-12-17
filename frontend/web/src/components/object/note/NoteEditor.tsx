@@ -28,6 +28,8 @@ import {
 import { noteFragment } from "./NoteFragment.gql"
 import { NoteFragment$key } from "./__generated__/NoteFragment.graphql"
 import { nullUuid } from "../../../constants/other"
+import FormRowMarkdown from "../../ui/form/FormRowMarkdown"
+import EditorFormRowMarkdown from "../../mutation/EditorFormRowMarkdown"
 
 interface FormValues {
   title: string
@@ -137,40 +139,48 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
 
   return (
     <Suspense fallback={null}>
-      <EditorHeader operationType={operationType} objectType="note" />
-      <Formik<FormValues>
-        initialValues={{
-          title: note?.title ?? "",
-          body: note?.body ?? "",
-          pinned: note?.pinned ?? false,
-          date: (note?.date as string) ?? dayjs().format("YYYY-MM-DD"),
-        }}
-        validationSchema={FormSchema}
-        onSubmit={submit}>
-        {formikProps => (
-          <EditorFormWrapper
-            formikProps={formikProps}
-            error={errors.length > 0 ? "error" : ""}
-            onCancel={onCancel}
-            type={operationType}
-            loading={loading}>
-            <EditorFormRowText
-              {...formikProps}
-              type="text"
-              name="title"
-              label="Title"
-            />
-            <EditorFormRowText
-              {...formikProps}
-              type="date"
-              name="date"
-              label="Date"
-            />
-            <EditorFormRowTextarea {...formikProps} name="body" label="Body" />
-            <EditorSwitch {...formikProps} name="pinned" label="Pin" />
-          </EditorFormWrapper>
-        )}
-      </Formik>
+      <div style={{ width: 720 }}>
+        <EditorHeader operationType={operationType} objectType="note" />
+        <Formik<FormValues>
+          initialValues={{
+            title: note?.title ?? "",
+            body: note?.body ?? "",
+            pinned: note?.pinned ?? false,
+            date: (note?.date as string) ?? dayjs().format("YYYY-MM-DD"),
+          }}
+          validationSchema={FormSchema}
+          onSubmit={submit}>
+          {formikProps => (
+            <EditorFormWrapper
+              formikProps={formikProps}
+              error={errors.length > 0 ? "error" : ""}
+              onCancel={onCancel}
+              type={operationType}
+              loading={loading}
+              className="w-full">
+              <EditorFormRowText
+                {...formikProps}
+                type="text"
+                name="title"
+                label="Title"
+              />
+              <EditorFormRowText
+                {...formikProps}
+                type="date"
+                name="date"
+                label="Date"
+                style={{ maxWidth: 180 }}
+              />
+              <EditorFormRowMarkdown
+                {...formikProps}
+                name="body"
+                label="Body"
+              />
+              <EditorSwitch {...formikProps} name="pinned" label="Pin" />
+            </EditorFormWrapper>
+          )}
+        </Formik>
+      </div>
     </Suspense>
   )
 }

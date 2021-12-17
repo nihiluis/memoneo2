@@ -1,5 +1,6 @@
 import { FormikProps } from "formik"
 import React, { PropsWithChildren, Suspense, useContext, useState } from "react"
+import { cx } from "../../lib/reexports"
 
 interface Props extends PropsWithChildren<{}> {
   error: string
@@ -7,14 +8,17 @@ interface Props extends PropsWithChildren<{}> {
   formikProps: FormikProps<any>
   onCancel: () => void
   loading: boolean
+  className?: string
 }
 
 export default function EditorFormWrapper(props: Props): JSX.Element {
-  const { error, formikProps, type, loading } = props
+  const { error, formikProps, type, loading, className } = props
 
   return (
     <Suspense fallback={null}>
-      <form className="py-2 w-80" onSubmit={formikProps.handleSubmit}>
+      <form
+        className={cx("py-2 w-80", className)}
+        onSubmit={formikProps.handleSubmit}>
         {props.children}
         {error.length > 0 && <p className="error">Unable to create object.</p>}
         <div className="flex gap-2">
