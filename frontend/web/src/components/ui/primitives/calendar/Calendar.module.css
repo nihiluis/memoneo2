@@ -39,11 +39,20 @@
   justify-content: center;
 }
 
+.dayInnerInactive {
+	@apply text-gray-400;
+	@apply cursor-not-allowed;
+}
+
 .dayInnerFocused {
 	background-color: black;
 	color: white;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.205);
   font-weight: 700;
+}
+
+.dayInnerActive {
+	@apply bg-gray-200;
 }
 
  

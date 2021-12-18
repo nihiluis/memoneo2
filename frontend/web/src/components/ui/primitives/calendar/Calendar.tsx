@@ -8,6 +8,7 @@ import { cx } from "../../../../lib/reexports"
 interface Props<ContextProps> {
   month: Dayjs
   focusedDay: Dayjs
+  activeDays: Dayjs[]
   focusDay: (day: Dayjs) => void
   setMonth: (month: number) => void
   className?: string
@@ -28,6 +29,7 @@ export default function Calendar<ContextProps>(
     setMonth,
     className,
     contextMenuItems,
+    activeDays
   } = props
 
   return (
@@ -38,6 +40,7 @@ export default function Calendar<ContextProps>(
         setMonth={setMonth}
         focusDay={focusDay}
         contextMenuItems={contextMenuItems}
+        activeDays={activeDays}
       />
     </div>
   )

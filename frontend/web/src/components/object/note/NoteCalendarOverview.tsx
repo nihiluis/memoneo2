@@ -45,6 +45,17 @@ function NoteCalendarOverviewInner(props: Props): JSX.Element {
   )
 
   const [shownItems, setShownItems] = useState<Item[]>([])
+  const [activeItems, setActiveItems] = useState<Item[]>([])
+  const [activeItemsDate, setActiveItemsDate] = useState<Dayjs[]>([])
+
+  useEffect(() => {
+    const items: Item[] = data.note_connection.edges
+      .map(edge => edge.node)
+      .filter(node => dayjs(node.date as string).isSame(activeMonth, "month"))
+
+    setActiveItems(items)
+    setActiveItemsDate(items.map(item => dayjs(item.date as string)))
+  }, [activeMonth])
 
   useEffect(() => {
     const items: Item[] = data.note_connection.edges
@@ -67,6 +78,7 @@ function NoteCalendarOverviewInner(props: Props): JSX.Element {
         setMonth={month => setActiveMonth(activeMonth.month(month))}
         className={style.calendar}
         contextMenuItems={ContextMenuItems}
+        activeDays={activeItemsDate}
       />
       <div className="mt-4">
         <List<Item>

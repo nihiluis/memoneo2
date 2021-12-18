@@ -16,6 +16,8 @@ interface Props<ContextProps> {
   day: DayType
   month: Dayjs
   isFocused: boolean
+  isActive: boolean
+  isInactive: boolean
   onClick?: () => void
   contextMenuItems?: ContextMenuItemComponent<ContextProps>
 }
@@ -36,12 +38,14 @@ export default function Day<ContextProps>(
 }
 
 function DayInnerNoContext(props: Props<any>): JSX.Element {
-  const { day, onClick, isFocused } = props
+  const { day, onClick, isFocused, isActive, isInactive } = props
 
   return (
     <div
       className={cx(style.dayInner, {
         [style.dayInnerFocused]: isFocused,
+        [style.dayInnerActive]: !isFocused && isActive,
+        [style.dayInnerInactive]: isInactive
       })}
       onClick={onClick}>
       <Label className="text-sm text-center">{day.date.format("D")}</Label>

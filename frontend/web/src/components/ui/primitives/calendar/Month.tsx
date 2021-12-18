@@ -1,6 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons"
 import { Dayjs } from "dayjs"
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { DayType, getDayNames, getMonthDays } from "../../../../lib/month"
 import Label from "../Label"
 import Day from "./Day"
@@ -15,10 +15,13 @@ interface Props<ContextProps> {
   showWeekdays?: boolean
   firstDayMonday?: boolean
   focusedDay: Dayjs
+  activeDays: Dayjs[]
   focusDay: (day: Dayjs) => void
   setMonth: (month: number) => void
   contextMenuItems?: ContextMenuItemComponent<ContextProps>
 }
+
+type ActiveDayTypeMap = { [id: string]: boolean }
 
 export default function Month<ContextProps>(
   props: Props<ContextProps>
@@ -27,26 +30,55 @@ export default function Month<ContextProps>(
     month,
     firstDayMonday = true,
     focusedDay,
+    activeDays,
     focusDay,
     setMonth,
     showWeekdays = true,
     contextMenuItems,
   } = props
 
-  const days = getMonthDays(
-    month.month(),
-    month.year(),
-    firstDayMonday,
-    [],
-    false
-  )
-  const dayNames = getDayNames(firstDayMonday)
+  const [days, setDays] = useState<DayType[]>([])
+  const [activeDayTypes, setActiveDayTypes] = useState<ActiveDayTypeMap>({})
+  const [dayNames, setDayNames] = useState<string[]>([])
+
+  useEffect(() => {
+    setDayNames(getDayNames(firstDayMonday))
+  }, [firstDayMonday])
+
+  useEffect(() => {
+    const days = getMonthDays(
+      month.month(),
+      month.year(),
+      firstDayMonday,
+      [],
+      false
+    )
+
+    setDays(days)
+  }, [month, firstDayMonday])
 
   const weeks: DayType[][] = []
 
-  while (days.length) {
-    weeks.push(days.splice(0, 7))
+  const tmpDays = [...days]
+  while (tmpDays.length) {
+    weeks.push(tmpDays.splice(0, 7))
   }
+
+  useEffect(() => {
+    const newActiveDayTypes: ActiveDayTypeMap = {}
+
+    console.log(activeDays)
+
+    for (let day of days) {
+      for (let activeDay of activeDays) {
+        if (day.date.isSame(activeDay, "day")) {
+          newActiveDayTypes[day.date.format("YYYY-MM-DD")] = true
+        }
+      }
+    }
+
+    setActiveDayTypes(newActiveDayTypes)
+  }, [activeDays, days])
 
   return (
     <div>
@@ -80,18 +112,24 @@ export default function Month<ContextProps>(
       <div>
         {weeks.map((week, idx) => (
           <div key={`week-${idx}`} className={style.week}>
-            {week.map(day => {
-              return (
-                <Day
-                  key={`day-${day.id}`}
-                  day={day}
-                  month={month}
-                  onClick={() => focusDay(day.date)}
-                  isFocused={day.date.isSame(focusedDay, "day")}
-                  contextMenuItems={contextMenuItems}
-                />
-              )
-            })}
+            {week.map(day => (
+              <Day
+                key={`day-${day.id}`}
+                day={day}
+                month={month}
+                onClick={() => {
+                  if (!day.date.isSame(month, "month")) return
+                  
+                  focusDay(day.date)
+                }}
+                isInactive={!day.date.isSame(month, "month")}
+                isActive={activeDayTypes.hasOwnProperty(
+                  day.date.format("YYYY-MM-DD")
+                )}
+                isFocused={day.date.isSame(focusedDay, "day")}
+                contextMenuItems={contextMenuItems}
+              />
+            ))}
           </div>
         ))}
       </div>
