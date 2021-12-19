@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/memoneo/auth/internal/services/auth"
+	"github.com/memoneo/auth/internal/services/keypairs"
 	"github.com/memoneo/auth/internal/services/users"
 	authmodels "github.com/memoneo/auth/lib/models"
 	"github.com/memoneo/auth/lib/utils"
@@ -23,19 +24,26 @@ var validate *validator.Validate
 
 type API struct {
 	auth          auth.Auth
+	config        *Config
 	authConfig    *auth.Config
 	users         *users.Users
+	keypairs      *keypairs.Keypairs
 	logger        *logger.Logger
 	validate      *validator.Validate
 	authPublicKey interface{}
 }
 
-func NewService(logger *logger.Logger, auth auth.Auth, authConfig *auth.Config, users *users.Users) (*API, error) {
+type Config struct {
+	UserIDContextKey string
+}
+
+func NewService(logger *logger.Logger, auth auth.Auth, config *Config, authConfig *auth.Config,
+	users *users.Users, keypairs *keypairs.Keypairs) (*API, error) {
 	validate := validator.New()
 
 	publicKey := auth.PublicKey()
 
-	return &API{auth, authConfig, users, logger, validate, publicKey}, nil
+	return &API{auth, config, authConfig, users, keypairs, logger, validate, publicKey}, nil
 }
 
 // AddHandlers adds the echo handlers that are part of this package.
@@ -67,6 +75,13 @@ func (api *API) AddHandlers(s *archhttp.EchoServer) {
 	s.Echo.POST("/login", api.login)
 	s.Echo.POST("/register", api.register)
 	authGroup.GET("", api.checkAuth)
+
+	keypairGroup := s.Echo.Group("/keypair")
+	keypairGroup.Use(cookieMiddleware)
+	keypairGroup.Use(authMiddleware)
+
+	keypairGroup.GET("", api.getKeypair)
+	keypairGroup.POST("/save", api.saveKeypair)
 }
 
 // LoginRequestBody is the JSON body of a request to the login handler.
@@ -183,10 +198,59 @@ func (api *API) checkAuth(c echo.Context) error {
 
 	fullUser := utils.MergeUser(authUser, dataUser)
 
+	keypair, err := api.keypairs.GetKeypair(dataUser.ID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Unable to retrieve user data."})
+	}
+
 	return c.JSON(http.StatusOK, echo.Map{
 		"token":      token.Raw,
+		"keypair":    keypair,
 		"userId":     dataUser.ID,
 		"authUserId": id,
 		"user":       fullUser,
 	})
+}
+
+// SaveKeypairRequestBody is the JSON body of a request to the /keypair/save handler.
+type SaveKeypairRequestBody struct {
+	PubKey     string `json:"pubKey" validate:"required"`
+	PrivateKey string `json:"privateKey" validate:"required"`
+}
+
+func (api *API) saveKeypair(c echo.Context) error {
+	body := new(SaveKeypairRequestBody)
+	if err := c.Bind(body); err != nil {
+		return err
+	}
+	err := api.validate.Struct(body)
+	if err != nil {
+		return err
+	}
+
+	api.logger.Zap.Infow("Handling saveKeypair attempt")
+
+	keypair := &authmodels.Keypair{
+		PubKey:     body.PubKey,
+		PrivateKey: body.PrivateKey,
+	}
+
+	_, err = api.keypairs.CreateKeypair(keypair)
+	if err != nil {
+		api.logger.Zap.Debugw("Failed to create keypair", "err", err)
+		return err
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{})
+}
+
+func (api *API) getKeypair(c echo.Context) error {
+	userID := c.Get(api.config.UserIDContextKey).(uuid.UUID)
+
+	keypair, err := api.keypairs.GetKeypair(userID)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{"keypair": keypair})
 }

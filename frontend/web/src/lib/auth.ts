@@ -1,10 +1,20 @@
 import axios from "axios"
-import { ENDPOINT_AUTH_URL, ENDPOINT_LOGIN_URL, ENDPOINT_REGISTER_URL } from "../constants/env"
+import {
+  ENDPOINT_AUTH_URL,
+  ENDPOINT_LOGIN_URL,
+  ENDPOINT_REGISTER_URL,
+} from "../constants/env"
 import protect from "await-protect"
+
+interface Keypair {
+  pubKey: string
+  privateKey: string
+}
 
 interface AuthResult {
   success: boolean
   error: string
+  keypair?: Keypair
   token: string
   userId: string
 }
@@ -25,13 +35,56 @@ export async function checkAuth(
   )
 
   if (error || !res.data.hasOwnProperty("token")) {
-    return { success: false, token: "", userId: "", error: error.message }
+    return {
+      success: false,
+      token: "",
+      keypair: null,
+      userId: "",
+      error: error.message,
+    }
   }
 
   const token: string = res.data.token
   const userId: string = res.data.userId
+  const keypair: Keypair = res.data.keypair
 
-  return { success: true, token, userId, error: "" }
+  return { success: true, token, keypair, userId, error: "" }
+}
+
+export async function createNewKeypair() {
+  // scrap this. no asynchronous needed. will use aes 256 to encrypt and decrypt.
+  const key = await window.crypto.subtle.generateKey(
+    {
+      name: "ECDH",
+      namedCurve: "P-384",
+    },
+    true,
+    ["deriveKey", "deriveBits"]
+  )
+  const exportedPrivateKey = await window.crypto.subtle.exportKey(
+    "jwk",
+    key.privateKey
+  )
+  const exportedPublicKey = await window.crypto.subtle.exportKey(
+    "jwk",
+    key.publicKey
+  )
+
+  const privateKeyText = JSON.stringify(exportedPrivateKey)
+  const publicKeyText = JSON.stringify(exportedPublicKey)
+
+  const signature = await window.crypto.subtle.sign(
+    {
+      name: "ECDH",
+      hash: {
+        name: "P-384",
+      },
+    },
+    key.publicKey,
+    new TextEncoder().encode("swagcityclique")
+  )
+
+  si
 }
 
 export async function login(
@@ -58,7 +111,6 @@ export async function login(
   return { success: true, token, userId, error: "" }
 }
 
-
 export async function register(
   mail: string,
   password: string
@@ -66,7 +118,10 @@ export async function register(
   const [res, error] = await protect(
     axios.post(
       ENDPOINT_REGISTER_URL,
-      { user: {firstName: "Placeholder", lastName: "Placeholder", mail}, password },
+      {
+        user: { firstName: "Placeholder", lastName: "Placeholder", mail },
+        password,
+      },
       {
         withCredentials: true,
       }
@@ -74,7 +129,12 @@ export async function register(
   )
 
   if (error || !res.data.hasOwnProperty("token")) {
-    return { success: false, token: "", userId: "", error: error?.message ?? "Token not provided." }
+    return {
+      success: false,
+      token: "",
+      userId: "",
+      error: error?.message ?? "Token not provided.",
+    }
   }
 
   const token: string = res.data.token
@@ -82,7 +142,6 @@ export async function register(
 
   return { success: true, token, userId, error: "" }
 }
-
 
 const SESSION_TOKEN_KEY = "token"
 

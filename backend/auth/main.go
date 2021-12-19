@@ -5,6 +5,7 @@ import (
 	"github.com/memoneo/auth/internal/api"
 	"github.com/memoneo/auth/internal/configs"
 	"github.com/memoneo/auth/internal/services/auth/keycloak"
+	"github.com/memoneo/auth/internal/services/keypairs"
 	"github.com/memoneo/auth/internal/services/users"
 	"github.com/memoneo/core/lib/datastore"
 	"github.com/memoneo/core/lib/logger"
@@ -26,6 +27,7 @@ func main() {
 	pgConfig, err := configs.Datastore()
 	authConfig, err := configs.Auth()
 	httpConfig, err := configs.HTTP()
+	apiConfig, err := configs.API()
 
 	datastore, err := datastore.NewService(pgConfig)
 	if err != nil {
@@ -34,6 +36,11 @@ func main() {
 	defer datastore.DB.Close()
 
 	keycloak, err := keycloak.NewService(logger, datastore, keycloakConfig)
+	if err != nil {
+		panic(err)
+	}
+
+	keypairs, err := keypairs.NewService(logger, datastore)
 	if err != nil {
 		panic(err)
 	}
@@ -48,7 +55,7 @@ func main() {
 		panic(err)
 	}
 
-	api, err := api.NewService(logger, keycloak, authConfig, users)
+	api, err := api.NewService(logger, keycloak, apiConfig, authConfig, users, keypairs)
 	if err != nil {
 		panic(err)
 	}

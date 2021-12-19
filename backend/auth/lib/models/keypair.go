@@ -6,8 +6,8 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-// KeyPair holds the encrypted private and the public key which are used to encrypt parts of the data.
-type KeyPair struct {
+// Keypair holds the encrypted private and the public key which are used to encrypt parts of the data.
+type Keypair struct {
 	tableName struct{} `pg:"keypair"`
 
 	ID uuid.UUID `pg:",type:uuid,pk"`

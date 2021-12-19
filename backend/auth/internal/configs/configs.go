@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/memoneo/auth/internal/api"
 	"github.com/memoneo/auth/internal/services/auth"
 	"github.com/memoneo/auth/internal/services/auth/keycloak"
 	"github.com/memoneo/core/lib/datastore"
@@ -24,6 +25,13 @@ func (cfg *Configs) HTTP() (*http.Config, error) {
 	return &http.Config{
 		Port:         os.Getenv("PORT"),
 		AllowOrigins: allowOrigins,
+	}, nil
+}
+
+// API returns API configuration
+func (cfg *Configs) API() (*api.Config, error) {
+	return &api.Config{
+		UserIDContextKey: "dataUserID",
 	}, nil
 }
 
