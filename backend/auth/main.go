@@ -5,7 +5,7 @@ import (
 	"github.com/memoneo/auth/internal/api"
 	"github.com/memoneo/auth/internal/configs"
 	"github.com/memoneo/auth/internal/services/auth/keycloak"
-	"github.com/memoneo/auth/internal/services/keypairs"
+	"github.com/memoneo/auth/internal/services/enckeys"
 	"github.com/memoneo/auth/internal/services/users"
 	"github.com/memoneo/core/lib/datastore"
 	"github.com/memoneo/core/lib/logger"
@@ -40,7 +40,7 @@ func main() {
 		panic(err)
 	}
 
-	keypairs, err := keypairs.NewService(logger, datastore)
+	enckeys, err := enckeys.NewService(logger, datastore)
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ func main() {
 		panic(err)
 	}
 
-	api, err := api.NewService(logger, keycloak, apiConfig, authConfig, users, keypairs)
+	api, err := api.NewService(logger, keycloak, apiConfig, authConfig, users, enckeys)
 	if err != nil {
 		panic(err)
 	}

@@ -67,8 +67,6 @@ export default function Month<ContextProps>(
   useEffect(() => {
     const newActiveDayTypes: ActiveDayTypeMap = {}
 
-    console.log(activeDays)
-
     for (let day of days) {
       for (let activeDay of activeDays) {
         if (day.date.isSame(activeDay, "day")) {

@@ -7,7 +7,7 @@ import React, {
 import { useRouter } from "next/router"
 import Head from "next/head"
 
-import { checkAuth, createNewKeypair, setSessionToken } from "../lib/auth"
+import { checkAuth, createNewKey, setSessionToken } from "../lib/auth"
 import Loading from "./Loading"
 
 interface AuthContextValues {
@@ -48,7 +48,7 @@ export default function Auth(props: PropsWithChildren<Props>) {
       if (!auth.authenticated) {
         setAuthLoading(true)
 
-        const { success, token, keypair, userId, error } = await checkAuth(
+        const { success, token, enckey, userId, error } = await checkAuth(
           initialToken
         )
 
@@ -57,7 +57,10 @@ export default function Auth(props: PropsWithChildren<Props>) {
           setSessionToken(token)
           setAuth({ authenticated: success, token, userId, error })
 
-          await createNewKeypair()
+          let key = enckey
+          if (!key) {
+            await createNewKey()
+          }
         }
       } else if (authLoading) {
         setAuthLoading(false)

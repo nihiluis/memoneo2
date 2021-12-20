@@ -39,8 +39,6 @@ export default function getMutationConfig<Mutation extends MutationParameters>(
       setLoading(false)
       setErrors(errors ?? [])
 
-      console.log("DOB")
-
       if (errors && errors.length !== 0) {
         console.error("found errors " + JSON.stringify(errors))
         return

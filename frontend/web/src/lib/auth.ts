@@ -3,18 +3,19 @@ import {
   ENDPOINT_AUTH_URL,
   ENDPOINT_LOGIN_URL,
   ENDPOINT_REGISTER_URL,
+  ENDPOINT_SAVE_KEY_URL,
 } from "../constants/env"
 import protect from "await-protect"
 
-interface Keypair {
-  pubKey: string
-  privateKey: string
+export type Enckey = {
+  key: string
+  salt: string
 }
 
 interface AuthResult {
   success: boolean
   error: string
-  keypair?: Keypair
+  enckey?: Enckey
   token: string
   userId: string
 }
@@ -38,7 +39,7 @@ export async function checkAuth(
     return {
       success: false,
       token: "",
-      keypair: null,
+      enckey: null,
       userId: "",
       error: error.message,
     }
@@ -46,45 +47,200 @@ export async function checkAuth(
 
   const token: string = res.data.token
   const userId: string = res.data.userId
-  const keypair: Keypair = res.data.keypair
+  const keypair: Enckey = res.data.keypair
 
-  return { success: true, token, keypair, userId, error: "" }
+  return { success: true, token, enckey: keypair, userId, error: "" }
 }
 
-export async function createNewKeypair() {
-  // scrap this. no asynchronous needed. will use aes 256 to encrypt and decrypt.
-  const key = await window.crypto.subtle.generateKey(
+async function generateProtectedKey(): Promise<CryptoKey> {
+  const protectedKey = await window.crypto.subtle.generateKey(
     {
-      name: "ECDH",
-      namedCurve: "P-384",
+      name: "AES-GCM",
+      length: 256,
     },
     true,
-    ["deriveKey", "deriveBits"]
-  )
-  const exportedPrivateKey = await window.crypto.subtle.exportKey(
-    "jwk",
-    key.privateKey
-  )
-  const exportedPublicKey = await window.crypto.subtle.exportKey(
-    "jwk",
-    key.publicKey
+    ["encrypt", "decrypt"]
   )
 
-  const privateKeyText = JSON.stringify(exportedPrivateKey)
-  const publicKeyText = JSON.stringify(exportedPublicKey)
+  return protectedKey
+}
 
-  const signature = await window.crypto.subtle.sign(
+interface EncryptProtectedKeyResult {
+  ivStr: string
+  ctStr: string
+}
+
+async function encryptProtectedKey(
+  password: string,
+  protectedKey: CryptoKey
+): Promise<EncryptProtectedKeyResult> {
+  const pwUtf8 = new TextEncoder().encode(password)
+  const pwHash = await crypto.subtle.digest("SHA-256", pwUtf8)
+
+  const exportedKey = await window.crypto.subtle.exportKey("raw", protectedKey)
+
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const ivStr = Array.from(iv)
+    .map(b => String.fromCharCode(b))
+    .join("")
+
+  const alg = { name: "AES-GCM", iv: iv }
+
+  const encryptionKey = await crypto.subtle.importKey(
+    "raw",
+    pwHash,
+    alg,
+    false,
+    ["encrypt", "decrypt"]
+  )
+
+  const ctBuffer = await window.crypto.subtle.encrypt(
+    alg,
+    encryptionKey,
+    exportedKey
+  )
+
+  const ctArray = Array.from(new Uint8Array(ctBuffer))
+  const ctStr = ctArray.map(byte => String.fromCharCode(byte)).join("")
+
+  return { ivStr, ctStr }
+}
+
+async function decryptProtectedKey(
+  password: string,
+  ctStr: string,
+  ivStr: string
+): Promise<CryptoKey> {
+  const decryptPwUtf8 = new TextEncoder().encode(password)
+  const decryptPwHash = await crypto.subtle.digest("SHA-256", decryptPwUtf8)
+
+  const decryptIv = new Uint8Array(
+    Array.from(ivStr).map(ch => ch.charCodeAt(0))
+  )
+  const decryptAlg = { name: "AES-GCM", iv: decryptIv }
+
+  const decryptPwKey = await crypto.subtle.importKey(
+    "raw",
+    decryptPwHash,
+    decryptAlg,
+    false,
+    ["encrypt", "decrypt"]
+  )
+
+  const ctUint8 = new Uint8Array(Array.from(ctStr).map(ch => ch.charCodeAt(0)))
+
+  const protectedKeyBuffer = await crypto.subtle.decrypt(
+    decryptAlg,
+    decryptPwKey,
+    ctUint8
+  )
+
+  return await crypto.subtle.importKey(
+    "raw",
+    protectedKeyBuffer,
     {
-      name: "ECDH",
-      hash: {
-        name: "P-384",
-      },
+      name: "AES-GCM",
+      length: 256,
     },
-    key.publicKey,
-    new TextEncoder().encode("swagcityclique")
+    true,
+    ["encrypt", "decrypt"]
+  )
+}
+
+interface EncryptTextResult {
+  ctStr: string
+  ivStr: string
+}
+
+async function encryptText(
+  text: string,
+  protectedKey: CryptoKey
+): Promise<EncryptTextResult> {
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const ivStr = Array.from(iv)
+    .map(b => String.fromCharCode(b))
+    .join("")
+
+  const alg = { name: "AES-GCM", iv: iv }
+
+  const ctBuffer = await window.crypto.subtle.encrypt(
+    alg,
+    protectedKey,
+    new TextEncoder().encode(text)
   )
 
-  si
+  const ctArray = Array.from(new Uint8Array(ctBuffer))
+  const ctStr = ctArray.map(byte => String.fromCharCode(byte)).join("")
+
+  return { ivStr, ctStr }
+}
+
+async function decryptText(
+  ctStr: string,
+  ivStr: string,
+  protectedKey: CryptoKey
+): Promise<string> {
+  const decryptIv = new Uint8Array(
+    Array.from(ivStr).map(ch => ch.charCodeAt(0))
+  )
+  const decryptAlg = { name: "AES-GCM", iv: decryptIv }
+
+  const ctUint8 = new Uint8Array(Array.from(ctStr).map(ch => ch.charCodeAt(0)))
+
+  const protectedKeyBuffer = await crypto.subtle.decrypt(
+    decryptAlg,
+    protectedKey,
+    ctUint8
+  )
+
+  const plaintext = new TextDecoder().decode(protectedKeyBuffer)
+
+  return plaintext
+}
+
+export async function createNewKey(password: string = "testestetstst") {
+  const encryptionTestMessage =
+    "swaggyswagswag Hallo Leute, ich bin's, jop der echte, der Jensi! Merry Christmas"
+
+  const generatedProtectedKey = await generateProtectedKey()
+  const { ivStr: textIvStr, ctStr: textCtStr } = await encryptText(
+    encryptionTestMessage,
+    generatedProtectedKey
+  )
+
+  const { ivStr, ctStr } = await encryptProtectedKey(
+    password,
+    generatedProtectedKey
+  )
+
+  const decryptedProtectedKey = await decryptProtectedKey(
+    password,
+    ctStr,
+    ivStr
+  )
+
+  const plaintext = await decryptText(
+    textCtStr,
+    textIvStr,
+    decryptedProtectedKey
+  )
+  console.log("Decrypted plaintext " + plaintext)
+
+  /*
+  const [res, error] = await protect(
+    axios.post(
+      ENDPOINT_SAVE_KEY_URL,
+      { key: window.btoa(ctStr), salt: window.btoa(ivStr) },
+      {
+        withCredentials: true,
+      }
+    )
+  )
+
+  if (error || !res.data.hasOwnProperty("token")) {
+    return { success: false, token: "", userId: "", error: error.message }
+  }
+  */
 }
 
 export async function login(

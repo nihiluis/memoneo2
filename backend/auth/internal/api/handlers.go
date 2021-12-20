@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/memoneo/auth/internal/services/auth"
-	"github.com/memoneo/auth/internal/services/keypairs"
+	"github.com/memoneo/auth/internal/services/enckeys"
 	"github.com/memoneo/auth/internal/services/users"
 	authmodels "github.com/memoneo/auth/lib/models"
 	"github.com/memoneo/auth/lib/utils"
@@ -27,7 +27,7 @@ type API struct {
 	config        *Config
 	authConfig    *auth.Config
 	users         *users.Users
-	keypairs      *keypairs.Keypairs
+	enckeys       *enckeys.Enckeys
 	logger        *logger.Logger
 	validate      *validator.Validate
 	authPublicKey interface{}
@@ -38,12 +38,12 @@ type Config struct {
 }
 
 func NewService(logger *logger.Logger, auth auth.Auth, config *Config, authConfig *auth.Config,
-	users *users.Users, keypairs *keypairs.Keypairs) (*API, error) {
+	users *users.Users, enckeys *enckeys.Enckeys) (*API, error) {
 	validate := validator.New()
 
 	publicKey := auth.PublicKey()
 
-	return &API{auth, config, authConfig, users, keypairs, logger, validate, publicKey}, nil
+	return &API{auth, config, authConfig, users, enckeys, logger, validate, publicKey}, nil
 }
 
 // AddHandlers adds the echo handlers that are part of this package.
@@ -76,12 +76,12 @@ func (api *API) AddHandlers(s *archhttp.EchoServer) {
 	s.Echo.POST("/register", api.register)
 	authGroup.GET("", api.checkAuth)
 
-	keypairGroup := s.Echo.Group("/keypair")
-	keypairGroup.Use(cookieMiddleware)
-	keypairGroup.Use(authMiddleware)
+	enckeyGroup := s.Echo.Group("/enckey")
+	enckeyGroup.Use(cookieMiddleware)
+	enckeyGroup.Use(authMiddleware)
 
-	keypairGroup.GET("", api.getKeypair)
-	keypairGroup.POST("/save", api.saveKeypair)
+	enckeyGroup.GET("", api.getEnckey)
+	enckeyGroup.POST("/save", api.saveEnckey)
 }
 
 // LoginRequestBody is the JSON body of a request to the login handler.
@@ -198,28 +198,28 @@ func (api *API) checkAuth(c echo.Context) error {
 
 	fullUser := utils.MergeUser(authUser, dataUser)
 
-	keypair, err := api.keypairs.GetKeypair(dataUser.ID)
+	enckey, err := api.enckeys.GetEnckey(dataUser.ID)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Unable to retrieve user data."})
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{
 		"token":      token.Raw,
-		"keypair":    keypair,
+		"enckey":     enckey,
 		"userId":     dataUser.ID,
 		"authUserId": id,
 		"user":       fullUser,
 	})
 }
 
-// SaveKeypairRequestBody is the JSON body of a request to the /keypair/save handler.
-type SaveKeypairRequestBody struct {
-	PubKey     string `json:"pubKey" validate:"required"`
-	PrivateKey string `json:"privateKey" validate:"required"`
+// SaveEnckeyRequestBody is the JSON body of a request to the /keypair/save handler.
+type SaveEnckeyRequestBody struct {
+	Key  string `json:"key" validate:"required"`
+	Salt string `json:"salt validate:"required"`
 }
 
-func (api *API) saveKeypair(c echo.Context) error {
-	body := new(SaveKeypairRequestBody)
+func (api *API) saveEnckey(c echo.Context) error {
+	body := new(SaveEnckeyRequestBody)
 	if err := c.Bind(body); err != nil {
 		return err
 	}
@@ -228,29 +228,32 @@ func (api *API) saveKeypair(c echo.Context) error {
 		return err
 	}
 
-	api.logger.Zap.Infow("Handling saveKeypair attempt")
+	api.logger.Zap.Infow("Handling saveEnckey attempt")
 
-	keypair := &authmodels.Keypair{
-		PubKey:     body.PubKey,
-		PrivateKey: body.PrivateKey,
+	userID := c.Get(api.config.UserIDContextKey).(uuid.UUID)
+
+	enckey := &authmodels.Enckey{
+		Key:  body.Key,
+		ID:   userID,
+		Salt: body.Salt,
 	}
 
-	_, err = api.keypairs.CreateKeypair(keypair)
+	_, err = api.enckeys.CreateEnckey(enckey)
 	if err != nil {
-		api.logger.Zap.Debugw("Failed to create keypair", "err", err)
+		api.logger.Zap.Debugw("Failed to create enckey", "err", err)
 		return err
 	}
 
 	return c.JSON(http.StatusOK, echo.Map{})
 }
 
-func (api *API) getKeypair(c echo.Context) error {
+func (api *API) getEnckey(c echo.Context) error {
 	userID := c.Get(api.config.UserIDContextKey).(uuid.UUID)
 
-	keypair, err := api.keypairs.GetKeypair(userID)
+	enckey, err := api.enckeys.GetEnckey(userID)
 	if err != nil {
 		return err
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{"keypair": keypair})
+	return c.JSON(http.StatusOK, echo.Map{"enckey": enckey})
 }
