@@ -66,6 +66,7 @@ async function generateProtectedKey(): Promise<CryptoKey> {
 }
 
 interface EncryptProtectedKeyResult {
+  iv: Uint8Array
   ivStr: string
   ctStr: string
 }
@@ -103,10 +104,10 @@ async function encryptProtectedKey(
   const ctArray = Array.from(new Uint8Array(ctBuffer))
   const ctStr = ctArray.map(byte => String.fromCharCode(byte)).join("")
 
-  return { ivStr, ctStr }
+  return { iv, ivStr, ctStr }
 }
 
-async function decryptProtectedKey(
+export async function decryptProtectedKey(
   password: string,
   ctStr: string,
   ivStr: string
@@ -198,7 +199,7 @@ async function decryptText(
   return plaintext
 }
 
-export async function createNewKey(password: string = "testestetstst") {
+export async function testEncryption(password: string = "swaggyswagswag") {
   const encryptionTestMessage =
     "swaggyswagswag Hallo Leute, ich bin's, jop der echte, der Jensi! Merry Christmas"
 
@@ -225,9 +226,25 @@ export async function createNewKey(password: string = "testestetstst") {
     decryptedProtectedKey
   )
   console.log("Decrypted plaintext " + plaintext)
+}
 
-  /*
-  const [res, error] = await protect(
+interface CreateNewKeyResult {
+  key?: CryptoKey
+  salt?: Uint8Array
+  error: string
+}
+
+export async function createNewKey(
+  password: string
+): Promise<CreateNewKeyResult> {
+  const generatedProtectedKey = await generateProtectedKey()
+
+  const { iv, ivStr, ctStr } = await encryptProtectedKey(
+    password,
+    generatedProtectedKey
+  )
+
+  const [_, error] = await protect(
     axios.post(
       ENDPOINT_SAVE_KEY_URL,
       { key: window.btoa(ctStr), salt: window.btoa(ivStr) },
@@ -237,10 +254,15 @@ export async function createNewKey(password: string = "testestetstst") {
     )
   )
 
-  if (error || !res.data.hasOwnProperty("token")) {
-    return { success: false, token: "", userId: "", error: error.message }
+  if (error) {
+    return { error: error.message }
   }
-  */
+
+  return {
+    key: generatedProtectedKey,
+    salt: iv,
+    error: "",
+  }
 }
 
 export async function login(

@@ -15,7 +15,7 @@ func init() {
 }
 
 func (r *EnckeyRepository) create(enckey *models.Enckey) (*models.Enckey, error) {
-	_, err := r.datastore.DB.Model(enckey).Insert()
+	_, err := r.datastore.DB.Model(enckey).OnConflict("(id) DO UPDATE").Insert()
 	if err != nil {
 		return nil, err
 	}

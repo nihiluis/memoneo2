@@ -8,8 +8,9 @@ import { PRODUCT_NAME } from "../src/constants/env"
 import Layout from "../src/components/ui/layout/Layout"
 import Auth, { AuthContext } from "../src/components/Auth"
 import FormRowInput from "../src/components/ui/form/FormRowInput"
-import { login } from "../src/lib/auth"
+import { login, setSessionToken } from "../src/lib/auth"
 import Logo from "../src/components/ui/Logo"
+import { useKeyStore } from "../src/stores/key"
 
 interface FormValues {
   mail: string
@@ -42,16 +43,23 @@ function LoginForm(): JSX.Element {
   const [loginError, setLoginError] = useState("")
   const [loginLoading, setLoginLoading] = useState(false)
 
+  const setKey = useKeyStore(state => state.set)
+
   const submit = async function (values: FormValues) {
     const { mail, password } = values
 
     setLoginLoading(true)
 
+    setKey({ password })
+    // warning: I think userId is always null here
     const { success, token, error, userId } = await login(mail, password)
 
     setLoginLoading(false)
     setLoginError(error)
-
+    if (token) {
+      setSessionToken(token)
+    }
+    
     authContext!.setAuth({ authenticated: success, token, error, userId })
   }
 
