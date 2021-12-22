@@ -47,9 +47,9 @@ export async function checkAuth(
 
   const token: string = res.data.token
   const userId: string = res.data.userId
-  const keypair: Enckey = res.data.keypair
+  const enckey: Enckey = res.data.enckey
 
-  return { success: true, token, enckey: keypair, userId, error: "" }
+  return { success: true, token, enckey, userId, error: "" }
 }
 
 async function generateProtectedKey(): Promise<CryptoKey> {
@@ -136,16 +136,20 @@ export async function decryptProtectedKey(
     ctUint8
   )
 
-  return await crypto.subtle.importKey(
-    "raw",
-    protectedKeyBuffer,
-    {
-      name: "AES-GCM",
-      length: 256,
-    },
-    true,
-    ["encrypt", "decrypt"]
-  )
+  try {
+    return await crypto.subtle.importKey(
+      "raw",
+      protectedKeyBuffer,
+      {
+        name: "AES-GCM",
+        length: 256,
+      },
+      true,
+      ["encrypt", "decrypt"]
+    )
+  } catch (ex: any) {
+    console.log(ex)
+  }
 }
 
 interface EncryptTextResult {
@@ -153,15 +157,12 @@ interface EncryptTextResult {
   ivStr: string
 }
 
-async function encryptText(
+export async function encryptText(
   text: string,
+  saltStr: string,
   protectedKey: CryptoKey
 ): Promise<EncryptTextResult> {
-  const iv = crypto.getRandomValues(new Uint8Array(12))
-  const ivStr = Array.from(iv)
-    .map(b => String.fromCharCode(b))
-    .join("")
-
+  const iv = new Uint8Array(Array.from(saltStr).map(ch => ch.charCodeAt(0)))
   const alg = { name: "AES-GCM", iv: iv }
 
   const ctBuffer = await window.crypto.subtle.encrypt(
@@ -173,10 +174,10 @@ async function encryptText(
   const ctArray = Array.from(new Uint8Array(ctBuffer))
   const ctStr = ctArray.map(byte => String.fromCharCode(byte)).join("")
 
-  return { ivStr, ctStr }
+  return { ivStr: saltStr, ctStr }
 }
 
-async function decryptText(
+export async function decryptText(
   ctStr: string,
   ivStr: string,
   protectedKey: CryptoKey
@@ -204,13 +205,15 @@ export async function testEncryption(password: string = "swaggyswagswag") {
     "swaggyswagswag Hallo Leute, ich bin's, jop der echte, der Jensi! Merry Christmas"
 
   const generatedProtectedKey = await generateProtectedKey()
-  const { ivStr: textIvStr, ctStr: textCtStr } = await encryptText(
-    encryptionTestMessage,
-    generatedProtectedKey
-  )
 
   const { ivStr, ctStr } = await encryptProtectedKey(
     password,
+    generatedProtectedKey
+  )
+
+  const { ivStr: textIvStr, ctStr: textCtStr } = await encryptText(
+    encryptionTestMessage,
+    ivStr,
     generatedProtectedKey
   )
 
@@ -230,7 +233,7 @@ export async function testEncryption(password: string = "swaggyswagswag") {
 
 interface CreateNewKeyResult {
   key?: CryptoKey
-  salt?: Uint8Array
+  salt?: string
   error: string
 }
 
@@ -260,7 +263,7 @@ export async function createNewKey(
 
   return {
     key: generatedProtectedKey,
-    salt: iv,
+    salt: ivStr,
     error: "",
   }
 }

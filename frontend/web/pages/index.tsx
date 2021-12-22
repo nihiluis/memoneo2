@@ -10,12 +10,15 @@ import DataLoader from "../src/components/DataLoader"
 import TodoOverview from "../src/components/object/todo/TodoOverview"
 import ActivityOverview from "../src/components/object/activity/ActivityOverview"
 import NoteCalendarOverview from "../src/components/object/note/NoteCalendarOverview"
+import KeyLoader from "../src/components/key/KeyLoader"
 
 export default function Index() {
   return (
     <Auth require>
       <DataLoader>
-        <IndexInner />
+        <KeyLoader>
+          <IndexInner />
+        </KeyLoader>
       </DataLoader>
     </Auth>
   )

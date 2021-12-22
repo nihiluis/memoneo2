@@ -42,9 +42,13 @@ func (r *EnckeyRepository) GetByID(id uuid.UUID) (*models.Enckey, error) {
 func (r *EnckeyRepository) GetByIDOptional(id uuid.UUID) (*models.Enckey, error) {
 	var enckeys []models.Enckey
 
-	err := r.datastore.DB.Model(enckeys).
+	err := r.datastore.DB.Model(&enckeys).
 		Where("id = ?", id).
 		Select()
+
+	if err != nil {
+		return nil, err
+	}
 
 	if len(enckeys) == 0 {
 		return nil, nil

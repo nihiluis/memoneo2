@@ -1,5 +1,5 @@
 import { Formik } from "formik"
-import React, { Suspense, useContext, useState } from "react"
+import React, { Suspense, useContext, useEffect, useRef, useState } from "react"
 import { useFragment, useLazyLoadQuery, useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
@@ -30,6 +30,9 @@ import { NoteFragment$key } from "./__generated__/NoteFragment.graphql"
 import { nullUuid } from "../../../constants/other"
 import FormRowMarkdown from "../../ui/form/FormRowMarkdown"
 import EditorFormRowMarkdown from "../../mutation/EditorFormRowMarkdown"
+import RequireKey from "../../key/RequireKey"
+import { decryptText, encryptText } from "../../../lib/auth"
+import { useKeyStore } from "../../../stores/key"
 
 interface FormValues {
   title: string
@@ -64,9 +67,11 @@ interface Props {
 
 export default function NoteEditor(props: Props): JSX.Element {
   return (
-    <Suspense fallback={null}>
-      <NoteEditorLoader {...props} />
-    </Suspense>
+    <RequireKey>
+      <Suspense fallback={null}>
+        <NoteEditorLoader {...props} />
+      </Suspense>
+    </RequireKey>
   )
 }
 
@@ -98,29 +103,59 @@ interface InnerProps {
 }
 
 function NoteEditorInner(props: Props & InnerProps): JSX.Element {
-  const [commit, _] = useMutation<NoteEditorMutation>(mutation)
+  const { item: preloadedNote, onComplete, onCancel, noteId, noteRef } = props
+  const operationType = !!preloadedNote ? "edit" : "add"
+
   const [errors, setErrors] = useState<PayloadError[]>([])
   const [loading, setLoading] = useState<boolean>(false)
+  const [decryptedBody, setDecryptedBody] = useState("")
+  const [initializedBody, setInitializedBody] = useState(false)
+
   const { auth } = useContext(AuthContext)
 
-  const { item: preloadedNote, onComplete, onCancel, noteId, noteRef } = props
+  const closed = useRef(false)
 
-  const operationType = !!preloadedNote ? "edit" : "add"
+  const key = useKeyStore(state => state.key)
+  const salt = useKeyStore(state => state.salt)
 
   const defaultNoteFilters = useFilterStore(state =>
     state.getFilters(DEFAULT_NOTE_CONNECTION)
   )
 
+  const [commit, _] = useMutation<NoteEditorMutation>(mutation)
   const note = useFragment<NoteFragment$key>(noteFragment, noteRef)
 
-  function submit(values: FormValues) {
+  useEffect(() => {
+    async function load() {
+      if (closed.current) return
+
+      if (note) {
+        const text = await decryptText(window.atob(note.body), salt, key)
+        setDecryptedBody(text)
+      }
+
+      setInitializedBody(true)
+    }
+
+    load()
+
+    return () => {
+      closed.current = true
+    }
+  }, [note])
+
+  async function submit(values: FormValues) {
     setLoading(true)
 
+    // if equals nullUuid, we are creating a new note and need a new uuid
+    const id = noteId === nullUuid ? uuidv4() : noteId
+    const encryptedBody = await encryptText(values["body"], salt, key)
+
     const variables: NoteEditorMutationVariables = {
-      id: noteId ?? uuidv4(),
+      id: id,
       user_id: auth.userId,
       title: values["title"],
-      body: values["body"],
+      body: window.btoa(encryptedBody.ctStr),
       pinned: values["pinned"] ?? false,
       date: values["date"],
       connections: [
@@ -141,45 +176,47 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
     <Suspense fallback={null}>
       <div style={{ width: 720 }}>
         <EditorHeader operationType={operationType} objectType="note" />
-        <Formik<FormValues>
-          initialValues={{
-            title: note?.title ?? "",
-            body: note?.body ?? "",
-            pinned: note?.pinned ?? false,
-            date: (note?.date as string) ?? dayjs().format("YYYY-MM-DD"),
-          }}
-          validationSchema={FormSchema}
-          onSubmit={submit}>
-          {formikProps => (
-            <EditorFormWrapper
-              formikProps={formikProps}
-              error={errors.length > 0 ? "error" : ""}
-              onCancel={onCancel}
-              type={operationType}
-              loading={loading}
-              className="w-full">
-              <EditorFormRowText
-                {...formikProps}
-                type="text"
-                name="title"
-                label="Title"
-              />
-              <EditorFormRowText
-                {...formikProps}
-                type="date"
-                name="date"
-                label="Date"
-                style={{ maxWidth: 180 }}
-              />
-              <EditorFormRowMarkdown
-                {...formikProps}
-                name="body"
-                label="Body"
-              />
-              <EditorSwitch {...formikProps} name="pinned" label="Pin" />
-            </EditorFormWrapper>
-          )}
-        </Formik>
+        {initializedBody && (
+          <Formik<FormValues>
+            initialValues={{
+              title: note?.title ?? "",
+              body: decryptedBody,
+              pinned: note?.pinned ?? false,
+              date: (note?.date as string) ?? dayjs().format("YYYY-MM-DD"),
+            }}
+            validationSchema={FormSchema}
+            onSubmit={submit}>
+            {formikProps => (
+              <EditorFormWrapper
+                formikProps={formikProps}
+                error={errors.length > 0 ? "error" : ""}
+                onCancel={onCancel}
+                type={operationType}
+                loading={loading}
+                className="w-full">
+                <EditorFormRowText
+                  {...formikProps}
+                  type="text"
+                  name="title"
+                  label="Title"
+                />
+                <EditorFormRowText
+                  {...formikProps}
+                  type="date"
+                  name="date"
+                  label="Date"
+                  style={{ maxWidth: 180 }}
+                />
+                <EditorFormRowMarkdown
+                  {...formikProps}
+                  name="body"
+                  label="Body"
+                />
+                <EditorSwitch {...formikProps} name="pinned" label="Pin" />
+              </EditorFormWrapper>
+            )}
+          </Formik>
+        )}
       </div>
     </Suspense>
   )

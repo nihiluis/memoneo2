@@ -10,11 +10,11 @@ interface KeyStore {
 }
 
 export const useKeyStore = create(
-  combine<KeyStore, any>(
+  combine(
     {
-      key: undefined,
-      protectedKey: undefined,
-      salt: undefined,
+      key: undefined as CryptoKey | undefined,
+      protectedKey: undefined as string | undefined,
+      salt: "",
       password: "",
       error: "",
     },

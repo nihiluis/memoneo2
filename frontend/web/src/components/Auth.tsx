@@ -66,10 +66,13 @@ export default function Auth(props: PropsWithChildren<Props>) {
         )
 
         if (enckey) {
+          console.log("found enckey")
           setKeyData({
-            protectedKey: enckey.key,
+            protectedKey: window.atob(enckey.key),
             salt: window.atob(enckey.salt),
           })
+        } else {
+          console.log("enckey not found in checkAuth")
         }
         if (!cancelled.current) {
           setAuthLoading(false)
@@ -89,38 +92,6 @@ export default function Auth(props: PropsWithChildren<Props>) {
       cancelled.current = true
     }
   }, [])
-
-  useEffect(() => {
-    const loadKey = async () => {
-      if (password) {
-        if (!protectedKey) {
-          // generate key to use for encryption
-          console.log("creating new key")
-          const { key, salt, error } = await createNewKey(password)
-
-          if (error) {
-            console.error("unable to generate encryption key.")
-            setKeyData({ error: "no key available", password: "" })
-            return
-          }
-
-          setKeyData({ key, salt, password: "" })
-        } else {
-          // decrypt key to use for encryption
-          console.log("decrypting existing key")
-
-          const key = await decryptProtectedKey(password, protectedKey, salt)
-          setKeyData({ key, salt, password: "" })
-        }
-      } else {
-        // persisting the key and salt is not currently supported
-        console.log("no key available")
-        setKeyData({ error: "no key available", password: "" })
-      }
-    }
-
-    loadKey()
-  }, [password, salt, protectedKey])
 
   useEffect(() => {
     if (require && !auth.authenticated && !authLoading && initialized) {

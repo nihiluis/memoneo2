@@ -10,7 +10,7 @@ import (
 type Enckey struct {
 	tableName struct{} `pg:"enckey"`
 
-	ID uuid.UUID `pg:",type:uuid,pk"`
+	ID uuid.UUID `json:"id" pg:",type:uuid,pk"`
 
 	Key  string `json:"key" pg:",type:text"`
 	Salt string `json:"salt" pg:",type:text"`

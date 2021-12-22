@@ -2,6 +2,7 @@ import React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 
 import style from "./Dialog.module.css"
+import { cx } from "../../../lib/reexports"
 
 export function DialogRoot({
   children,
@@ -21,10 +22,16 @@ export function DialogOverlay(
   return <DialogPrimitive.Overlay {...props} />
 }
 
-export function DialogContent(
-  props: DialogPrimitive.DialogContentProps
-): JSX.Element {
-  return <DialogPrimitive.Content className={style.content} {...props} />
+export function DialogContent({
+  className,
+  ...props
+}: DialogPrimitive.DialogContentProps): JSX.Element {
+  return (
+    <DialogPrimitive.Content
+      className={cx(style.content, className)}
+      {...props}
+    />
+  )
 }
 
 export function DialogTitle(

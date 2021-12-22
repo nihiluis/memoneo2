@@ -215,7 +215,7 @@ func (api *API) checkAuth(c echo.Context) error {
 // SaveEnckeyRequestBody is the JSON body of a request to the /keypair/save handler.
 type SaveEnckeyRequestBody struct {
 	Key  string `json:"key" validate:"required"`
-	Salt string `json:"salt validate:"required"`
+	Salt string `json:"salt" validate:"required"`
 }
 
 func (api *API) saveEnckey(c echo.Context) error {
@@ -230,11 +230,24 @@ func (api *API) saveEnckey(c echo.Context) error {
 
 	api.logger.Zap.Infow("Handling saveEnckey attempt")
 
-	userID := c.Get(api.config.UserIDContextKey).(uuid.UUID)
+	token := c.Get("user").(*jwt.Token)
+
+	claims := token.Claims.(jwt.MapClaims)
+	idString := claims["sub"]
+
+	id, err := uuid.FromString(idString.(string))
+	if err != nil {
+		return err
+	}
+
+	dataUser, err := api.users.GetDataUserByAuthID(id)
+	if err != nil {
+		return err
+	}
 
 	enckey := &authmodels.Enckey{
 		Key:  body.Key,
-		ID:   userID,
+		ID:   dataUser.ID,
 		Salt: body.Salt,
 	}
 
@@ -248,9 +261,24 @@ func (api *API) saveEnckey(c echo.Context) error {
 }
 
 func (api *API) getEnckey(c echo.Context) error {
-	userID := c.Get(api.config.UserIDContextKey).(uuid.UUID)
+	api.logger.Zap.Infow("Handling saveEnckey attempt")
 
-	enckey, err := api.enckeys.GetEnckey(userID)
+	token := c.Get("user").(*jwt.Token)
+
+	claims := token.Claims.(jwt.MapClaims)
+	idString := claims["sub"]
+
+	id, err := uuid.FromString(idString.(string))
+	if err != nil {
+		return err
+	}
+
+	dataUser, err := api.users.GetDataUserByAuthID(id)
+	if err != nil {
+		return err
+	}
+
+	enckey, err := api.enckeys.GetEnckey(dataUser.ID)
 	if err != nil {
 		return err
 	}
