@@ -90,23 +90,37 @@ function DataLoaderInner(
     loadNoteQuery({})
     loadActivityQuery({})
     loadTodoQuery({})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => props.setGoalQueryRef(goalQueryRef), [goalQueryRef])
-  useEffect(() => props.setNoteQueryRef(noteQueryRef), [noteQueryRef])
-  useEffect(() => props.setActivityQueryRef(activityQueryRef), [
-    activityQueryRef,
-  ])
-  useEffect(() => props.setTodoQueryRef(todoQueryRef), [todoQueryRef])
+  const {
+    children,
+    setGoalQueryRef,
+    setNoteQueryRef,
+    setActivityQueryRef,
+    setTodoQueryRef,
+  } = props
 
-  if (
-    !props.goalQueryRef ||
-    !props.noteQueryRef ||
-    !props.activityQueryRef ||
-    !props.todoQueryRef
-  ) {
+  useEffect(() => setGoalQueryRef(goalQueryRef), [
+    goalQueryRef,
+    setGoalQueryRef,
+  ])
+  useEffect(() => setNoteQueryRef(noteQueryRef), [
+    noteQueryRef,
+    setNoteQueryRef,
+  ])
+  useEffect(() => setActivityQueryRef(activityQueryRef), [
+    activityQueryRef,
+    setActivityQueryRef,
+  ])
+  useEffect(() => setTodoQueryRef(todoQueryRef), [
+    todoQueryRef,
+    setTodoQueryRef,
+  ])
+
+  if (!goalQueryRef || !noteQueryRef || !activityQueryRef || !todoQueryRef) {
     return null
   }
 
-  return <React.Fragment>{props.children}</React.Fragment>
+  return <React.Fragment>{children}</React.Fragment>
 }

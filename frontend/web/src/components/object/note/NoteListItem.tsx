@@ -69,7 +69,15 @@ function AdditionalIcons(props: Props): JSX.Element {
     })
 
     commitPin(mutationConfig)
-  }, [item.id, item.archived, setLoading, setErrors, commitPin])
+  }, [
+    item.id,
+    setLoading,
+    setErrors,
+    commitPin,
+    connection,
+    filters,
+    item.pinned,
+  ])
 
   return (
     <React.Fragment>

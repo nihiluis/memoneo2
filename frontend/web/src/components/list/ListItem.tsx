@@ -68,7 +68,14 @@ export default function ListItem<Item extends ItemMin>(
     })
 
     commitDelete(mutationConfig)
-  }, [item.id, setLoading, setErrors, filters, commitDelete])
+  }, [
+    item.id,
+    setLoading,
+    setErrors,
+    filters,
+    commitDelete,
+    connection,
+  ])
 
   const onArchive = useCallback(() => {
     setLoading(true)
@@ -95,7 +102,15 @@ export default function ListItem<Item extends ItemMin>(
     })
 
     commitArchive(mutationConfig)
-  }, [item.id, item.archived, setLoading, setErrors, commitArchive])
+  }, [
+    item.id,
+    item.archived,
+    setLoading,
+    setErrors,
+    commitArchive,
+    connection,
+    filters,
+  ])
 
   return (
     <div className="pt-2 px-2 hover:bg-gray-50 cursor-pointer">

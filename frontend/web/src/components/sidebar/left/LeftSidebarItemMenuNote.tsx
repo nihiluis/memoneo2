@@ -138,7 +138,14 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
     )
 
     commitArchive(mutationConfig)
-  }, [item.id, item.archived, setLoading, setErrors, commitArchive])
+  }, [
+    item.id,
+    item.archived,
+    setLoading,
+    setErrors,
+    defaultNoteFilters,
+    commitArchive,
+  ])
 
   return (
     <div>

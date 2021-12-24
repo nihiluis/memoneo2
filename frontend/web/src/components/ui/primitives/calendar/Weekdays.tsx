@@ -10,11 +10,13 @@ interface WeekColumnProps {
 }
 
 const WeekColumn = React.memo<WeekColumnProps>(
-  (props: WeekColumnProps) => (
-    <div className={style.weekColumn}>
-      <Label>{props.day}</Label>
-    </div>
-  ),
+  function WeekColumn(props: WeekColumnProps) {
+    return (
+      <div className={style.weekColumn}>
+        <Label>{props.day}</Label>
+      </div>
+    )
+  },
   () => SHOULD_NOT_UPDATE
 )
 
@@ -23,12 +25,14 @@ interface WeekColumnsProps {
 }
 
 export default React.memo<WeekColumnsProps>(
-  (props: WeekColumnsProps) => (
-    <div className={style.weekdays}>
-      {props.days.map((day: string) => (
-        <WeekColumn key={day} day={day} />
-      ))}
-    </div>
-  ),
+  function Weekdays(props: WeekColumnsProps) {
+    return (
+      <div className={style.weekdays}>
+        {props.days.map((day: string) => (
+          <WeekColumn key={day} day={day} />
+        ))}
+      </div>
+    )
+  },
   () => SHOULD_NOT_UPDATE
 )

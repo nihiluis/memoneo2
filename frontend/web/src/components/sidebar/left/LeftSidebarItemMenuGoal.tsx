@@ -138,7 +138,14 @@ function LeftSidebarItemMenuGoalInner(props: Props): JSX.Element {
     )
 
     commitArchive(mutationConfig)
-  }, [item.id, item.archived, setLoading, setErrors, commitArchive])
+  }, [
+    item.id,
+    item.archived,
+    setLoading,
+    setErrors,
+    defaultGoalFilters,
+    commitArchive,
+  ])
 
   return (
     <div>

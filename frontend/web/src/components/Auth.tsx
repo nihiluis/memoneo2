@@ -66,7 +66,6 @@ export default function Auth(props: PropsWithChildren<Props>) {
         )
 
         if (enckey) {
-          console.log("found enckey")
           setKeyData({
             protectedKey: window.atob(enckey.key),
             salt: window.atob(enckey.salt),
@@ -91,6 +90,8 @@ export default function Auth(props: PropsWithChildren<Props>) {
     return () => {
       cancelled.current = true
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -104,6 +105,7 @@ export default function Auth(props: PropsWithChildren<Props>) {
     ) {
       router.push("/")
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auth])
 
   return (

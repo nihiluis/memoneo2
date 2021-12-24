@@ -142,7 +142,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
     return () => {
       closed.current = true
     }
-  }, [note])
+  }, [note, key, salt])
 
   async function submit(values: FormValues) {
     setLoading(true)

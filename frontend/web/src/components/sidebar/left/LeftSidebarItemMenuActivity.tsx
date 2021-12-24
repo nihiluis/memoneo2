@@ -2,7 +2,10 @@ import { ArchiveIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons"
 import React, { Suspense, useCallback, useEffect, useRef } from "react"
 import { useMutation } from "react-relay"
 import { PayloadError } from "relay-runtime"
-import { DEFAULT_GOAL_CONNECTION } from "../../../constants/connections"
+import {
+  DEFAULT_ACTIVITY_CONNECTION,
+  DEFAULT_GOAL_CONNECTION,
+} from "../../../constants/connections"
 import { getIdFromNodeId } from "../../../lib/hasura"
 import deleteInConnection from "../../../relay/deleteInConnection"
 import { getRootConnectionIds } from "../../../relay/getConnection"
@@ -111,7 +114,7 @@ function LeftSidebarItemMenuActivityInner(props: Props): JSX.Element {
       archived: !item.archived,
       connections: [
         ...getRootConnectionIds(
-          DEFAULT_GOAL_CONNECTION,
+          DEFAULT_ACTIVITY_CONNECTION,
           defaultActivityFilters
         ),
       ],
@@ -144,7 +147,14 @@ function LeftSidebarItemMenuActivityInner(props: Props): JSX.Element {
     )
 
     commitArchive(mutationConfig)
-  }, [item.id, item.archived, setLoading, setErrors, commitArchive])
+  }, [
+    item.id,
+    item.archived,
+    defaultActivityFilters,
+    setLoading,
+    setErrors,
+    commitArchive,
+  ])
 
   return (
     <div>

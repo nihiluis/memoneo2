@@ -17,6 +17,7 @@ export default function FormRowCalendar<T>(props: Props<T>) {
     <div className="form-row">
       <label className="form-label">{label}</label>
       <Calendar
+        activeDays={[]}
         focusedDay={values[name]}
         focusDay={day => setFieldValue(name, day)}
         month={dayjs()}

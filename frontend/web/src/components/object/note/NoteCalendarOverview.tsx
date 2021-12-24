@@ -55,7 +55,7 @@ function NoteCalendarOverviewInner(props: Props): JSX.Element {
 
     setActiveItems(items)
     setActiveItemsDate(items.map(item => dayjs(item.date as string)))
-  }, [activeMonth])
+  }, [activeMonth, data])
 
   useEffect(() => {
     const items: Item[] = data.note_connection.edges
