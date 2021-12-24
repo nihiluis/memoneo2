@@ -69,19 +69,19 @@ function DataLoaderInner(
   props: PropsWithChildren<DataLoaderContextValues>
 ): JSX.Element {
   const [
-    goalQueryRef,
+    goalQueryRefRaw,
     loadGoalQuery,
   ] = useQueryLoader<DataLoaderInnerGoalQuery>(defaultGoalQuery)
   const [
-    noteQueryRef,
+    noteQueryRefRaw,
     loadNoteQuery,
   ] = useQueryLoader<DataLoaderInnerNoteQuery>(defaultNoteQuery)
   const [
-    activityQueryRef,
+    activityQueryRefRaw,
     loadActivityQuery,
   ] = useQueryLoader<DataLoaderInnerActivityQuery>(defaultActivityQuery)
   const [
-    todoQueryRef,
+    todoQueryRefRaw,
     loadTodoQuery,
   ] = useQueryLoader<DataLoaderInnerTodoQuery>(defaultTodoQuery)
 
@@ -101,22 +101,24 @@ function DataLoaderInner(
     setTodoQueryRef,
   } = props
 
-  useEffect(() => setGoalQueryRef(goalQueryRef), [
-    goalQueryRef,
+  useEffect(() => setGoalQueryRef(goalQueryRefRaw), [
+    goalQueryRefRaw,
     setGoalQueryRef,
   ])
-  useEffect(() => setNoteQueryRef(noteQueryRef), [
-    noteQueryRef,
+  useEffect(() => setNoteQueryRef(noteQueryRefRaw), [
+    noteQueryRefRaw,
     setNoteQueryRef,
   ])
-  useEffect(() => setActivityQueryRef(activityQueryRef), [
-    activityQueryRef,
+  useEffect(() => setActivityQueryRef(activityQueryRefRaw), [
+    activityQueryRefRaw,
     setActivityQueryRef,
   ])
-  useEffect(() => setTodoQueryRef(todoQueryRef), [
-    todoQueryRef,
+  useEffect(() => setTodoQueryRef(todoQueryRefRaw), [
+    todoQueryRefRaw,
     setTodoQueryRef,
   ])
+
+  const { goalQueryRef, noteQueryRef, activityQueryRef, todoQueryRef } = props
 
   if (!goalQueryRef || !noteQueryRef || !activityQueryRef || !todoQueryRef) {
     return null
