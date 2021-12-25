@@ -5,23 +5,23 @@ import Month from "./Month"
 import style from "./Calendar.module.css"
 import { cx } from "../../../../lib/reexports"
 
-interface Props<ContextProps> {
+export type BaseContextProps = {
+  setContextOpen(open: boolean): void
+}
+
+interface Props {
   month: Dayjs
   focusedDay: Dayjs
   activeDays: Dayjs[]
   focusDay: (day: Dayjs) => void
   setMonth: (month: number) => void
   className?: string
-  contextMenuItems?: ContextMenuItemComponent<ContextProps>
+  contextMenuItems?: ContextMenuItemComponent
 }
 
-export type ContextMenuItemComponent<ContextProps> = (
-  props: ContextProps
-) => JSX.Element
+export type ContextMenuItemComponent = (props: BaseContextProps) => JSX.Element
 
-export default function Calendar<ContextProps>(
-  props: Props<ContextProps>
-): JSX.Element {
+export default function Calendar(props: Props): JSX.Element {
   const {
     month,
     focusedDay,
@@ -29,12 +29,12 @@ export default function Calendar<ContextProps>(
     setMonth,
     className,
     contextMenuItems,
-    activeDays
+    activeDays,
   } = props
 
   return (
     <div className={cx(style.calendar, className)}>
-      <Month<ContextProps>
+      <Month
         month={month}
         focusedDay={focusedDay}
         setMonth={setMonth}

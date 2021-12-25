@@ -31,7 +31,7 @@ import { nullUuid } from "../../../constants/other"
 import FormRowMarkdown from "../../ui/form/FormRowMarkdown"
 import EditorFormRowMarkdown from "../../mutation/EditorFormRowMarkdown"
 import RequireKey from "../../key/RequireKey"
-import { decryptText, encryptText } from "../../../lib/auth"
+import { decryptText, encryptText } from "../../../lib/key"
 import { useKeyStore } from "../../../stores/key"
 
 interface FormValues {

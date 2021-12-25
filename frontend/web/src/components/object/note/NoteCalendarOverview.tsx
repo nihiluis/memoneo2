@@ -7,7 +7,9 @@ import { DataLoaderContext } from "../../DataLoader"
 import { defaultNoteQuery } from "../../DataLoader.gql"
 import List from "../../list/List"
 import OverviewSimpleWrapper from "../../overview/OverviewSimpleWrapper"
-import Calendar from "../../ui/primitives/calendar/Calendar"
+import Calendar, {
+  BaseContextProps,
+} from "../../ui/primitives/calendar/Calendar"
 import { ContextMenuItem } from "../../ui/primitives/ContextMenu"
 import {
   DataLoaderInnerNoteQuery,
@@ -17,6 +19,11 @@ import {
 import style from "./Overview.module.css"
 import NoteEditor from "./NoteEditor"
 import { DEFAULT_NOTE_CONNECTION } from "../../../constants/connections"
+import {
+  DialogContent,
+  DialogRoot,
+  DialogTrigger,
+} from "../../ui/primitives/Dialog"
 
 interface Props {
   className?: string
@@ -65,45 +72,61 @@ function NoteCalendarOverviewInner(props: Props): JSX.Element {
     setShownItems(items)
   }, [data, focusedDay, showArchived])
 
+  const [addNoteDialogOpen, setAddNoteDialogOpen] = useState(false)
+  function onCloseEditor() {
+    setAddNoteDialogOpen(false)
+  }
+
   return (
     <OverviewSimpleWrapper
       title="Notes"
       showArchived={showArchived}
       setShowArchived={setShowArchived}
       className="mb-10">
-      <Calendar
-        focusedDay={focusedDay}
-        focusDay={setFocusedDay}
-        month={activeMonth}
-        setMonth={month => setActiveMonth(activeMonth.month(month))}
-        className={style.calendar}
-        contextMenuItems={ContextMenuItems}
-        activeDays={activeItemsDate}
-      />
-      <div className="mt-4">
-        <List<Item>
-          items={shownItems}
-          type="note"
-          ItemComponent={NoteListItem}
-          MutateComponent={NoteEditor}
-          connection={DEFAULT_NOTE_CONNECTION}
-          showArchived={showArchived}
+      <DialogRoot open={addNoteDialogOpen} onOpenChange={setAddNoteDialogOpen}>
+        <Calendar
+          focusedDay={focusedDay}
+          focusDay={setFocusedDay}
+          month={activeMonth}
+          setMonth={month => setActiveMonth(activeMonth.month(month))}
+          className={style.calendar}
+          contextMenuItems={DropdownMenuItems}
+          activeDays={activeItemsDate}
         />
-      </div>
+        <div className="mt-4">
+          <List<Item>
+            items={shownItems}
+            type="note"
+            ItemComponent={NoteListItem}
+            MutateComponent={NoteEditor}
+            connection={DEFAULT_NOTE_CONNECTION}
+            showArchived={showArchived}
+          />
+        </div>
+        <DialogContent>
+          <NoteEditor onComplete={onCloseEditor} onCancel={onCloseEditor} />
+        </DialogContent>
+      </DialogRoot>
     </OverviewSimpleWrapper>
   )
 }
 
-function ContextMenuItems<ContextProps>(props: ContextProps) {
+function DropdownMenuItems(props: BaseContextProps) {
   return (
-    <ContextMenuItem onClick={() => {}} className="flex gap-2">
-      <PlusIcon
-        color="var(--icon-color)"
-        width={20}
-        height={20}
-        className="icon-20"
-      />
-      <p>Add note</p>
-    </ContextMenuItem>
+    <React.Fragment>
+      <ContextMenuItem interactive className="flex gap-2">
+        <DialogTrigger
+          onClick={event => event.stopPropagation()}
+          className="flex gap-2 w-full items-center">
+          <PlusIcon
+            color="var(--icon-color)"
+            width={20}
+            height={20}
+            className="icon-20"
+          />
+          <p>Add note</p>
+        </DialogTrigger>
+      </ContextMenuItem>
+    </React.Fragment>
   )
 }

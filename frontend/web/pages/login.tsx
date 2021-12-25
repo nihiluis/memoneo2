@@ -50,17 +50,28 @@ function LoginForm(): JSX.Element {
 
     setLoginLoading(true)
 
-    setKey({ password })
-    // warning: I think userId is always null here
-    const { success, token, error, userId } = await login(mail, password)
+    const { success, token, enckey, error, userId } = await login(
+      mail,
+      password
+    )
 
     setLoginLoading(false)
     setLoginError(error)
     if (token) {
       setSessionToken(token)
     }
-    
+
     authContext!.setAuth({ authenticated: success, token, error, userId })
+
+    if (!enckey) {
+      setKey({ password })
+    } else {
+      setKey({
+        protectedKey: window.atob(enckey.key),
+        salt: window.atob(enckey.salt),
+        password,
+      })
+    }
   }
 
   return (

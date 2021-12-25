@@ -9,7 +9,7 @@ import style from "./Calendar.module.css"
 import { SeparatorHorizontal } from "../../Separator"
 import { ContextMenuItemComponent } from "./Calendar"
 
-interface Props<ContextProps> {
+interface Props {
   month: Dayjs
   onPress?: () => void
   showWeekdays?: boolean
@@ -18,14 +18,12 @@ interface Props<ContextProps> {
   activeDays: Dayjs[]
   focusDay: (day: Dayjs) => void
   setMonth: (month: number) => void
-  contextMenuItems?: ContextMenuItemComponent<ContextProps>
+  contextMenuItems?: ContextMenuItemComponent
 }
 
 type ActiveDayTypeMap = { [id: string]: boolean }
 
-export default function Month<ContextProps>(
-  props: Props<ContextProps>
-): JSX.Element {
+export default function Month(props: Props): JSX.Element {
   const {
     month,
     firstDayMonday = true,
@@ -117,7 +115,7 @@ export default function Month<ContextProps>(
                 month={month}
                 onClick={() => {
                   if (!day.date.isSame(month, "month")) return
-                  
+
                   focusDay(day.date)
                 }}
                 isInactive={!day.date.isSame(month, "month")}

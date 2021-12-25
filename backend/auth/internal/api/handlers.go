@@ -74,6 +74,7 @@ func (api *API) AddHandlers(s *archhttp.EchoServer) {
 	s.Echo.GET("/publickey", api.getAuthPublicKey)
 	s.Echo.POST("/login", api.login)
 	s.Echo.POST("/register", api.register)
+	s.Echo.GET("/logout", api.logout)
 	authGroup.GET("", api.checkAuth)
 
 	enckeyGroup := s.Echo.Group("/enckey")
@@ -107,7 +108,39 @@ func (api *API) login(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Unknown user and password combination or auth backend is down."})
 	}
 
-	return c.JSON(http.StatusOK, echo.Map{"token": token})
+	authUser, err := api.auth.GetUserByMail(mail)
+
+	dataUser, err := api.users.GetDataUserByAuthID(authUser.ID)
+	if err != nil {
+		return err
+	}
+
+	enckey, err := api.enckeys.GetEnckey(dataUser.ID)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Unable to retrieve user data."})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{
+		"token":      token,
+		"enckey":     enckey,
+		"userId":     dataUser.ID,
+		"authUserId": authUser.ID,
+	})
+}
+
+func (api *API) logout(c echo.Context) error {
+	cookie := new(http.Cookie)
+	cookie.Name = "token"
+	cookie.Value = ""
+	cookie.Path = "/"
+	cookie.Domain = api.authConfig.AuthCookieDomain
+	cookie.Expires = time.Unix(0, 0)
+	cookie.Secure = true
+	cookie.HttpOnly = true
+
+	c.SetCookie(cookie)
+
+	return c.JSON(http.StatusOK, echo.Map{})
 }
 
 func (api *API) performLogin(c echo.Context, mail string, password string) (string, error) {
@@ -119,6 +152,7 @@ func (api *API) performLogin(c echo.Context, mail string, password string) (stri
 	cookie := new(http.Cookie)
 	cookie.Name = "token"
 	cookie.Value = token
+	cookie.Path = "/"
 	cookie.Domain = api.authConfig.AuthCookieDomain
 	cookie.Expires = time.Now().Add(24 * time.Hour)
 	cookie.Secure = true
@@ -168,7 +202,7 @@ func (api *API) register(c echo.Context) error {
 
 	token, err := api.performLogin(c, user.Mail, body.Password)
 
-	return c.JSON(http.StatusOK, echo.Map{"token": token, "user": user})
+	return c.JSON(http.StatusOK, echo.Map{"token": token, "user": user, "userId": user.ID})
 }
 
 func (api *API) checkAuth(c echo.Context) error {

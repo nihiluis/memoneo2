@@ -18,6 +18,12 @@ import { useRouter } from "next/router"
 import IconButton from "../icon/IconButton"
 import MiniAvatar from "../avatar/MiniAvatar"
 import MiniSearch from "../search/MiniSearch"
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+} from "../menu/DropdownMenu"
 
 interface Props {
   showSidebarLeft: boolean
@@ -32,6 +38,10 @@ export default function GridLayout(props: React.PropsWithChildren<Props>) {
   const { showSidebarLeft, setShowSidebarLeft } = props
 
   const router = useRouter()
+
+  function logout() {
+    router.push("logout")
+  }
 
   return (
     <div>
@@ -70,7 +80,16 @@ export default function GridLayout(props: React.PropsWithChildren<Props>) {
             <IconButton>
               <GearIcon color="var(--icon-color)" width={24} height={24} />
             </IconButton>
-            <MiniAvatar />
+            <DropdownMenuRoot>
+              <DropdownMenuTrigger>
+                <MiniAvatar />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem>
+                  <a onClick={logout}>Logout</a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenuRoot>
           </div>
         </header>
         <Sidebar

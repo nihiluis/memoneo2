@@ -7,15 +7,20 @@ import { cx } from "../../../lib/reexports"
 export const ContextMenu = ContextMenuPrimitive.Root
 export const ContextMenuTrigger = ContextMenuPrimitive.Trigger
 
+interface OwnItemProps {
+  interactive?: boolean
+}
+
 export function ContextMenuItem({
   className,
+  interactive,
   ...props
-}: ContextMenuPrimitive.ContextMenuItemProps) {
+}: ContextMenuPrimitive.ContextMenuItemProps & OwnItemProps) {
   return (
     <ContextMenuPrimitive.Item
       className={cx(
         style.item,
-        { [style.itemInteractive]: !!props.onClick },
+        { [style.itemInteractive]: !!props.onClick || interactive },
         className
       )}
       {...props}

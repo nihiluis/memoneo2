@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Dayjs } from "dayjs"
 import { DayType } from "../../../../lib/month"
 import Label from "../Label"
@@ -10,21 +10,19 @@ import {
   ContextMenuContent,
   ContextMenuTrigger,
 } from "../ContextMenu"
-import { ContextMenuItemComponent } from "./Calendar"
+import { BaseContextProps, ContextMenuItemComponent } from "./Calendar"
 
-interface Props<ContextProps> {
+interface Props {
   day: DayType
   month: Dayjs
   isFocused: boolean
   isActive: boolean
   isInactive: boolean
   onClick?: () => void
-  contextMenuItems?: ContextMenuItemComponent<ContextProps>
+  contextMenuItems?: ContextMenuItemComponent
 }
 
-export default function Day<ContextProps>(
-  props: Props<ContextProps>
-): JSX.Element {
+export default function Day(props: Props): JSX.Element {
   const { day, month, contextMenuItems } = props
 
   const isSameMonth = day.date.month() === month.month()
@@ -37,7 +35,7 @@ export default function Day<ContextProps>(
   )
 }
 
-function DayInnerNoContext(props: Props<any>): JSX.Element {
+function DayInnerNoContext(props: Props): JSX.Element {
   const { day, onClick, isFocused, isActive, isInactive } = props
 
   return (
@@ -45,7 +43,7 @@ function DayInnerNoContext(props: Props<any>): JSX.Element {
       className={cx(style.dayInner, {
         [style.dayInnerFocused]: isFocused,
         [style.dayInnerActive]: !isFocused && isActive,
-        [style.dayInnerInactive]: isInactive
+        [style.dayInnerInactive]: isInactive,
       })}
       onClick={onClick}>
       <Label className="text-sm text-center">{day.date.format("D")}</Label>
@@ -53,18 +51,18 @@ function DayInnerNoContext(props: Props<any>): JSX.Element {
   )
 }
 
-function DayInnerContext<ContextProps>(
-  props: Props<ContextProps>
-): JSX.Element {
+function DayInnerContext(props: Props): JSX.Element {
   const ItemComponent = props.contextMenuItems
 
+  const [contextOpen, setContextOpen] = useState(false)
+
   return (
-    <ContextMenu>
+    <ContextMenu onOpenChange={setContextOpen}>
       <ContextMenuTrigger>
         <DayInnerNoContext {...props} />
       </ContextMenuTrigger>
       <ContextMenuContent>
-        <ItemComponent {...({} as ContextProps)} />
+        <ItemComponent {...({ setContextOpen } as BaseContextProps)} />
       </ContextMenuContent>
     </ContextMenu>
   )

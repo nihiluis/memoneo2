@@ -8,12 +8,7 @@ import React, {
 import { useRouter } from "next/router"
 import Head from "next/head"
 
-import {
-  checkAuth,
-  createNewKey,
-  decryptProtectedKey,
-  setSessionToken,
-} from "../lib/auth"
+import { checkAuth, setSessionToken } from "../lib/auth"
 import Loading from "./Loading"
 import { useKeyStore } from "../stores/key"
 
@@ -46,19 +41,15 @@ export default function Auth(props: PropsWithChildren<Props>) {
   const [authLoading, setAuthLoading] = useState<boolean>(false)
   const [initialized, setInitialized] = useState<boolean>(false)
 
-  const password = useKeyStore(state => state.password)
-  const protectedKey = useKeyStore(state => state.protectedKey)
-  const salt = useKeyStore(state => state.salt)
-
   const setKeyData = useKeyStore(state => state.set)
 
   const cancelled = useRef(false)
 
   useEffect(() => {
-    console.log("doing initial auth with token " + initialToken)
-
     const fetchData = async () => {
       if (!auth.authenticated) {
+        console.log(`doing initial auth with token ${initialToken}`)
+
         setAuthLoading(true)
 
         const { success, token, enckey, userId, error } = await checkAuth(
@@ -70,9 +61,8 @@ export default function Auth(props: PropsWithChildren<Props>) {
             protectedKey: window.atob(enckey.key),
             salt: window.atob(enckey.salt),
           })
-        } else {
-          console.log("enckey not found in checkAuth")
         }
+
         if (!cancelled.current) {
           setAuthLoading(false)
           setSessionToken(token)

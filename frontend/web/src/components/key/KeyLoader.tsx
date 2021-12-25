@@ -1,20 +1,7 @@
-import React, {
-  useState,
-  useEffect,
-  PropsWithChildren,
-  useContext,
-  useRef,
-} from "react"
+import React, { useEffect, PropsWithChildren, useRef } from "react"
 import { useRouter } from "next/router"
-import Head from "next/head"
 
-import {
-  checkAuth,
-  createNewKey,
-  decryptProtectedKey,
-  setSessionToken,
-} from "../../lib/auth"
-import Loading from "../Loading"
+import { createNewKey, decryptProtectedKey } from "../../lib/key"
 import { useKeyStore } from "../../stores/key"
 import {
   DialogContent,
@@ -47,10 +34,9 @@ export default function KeyLoader(props: PropsWithChildren<Props>) {
 
   useEffect(() => {
     const loadKey = async () => {
-      if (password) {
+      if (!key && password) {
         if (!protectedKey) {
-          // generate key to use for encryption
-          console.log("creating new key")
+          console.debug("creating new key")
           const { key, salt, error } = await createNewKey(password)
 
           if (error) {
@@ -75,7 +61,6 @@ export default function KeyLoader(props: PropsWithChildren<Props>) {
 
   function onSubmitPassword(values: FormValues) {
     // password should be validated. TODO
-    console.log("setting passwrod to " + values.password)
     setKeyData({ password: values.password })
   }
 
