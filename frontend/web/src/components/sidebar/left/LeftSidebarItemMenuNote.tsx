@@ -2,7 +2,7 @@ import { ArchiveIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons"
 import React, { Suspense, useCallback, useEffect, useRef } from "react"
 import { useMutation } from "react-relay"
 import { PayloadError } from "relay-runtime"
-import { DEFAULT_GOAL_CONNECTION } from "../../../constants/connections"
+import { DEFAULT_NOTE_CONNECTION } from "../../../constants/connections"
 import { getIdFromNodeId } from "../../../lib/hasura"
 import deleteInConnection from "../../../relay/deleteInConnection"
 import { getRootConnectionIds } from "../../../relay/getConnection"
@@ -60,7 +60,7 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
   )
 
   const defaultNoteFilters = useFilterStore(state =>
-    state.getFilters(DEFAULT_GOAL_CONNECTION)
+    state.getFilters(DEFAULT_NOTE_CONNECTION)
   )
 
   const onDelete = useCallback(() => {
@@ -69,7 +69,7 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
     const variables: any = {
       id: getIdFromNodeId(item.id),
       connections: [
-        ...getRootConnectionIds(DEFAULT_GOAL_CONNECTION, defaultNoteFilters),
+        ...getRootConnectionIds(DEFAULT_NOTE_CONNECTION, defaultNoteFilters),
       ],
     }
 
@@ -89,7 +89,7 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
         updater: store => {
           deleteInConnection(
             store,
-            DEFAULT_GOAL_CONNECTION,
+            DEFAULT_NOTE_CONNECTION,
             defaultNoteFilters[0],
             item.id
           )
@@ -107,7 +107,7 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
       id: getIdFromNodeId(item.id),
       archived: !item.archived,
       connections: [
-        ...getRootConnectionIds(DEFAULT_GOAL_CONNECTION, defaultNoteFilters),
+        ...getRootConnectionIds(DEFAULT_NOTE_CONNECTION, defaultNoteFilters),
       ],
     }
 
