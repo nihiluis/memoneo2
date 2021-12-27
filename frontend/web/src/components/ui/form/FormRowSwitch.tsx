@@ -1,6 +1,7 @@
 import React from "react"
 import { FormikProps } from "formik"
 import { Switch } from "../primitives/Switch"
+import FormRowWrapper from "./FormRowWrapper"
 
 interface Props<T> extends FormikProps<T> {
   label: string
@@ -9,18 +10,14 @@ interface Props<T> extends FormikProps<T> {
 }
 
 export default function FormRowSwitch<T>(props: Props<T>) {
-  const {
-    label,
-    name,
-    setFieldValue,
-    values,
-    innerClassName = "",
-  } = props
+  const { label, name, setFieldValue, values, innerClassName = "" } = props
 
   return (
-    <div className="form-row">
-      <label className="form-label">{label}</label>
-      <Switch checked={values[name]} onCheckedChange={() => setFieldValue(name, !values[name])} />
-    </div>
+    <FormRowWrapper {...props}>
+      <Switch
+        checked={values[name]}
+        onCheckedChange={() => setFieldValue(name, !values[name])}
+      />
+    </FormRowWrapper>
   )
 }

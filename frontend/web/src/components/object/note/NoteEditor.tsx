@@ -14,7 +14,7 @@ import EditorFormWrapper from "../../mutation/EditorFormWrapper"
 import getMutationConfig from "../../mutation/getMutationConfig"
 import EditorHeader from "../../mutation/EditorHeader"
 import EditorFormRowText from "../../mutation/EditorFormRowText"
-import EditorFormRowTextarea from "../../mutation/EditorFormRowTextarea"
+import EditorFormRowSelect from "../../mutation/EditorFormRowSelect"
 import {
   NoteEditorMutation,
   NoteEditorMutationVariables,
@@ -25,20 +25,21 @@ import {
   NoteEditorDataQuery,
   NoteEditorDataQueryResponse,
 } from "./__generated__/NoteEditorDataQuery.graphql"
-import { noteFragment } from "./NoteFragment.gql"
+import { noteFragment, NoteRef } from "./NoteFragment.gql"
 import { NoteFragment$key } from "./__generated__/NoteFragment.graphql"
 import { nullUuid } from "../../../constants/other"
-import FormRowMarkdown from "../../ui/form/FormRowMarkdown"
 import EditorFormRowMarkdown from "../../mutation/EditorFormRowMarkdown"
 import RequireKey from "../../key/RequireKey"
 import { decryptText, encryptText } from "../../../lib/key"
 import { useKeyStore } from "../../../stores/key"
+import NoteEditorGoals from "./NoteEditorGoals"
 
 interface FormValues {
   title: string
   body: string
   pinned: boolean
   date?: string
+  goals: string[]
 }
 
 const FormSchema = Yup.object().shape({
@@ -95,8 +96,6 @@ function NoteEditorLoader(props: Props): JSX.Element {
   )
 }
 
-type NoteRef = NoteEditorDataQueryResponse["note_connection"]["edges"][0]["node"]
-
 interface InnerProps {
   noteId?: string
   noteRef?: NoteRef
@@ -124,6 +123,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
 
   const [commit, _] = useMutation<NoteEditorMutation>(mutation)
   const note = useFragment<NoteFragment$key>(noteFragment, noteRef)
+  const goalRefs = note?.note_goal_connection.edges.map(edge => edge.node) ?? []
 
   useEffect(() => {
     async function load() {
@@ -183,6 +183,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
               body: decryptedBody,
               pinned: note?.pinned ?? false,
               date: (note?.date as string) ?? dayjs().format("YYYY-MM-DD"),
+              goals: [],
             }}
             validationSchema={FormSchema}
             onSubmit={submit}>
@@ -213,6 +214,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
                   label="Body"
                 />
                 <EditorSwitch {...formikProps} name="pinned" label="Pin" />
+                <NoteEditorGoals {...formikProps} noteGoals={goalRefs} />
               </EditorFormWrapper>
             )}
           </Formik>

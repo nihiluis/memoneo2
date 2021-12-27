@@ -5,6 +5,7 @@ if (typeof window !== "undefined") {
   require("codemirror/mode/markdown/markdown")
 }
 import { cx } from "../../../lib/reexports"
+import FormRowWrapper from "./FormRowWrapper"
 
 interface Props<T> extends FormikProps<T> {
   label: string
@@ -25,8 +26,7 @@ export default function FormRowMarkdown<T>(props: Props<T>) {
   } = props
 
   return (
-    <div className="form-row">
-      <label className="form-label">{label}</label>
+    <FormRowWrapper {...props}>
       <CodeMirror
         className={cx("p-2 rounded w-full", innerClassName)}
         value={values[name]}
@@ -36,9 +36,6 @@ export default function FormRowMarkdown<T>(props: Props<T>) {
         onBeforeChange={(editor, data, value) => setFieldValue(name, value)}
         onBlur={() => setFieldTouched(name, true)}
       />
-      {errors[name] && touched[name] && (
-        <p className="text-error">{errors[name]}</p>
-      )}
-    </div>
+      </FormRowWrapper>
   )
 }

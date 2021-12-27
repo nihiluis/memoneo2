@@ -1,6 +1,7 @@
 import React from "react"
 import { FormikProps } from "formik"
 import { cx } from "../../../lib/reexports"
+import FormRowWrapper from "./FormRowWrapper"
 
 interface Props<T> extends FormikProps<T> {
   label: string
@@ -25,8 +26,7 @@ export default function FormRowInput<T>(props: Props<T>) {
   } = props
 
   return (
-    <div className="form-row" style={style}>
-      <label className="form-label">{label}</label>
+    <FormRowWrapper {...props}>
       <input
         className={cx("form-input", innerClassName)}
         type={type}
@@ -35,9 +35,6 @@ export default function FormRowInput<T>(props: Props<T>) {
         onBlur={handleBlur}
         value={values[name]}
       />
-      {errors[name] && touched[name] && (
-        <p className="text-error">{errors[name]}</p>
-      )}
-    </div>
+    </FormRowWrapper>
   )
 }

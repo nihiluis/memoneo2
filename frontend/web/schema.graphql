@@ -201,6 +201,117 @@ input date_comparison_exp {
   _nin: [date!]
 }
 
+# columns and relationships of "enckey"
+type enckey implements Node {
+  created_at: timestamptz!
+  id: ID!
+  key: String!
+  salt: String!
+}
+
+# Boolean expression to filter rows from the table "enckey". All fields are combined with a logical 'AND'.
+input enckey_bool_exp {
+  _and: [enckey_bool_exp!]
+  _not: enckey_bool_exp
+  _or: [enckey_bool_exp!]
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  key: String_comparison_exp
+  salt: String_comparison_exp
+}
+
+# unique or primary key constraints on table "enckey"
+enum enckey_constraint {
+  # unique or primary key constraint
+  keypair_pkey
+}
+
+# input type for inserting data into table "enckey"
+input enckey_insert_input {
+  created_at: timestamptz
+  id: uuid
+  key: String
+  salt: String
+}
+
+# response of any mutation on the table "enckey"
+type enckey_mutation_response {
+  # number of rows affected by the mutation
+  affected_rows: Int!
+
+  # data from the rows affected by the mutation
+  returning: [enckey!]!
+}
+
+# on conflict condition type for table "enckey"
+input enckey_on_conflict {
+  constraint: enckey_constraint!
+  update_columns: [enckey_update_column!]! = []
+  where: enckey_bool_exp
+}
+
+# Ordering options when selecting data from "enckey".
+input enckey_order_by {
+  created_at: order_by
+  id: order_by
+  key: order_by
+  salt: order_by
+}
+
+# primary key columns input for table: enckey
+input enckey_pk_columns_input {
+  id: uuid!
+}
+
+# select columns of table "enckey"
+enum enckey_select_column {
+  # column name
+  created_at
+
+  # column name
+  id
+
+  # column name
+  key
+
+  # column name
+  salt
+}
+
+# input type for updating data in table "enckey"
+input enckey_set_input {
+  created_at: timestamptz
+  id: uuid
+  key: String
+  salt: String
+}
+
+# update columns of table "enckey"
+enum enckey_update_column {
+  # column name
+  created_at
+
+  # column name
+  id
+
+  # column name
+  key
+
+  # column name
+  salt
+}
+
+# A Relay connection object on "enckey"
+type enckeyConnection {
+  edges: [enckeyEdge!]!
+  pageInfo: PageInfo!
+}
+
+type enckeyEdge {
+  cursor: String!
+  node: enckey!
+}
+
 # columns and relationships of "goal"
 type goal implements Node {
   archived: Boolean!
@@ -369,6 +480,14 @@ type goal_mutation_response {
 
   # data from the rows affected by the mutation
   returning: [goal!]!
+}
+
+# input type for inserting object relation for remote table "goal"
+input goal_obj_rel_insert_input {
+  data: goal_insert_input!
+
+  # on conflict condition
+  on_conflict: goal_on_conflict
 }
 
 # on conflict condition type for table "goal"
@@ -908,6 +1027,15 @@ type mutation_root {
   # delete single row from the table: "activity"
   delete_activity_by_pk(id: uuid!): activity
 
+  # delete data from the table: "enckey"
+  delete_enckey(
+    # filter the rows which have to be deleted
+    where: enckey_bool_exp!
+  ): enckey_mutation_response
+
+  # delete single row from the table: "enckey"
+  delete_enckey_by_pk(id: uuid!): enckey
+
   # delete data from the table: "goal"
   delete_goal(
     # filter the rows which have to be deleted
@@ -934,6 +1062,15 @@ type mutation_root {
 
   # delete single row from the table: "note"
   delete_note_by_pk(id: uuid!): note
+
+  # delete data from the table: "note_goal"
+  delete_note_goal(
+    # filter the rows which have to be deleted
+    where: note_goal_bool_exp!
+  ): note_goal_mutation_response
+
+  # delete single row from the table: "note_goal"
+  delete_note_goal_by_pk(goal_id: uuid!, note_id: uuid!): note_goal
 
   # delete data from the table: "status_simple"
   delete_status_simple(
@@ -970,6 +1107,24 @@ type mutation_root {
     # on conflict condition
     on_conflict: activity_on_conflict
   ): activity
+
+  # insert data into the table: "enckey"
+  insert_enckey(
+    # the rows to be inserted
+    objects: [enckey_insert_input!]!
+
+    # on conflict condition
+    on_conflict: enckey_on_conflict
+  ): enckey_mutation_response
+
+  # insert a single row into the table: "enckey"
+  insert_enckey_one(
+    # the row to be inserted
+    object: enckey_insert_input!
+
+    # on conflict condition
+    on_conflict: enckey_on_conflict
+  ): enckey
 
   # insert data into the table: "goal"
   insert_goal(
@@ -1015,6 +1170,24 @@ type mutation_root {
     # on conflict condition
     on_conflict: note_on_conflict
   ): note_mutation_response
+
+  # insert data into the table: "note_goal"
+  insert_note_goal(
+    # the rows to be inserted
+    objects: [note_goal_insert_input!]!
+
+    # on conflict condition
+    on_conflict: note_goal_on_conflict
+  ): note_goal_mutation_response
+
+  # insert a single row into the table: "note_goal"
+  insert_note_goal_one(
+    # the row to be inserted
+    object: note_goal_insert_input!
+
+    # on conflict condition
+    on_conflict: note_goal_on_conflict
+  ): note_goal
 
   # insert a single row into the table: "note"
   insert_note_one(
@@ -1083,6 +1256,22 @@ type mutation_root {
     pk_columns: activity_pk_columns_input!
   ): activity
 
+  # update data of the table: "enckey"
+  update_enckey(
+    # sets the columns of the filtered rows to the given values
+    _set: enckey_set_input
+
+    # filter the rows which have to be updated
+    where: enckey_bool_exp!
+  ): enckey_mutation_response
+
+  # update single row of the table: "enckey"
+  update_enckey_by_pk(
+    # sets the columns of the filtered rows to the given values
+    _set: enckey_set_input
+    pk_columns: enckey_pk_columns_input!
+  ): enckey
+
   # update data of the table: "goal"
   update_goal(
     # increments the numeric columns with given value of the filtered values
@@ -1143,6 +1332,22 @@ type mutation_root {
     pk_columns: note_pk_columns_input!
   ): note
 
+  # update data of the table: "note_goal"
+  update_note_goal(
+    # sets the columns of the filtered rows to the given values
+    _set: note_goal_set_input
+
+    # filter the rows which have to be updated
+    where: note_goal_bool_exp!
+  ): note_goal_mutation_response
+
+  # update single row of the table: "note_goal"
+  update_note_goal_by_pk(
+    # sets the columns of the filtered rows to the given values
+    _set: note_goal_set_input
+    pk_columns: note_goal_pk_columns_input!
+  ): note_goal
+
   # update data of the table: "status_simple"
   update_status_simple(
     # sets the columns of the filtered rows to the given values
@@ -1194,7 +1399,96 @@ type note implements Node {
   body: String!
   created_at: timestamptz!
   date: date!
+
+  # An array relationship
+  goals(
+    # distinct select on columns
+    distinct_on: [note_goal_view_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [note_goal_view_order_by!]
+
+    # filter the rows returned
+    where: note_goal_view_bool_exp
+  ): [note_goal_view!]!
+
+  # An aggregate relationship
+  goals_aggregate(
+    # distinct select on columns
+    distinct_on: [note_goal_view_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [note_goal_view_order_by!]
+
+    # filter the rows returned
+    where: note_goal_view_bool_exp
+  ): note_goal_view_aggregate!
   id: ID!
+
+  # An array relationship
+  note_goal(
+    # distinct select on columns
+    distinct_on: [note_goal_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [note_goal_order_by!]
+
+    # filter the rows returned
+    where: note_goal_bool_exp
+  ): [note_goal!]!
+
+  # An aggregate relationship
+  note_goal_aggregate(
+    # distinct select on columns
+    distinct_on: [note_goal_select_column!]
+
+    # limit the number of rows returned
+    limit: Int
+
+    # skip the first n rows. Use only with order_by
+    offset: Int
+
+    # sort the rows by one or more columns
+    order_by: [note_goal_order_by!]
+
+    # filter the rows returned
+    where: note_goal_bool_exp
+  ): note_goal_aggregate!
+
+  # An array relationship connection
+  note_goal_connection(
+    after: String
+    before: String
+
+    # distinct select on columns
+    distinct_on: [note_goal_select_column!]
+    first: Int
+    last: Int
+
+    # sort the rows by one or more columns
+    order_by: [note_goal_order_by!]
+
+    # filter the rows returned
+    where: note_goal_bool_exp
+  ): note_goalConnection!
   pinned: Boolean!
   title: String!
   updated_at: timestamptz
@@ -1238,7 +1532,9 @@ input note_bool_exp {
   body: String_comparison_exp
   created_at: timestamptz_comparison_exp
   date: date_comparison_exp
+  goals: note_goal_view_bool_exp
   id: uuid_comparison_exp
+  note_goal: note_goal_bool_exp
   pinned: Boolean_comparison_exp
   title: String_comparison_exp
   updated_at: timestamptz_comparison_exp
@@ -1251,13 +1547,460 @@ enum note_constraint {
   note_pkey
 }
 
+# columns and relationships of "note_goal"
+type note_goal implements Node {
+  # An object relationship
+  goal: goal!
+  goal_id: uuid!
+  id: ID!
+
+  # An object relationship
+  note: note!
+  note_id: uuid!
+}
+
+# aggregated selection of "note_goal"
+type note_goal_aggregate {
+  aggregate: note_goal_aggregate_fields
+  nodes: [note_goal!]!
+}
+
+# aggregate fields of "note_goal"
+type note_goal_aggregate_fields {
+  count(columns: [note_goal_select_column!], distinct: Boolean): Int!
+  max: note_goal_max_fields
+  min: note_goal_min_fields
+}
+
+# order by aggregate values of table "note_goal"
+input note_goal_aggregate_order_by {
+  count: order_by
+  max: note_goal_max_order_by
+  min: note_goal_min_order_by
+}
+
+# input type for inserting array relation for remote table "note_goal"
+input note_goal_arr_rel_insert_input {
+  data: [note_goal_insert_input!]!
+
+  # on conflict condition
+  on_conflict: note_goal_on_conflict
+}
+
+# Boolean expression to filter rows from the table "note_goal". All fields are combined with a logical 'AND'.
+input note_goal_bool_exp {
+  _and: [note_goal_bool_exp!]
+  _not: note_goal_bool_exp
+  _or: [note_goal_bool_exp!]
+  goal: goal_bool_exp
+  goal_id: uuid_comparison_exp
+  note: note_bool_exp
+  note_id: uuid_comparison_exp
+}
+
+# unique or primary key constraints on table "note_goal"
+enum note_goal_constraint {
+  # unique or primary key constraint
+  note_activity_pkey
+}
+
+# input type for inserting data into table "note_goal"
+input note_goal_insert_input {
+  goal: goal_obj_rel_insert_input
+  goal_id: uuid
+  note: note_obj_rel_insert_input
+  note_id: uuid
+}
+
+# aggregate max on columns
+type note_goal_max_fields {
+  goal_id: uuid
+  note_id: uuid
+}
+
+# order by max() on columns of table "note_goal"
+input note_goal_max_order_by {
+  goal_id: order_by
+  note_id: order_by
+}
+
+# aggregate min on columns
+type note_goal_min_fields {
+  goal_id: uuid
+  note_id: uuid
+}
+
+# order by min() on columns of table "note_goal"
+input note_goal_min_order_by {
+  goal_id: order_by
+  note_id: order_by
+}
+
+# response of any mutation on the table "note_goal"
+type note_goal_mutation_response {
+  # number of rows affected by the mutation
+  affected_rows: Int!
+
+  # data from the rows affected by the mutation
+  returning: [note_goal!]!
+}
+
+# on conflict condition type for table "note_goal"
+input note_goal_on_conflict {
+  constraint: note_goal_constraint!
+  update_columns: [note_goal_update_column!]! = []
+  where: note_goal_bool_exp
+}
+
+# Ordering options when selecting data from "note_goal".
+input note_goal_order_by {
+  goal: goal_order_by
+  goal_id: order_by
+  note: note_order_by
+  note_id: order_by
+}
+
+# primary key columns input for table: note_goal
+input note_goal_pk_columns_input {
+  goal_id: uuid!
+  note_id: uuid!
+}
+
+# select columns of table "note_goal"
+enum note_goal_select_column {
+  # column name
+  goal_id
+
+  # column name
+  note_id
+}
+
+# input type for updating data in table "note_goal"
+input note_goal_set_input {
+  goal_id: uuid
+  note_id: uuid
+}
+
+# update columns of table "note_goal"
+enum note_goal_update_column {
+  # column name
+  goal_id
+
+  # column name
+  note_id
+}
+
+# columns and relationships of "note_goal_view"
+type note_goal_view {
+  archived: Boolean
+  created_at: timestamptz
+  description: String
+  note_id: uuid
+  progress: Int
+  rank: Int
+  status: String
+  title: String
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+# aggregated selection of "note_goal_view"
+type note_goal_view_aggregate {
+  aggregate: note_goal_view_aggregate_fields
+  nodes: [note_goal_view!]!
+}
+
+# aggregate fields of "note_goal_view"
+type note_goal_view_aggregate_fields {
+  avg: note_goal_view_avg_fields
+  count(columns: [note_goal_view_select_column!], distinct: Boolean): Int!
+  max: note_goal_view_max_fields
+  min: note_goal_view_min_fields
+  stddev: note_goal_view_stddev_fields
+  stddev_pop: note_goal_view_stddev_pop_fields
+  stddev_samp: note_goal_view_stddev_samp_fields
+  sum: note_goal_view_sum_fields
+  var_pop: note_goal_view_var_pop_fields
+  var_samp: note_goal_view_var_samp_fields
+  variance: note_goal_view_variance_fields
+}
+
+# order by aggregate values of table "note_goal_view"
+input note_goal_view_aggregate_order_by {
+  avg: note_goal_view_avg_order_by
+  count: order_by
+  max: note_goal_view_max_order_by
+  min: note_goal_view_min_order_by
+  stddev: note_goal_view_stddev_order_by
+  stddev_pop: note_goal_view_stddev_pop_order_by
+  stddev_samp: note_goal_view_stddev_samp_order_by
+  sum: note_goal_view_sum_order_by
+  var_pop: note_goal_view_var_pop_order_by
+  var_samp: note_goal_view_var_samp_order_by
+  variance: note_goal_view_variance_order_by
+}
+
+# input type for inserting array relation for remote table "note_goal_view"
+input note_goal_view_arr_rel_insert_input {
+  data: [note_goal_view_insert_input!]!
+}
+
+# aggregate avg on columns
+type note_goal_view_avg_fields {
+  progress: Float
+  rank: Float
+}
+
+# order by avg() on columns of table "note_goal_view"
+input note_goal_view_avg_order_by {
+  progress: order_by
+  rank: order_by
+}
+
+# Boolean expression to filter rows from the table "note_goal_view". All fields are combined with a logical 'AND'.
+input note_goal_view_bool_exp {
+  _and: [note_goal_view_bool_exp!]
+  _not: note_goal_view_bool_exp
+  _or: [note_goal_view_bool_exp!]
+  archived: Boolean_comparison_exp
+  created_at: timestamptz_comparison_exp
+  description: String_comparison_exp
+  id: uuid_comparison_exp
+  note_id: uuid_comparison_exp
+  progress: Int_comparison_exp
+  rank: Int_comparison_exp
+  status: String_comparison_exp
+  title: String_comparison_exp
+  updated_at: timestamptz_comparison_exp
+  user_id: uuid_comparison_exp
+}
+
+# input type for inserting data into table "note_goal_view"
+input note_goal_view_insert_input {
+  archived: Boolean
+  created_at: timestamptz
+  description: String
+  id: uuid
+  note_id: uuid
+  progress: Int
+  rank: Int
+  status: String
+  title: String
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+# aggregate max on columns
+type note_goal_view_max_fields {
+  created_at: timestamptz
+  description: String
+  id: uuid
+  note_id: uuid
+  progress: Int
+  rank: Int
+  status: String
+  title: String
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+# order by max() on columns of table "note_goal_view"
+input note_goal_view_max_order_by {
+  created_at: order_by
+  description: order_by
+  id: order_by
+  note_id: order_by
+  progress: order_by
+  rank: order_by
+  status: order_by
+  title: order_by
+  updated_at: order_by
+  user_id: order_by
+}
+
+# aggregate min on columns
+type note_goal_view_min_fields {
+  created_at: timestamptz
+  description: String
+  id: uuid
+  note_id: uuid
+  progress: Int
+  rank: Int
+  status: String
+  title: String
+  updated_at: timestamptz
+  user_id: uuid
+}
+
+# order by min() on columns of table "note_goal_view"
+input note_goal_view_min_order_by {
+  created_at: order_by
+  description: order_by
+  id: order_by
+  note_id: order_by
+  progress: order_by
+  rank: order_by
+  status: order_by
+  title: order_by
+  updated_at: order_by
+  user_id: order_by
+}
+
+# Ordering options when selecting data from "note_goal_view".
+input note_goal_view_order_by {
+  archived: order_by
+  created_at: order_by
+  description: order_by
+  id: order_by
+  note_id: order_by
+  progress: order_by
+  rank: order_by
+  status: order_by
+  title: order_by
+  updated_at: order_by
+  user_id: order_by
+}
+
+# select columns of table "note_goal_view"
+enum note_goal_view_select_column {
+  # column name
+  archived
+
+  # column name
+  created_at
+
+  # column name
+  description
+
+  # column name
+  id
+
+  # column name
+  note_id
+
+  # column name
+  progress
+
+  # column name
+  rank
+
+  # column name
+  status
+
+  # column name
+  title
+
+  # column name
+  updated_at
+
+  # column name
+  user_id
+}
+
+# aggregate stddev on columns
+type note_goal_view_stddev_fields {
+  progress: Float
+  rank: Float
+}
+
+# order by stddev() on columns of table "note_goal_view"
+input note_goal_view_stddev_order_by {
+  progress: order_by
+  rank: order_by
+}
+
+# aggregate stddev_pop on columns
+type note_goal_view_stddev_pop_fields {
+  progress: Float
+  rank: Float
+}
+
+# order by stddev_pop() on columns of table "note_goal_view"
+input note_goal_view_stddev_pop_order_by {
+  progress: order_by
+  rank: order_by
+}
+
+# aggregate stddev_samp on columns
+type note_goal_view_stddev_samp_fields {
+  progress: Float
+  rank: Float
+}
+
+# order by stddev_samp() on columns of table "note_goal_view"
+input note_goal_view_stddev_samp_order_by {
+  progress: order_by
+  rank: order_by
+}
+
+# aggregate sum on columns
+type note_goal_view_sum_fields {
+  progress: Int
+  rank: Int
+}
+
+# order by sum() on columns of table "note_goal_view"
+input note_goal_view_sum_order_by {
+  progress: order_by
+  rank: order_by
+}
+
+# aggregate var_pop on columns
+type note_goal_view_var_pop_fields {
+  progress: Float
+  rank: Float
+}
+
+# order by var_pop() on columns of table "note_goal_view"
+input note_goal_view_var_pop_order_by {
+  progress: order_by
+  rank: order_by
+}
+
+# aggregate var_samp on columns
+type note_goal_view_var_samp_fields {
+  progress: Float
+  rank: Float
+}
+
+# order by var_samp() on columns of table "note_goal_view"
+input note_goal_view_var_samp_order_by {
+  progress: order_by
+  rank: order_by
+}
+
+# aggregate variance on columns
+type note_goal_view_variance_fields {
+  progress: Float
+  rank: Float
+}
+
+# order by variance() on columns of table "note_goal_view"
+input note_goal_view_variance_order_by {
+  progress: order_by
+  rank: order_by
+}
+
+# A Relay connection object on "note_goal"
+type note_goalConnection {
+  edges: [note_goalEdge!]!
+  pageInfo: PageInfo!
+}
+
+type note_goalEdge {
+  cursor: String!
+  node: note_goal!
+}
+
 # input type for inserting data into table "note"
 input note_insert_input {
   archived: Boolean
   body: String
   created_at: timestamptz
   date: date
+  goals: note_goal_view_arr_rel_insert_input
   id: uuid
+  note_goal: note_goal_arr_rel_insert_input
   pinned: Boolean
   title: String
   updated_at: timestamptz
@@ -1317,6 +2060,14 @@ type note_mutation_response {
   returning: [note!]!
 }
 
+# input type for inserting object relation for remote table "note"
+input note_obj_rel_insert_input {
+  data: note_insert_input!
+
+  # on conflict condition
+  on_conflict: note_on_conflict
+}
+
 # on conflict condition type for table "note"
 input note_on_conflict {
   constraint: note_constraint!
@@ -1330,7 +2081,9 @@ input note_order_by {
   body: order_by
   created_at: order_by
   date: order_by
+  goals_aggregate: note_goal_view_aggregate_order_by
   id: order_by
+  note_goal_aggregate: note_goal_aggregate_order_by
   pinned: order_by
   title: order_by
   updated_at: order_by
@@ -1472,6 +2225,23 @@ type query_root {
     where: activity_bool_exp
   ): activityConnection!
 
+  # fetch data from the table: "enckey"
+  enckey_connection(
+    after: String
+    before: String
+
+    # distinct select on columns
+    distinct_on: [enckey_select_column!]
+    first: Int
+    last: Int
+
+    # sort the rows by one or more columns
+    order_by: [enckey_order_by!]
+
+    # filter the rows returned
+    where: enckey_bool_exp
+  ): enckeyConnection!
+
   # fetch data from the table: "goal"
   goal_connection(
     after: String
@@ -1526,6 +2296,23 @@ type query_root {
     # filter the rows returned
     where: note_bool_exp
   ): noteConnection!
+
+  # An array relationship connection
+  note_goal_connection(
+    after: String
+    before: String
+
+    # distinct select on columns
+    distinct_on: [note_goal_select_column!]
+    first: Int
+    last: Int
+
+    # sort the rows by one or more columns
+    order_by: [note_goal_order_by!]
+
+    # filter the rows returned
+    where: note_goal_bool_exp
+  ): note_goalConnection!
 
   # fetch data from the table: "status_simple"
   status_simple_connection(
@@ -1717,6 +2504,23 @@ type subscription_root {
     where: activity_bool_exp
   ): activityConnection!
 
+  # fetch data from the table: "enckey"
+  enckey_connection(
+    after: String
+    before: String
+
+    # distinct select on columns
+    distinct_on: [enckey_select_column!]
+    first: Int
+    last: Int
+
+    # sort the rows by one or more columns
+    order_by: [enckey_order_by!]
+
+    # filter the rows returned
+    where: enckey_bool_exp
+  ): enckeyConnection!
+
   # fetch data from the table: "goal"
   goal_connection(
     after: String
@@ -1771,6 +2575,23 @@ type subscription_root {
     # filter the rows returned
     where: note_bool_exp
   ): noteConnection!
+
+  # An array relationship connection
+  note_goal_connection(
+    after: String
+    before: String
+
+    # distinct select on columns
+    distinct_on: [note_goal_select_column!]
+    first: Int
+    last: Int
+
+    # sort the rows by one or more columns
+    order_by: [note_goal_order_by!]
+
+    # filter the rows returned
+    where: note_goal_bool_exp
+  ): note_goalConnection!
 
   # fetch data from the table: "status_simple"
   status_simple_connection(
