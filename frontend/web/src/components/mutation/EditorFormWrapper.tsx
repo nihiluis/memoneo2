@@ -1,6 +1,13 @@
 import { FormikProps } from "formik"
 import React, { PropsWithChildren, Suspense, useContext, useState } from "react"
 import { cx } from "../../lib/reexports"
+import {
+  ScrollAreaCorner,
+  ScrollAreaRoot,
+  ScrollAreaScrollbar,
+  ScrollAreaThumb,
+  ScrollAreaViewport,
+} from "../ui/primitives/ScrollArea"
 
 interface Props extends PropsWithChildren<{}> {
   error: string
@@ -16,26 +23,36 @@ export default function EditorFormWrapper(props: Props): JSX.Element {
 
   return (
     <Suspense fallback={null}>
-      <form
-        className={cx("py-2 w-80", className)}
-        onSubmit={formikProps.handleSubmit}>
-        {props.children}
-        {error.length > 0 && <p className="error">Unable to create object.</p>}
-        <div className="flex gap-2">
-          <button
-            onClick={props.onCancel}
-            type="button"
-            className="btn btn-secondary form-btn rounded w-full mb-2">
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="btn btn-primary form-btn rounded w-full mb-2"
-            disabled={formikProps.isSubmitting || loading}>
-            {type === "edit" ? "Edit" : "Add"}
-          </button>
-        </div>
-      </form>
+      <ScrollAreaRoot style={{ maxHeight: 720 }}>
+        <ScrollAreaViewport style={{ maxHeight: "inherit" }}>
+          <form
+            className={cx("py-2 w-80", className)}
+            onSubmit={formikProps.handleSubmit}>
+            {props.children}
+            {error.length > 0 && (
+              <p className="error">Unable to create object.</p>
+            )}
+            <div className="flex gap-2">
+              <button
+                onClick={props.onCancel}
+                type="button"
+                className="btn btn-secondary form-btn rounded w-full mb-2">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary form-btn rounded w-full mb-2"
+                disabled={formikProps.isSubmitting || loading}>
+                {type === "edit" ? "Edit" : "Add"}
+              </button>
+            </div>
+          </form>
+        </ScrollAreaViewport>
+        <ScrollAreaScrollbar orientation="vertical">
+          <ScrollAreaThumb />
+        </ScrollAreaScrollbar>
+        <ScrollAreaCorner />
+      </ScrollAreaRoot>
     </Suspense>
   )
 }

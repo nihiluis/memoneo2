@@ -1,16 +1,16 @@
-import React, { PropsWithChildren } from "react"
+import React, { ButtonHTMLAttributes, PropsWithChildren } from "react"
 import { cx } from "../../../lib/reexports"
 
-interface Props extends PropsWithChildren<{}> {
+interface Props extends PropsWithChildren<ButtonHTMLAttributes<{}>> {
   className?: string
   type?: "button" | "submit" | "reset"
 }
 
 export default function Button(props: Props) {
-  const { className, type = "button", children } = props
+  const { className, type = "button", children, ...rest } = props
 
   return (
-    <button className={cx("btn", className)} type={type}>
+    <button {...rest} className={cx("btn", className)} type={type}>
       {children}
     </button>
   )

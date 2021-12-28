@@ -14,7 +14,7 @@ import EditorFormWrapper from "../../mutation/EditorFormWrapper"
 import getMutationConfig from "../../mutation/getMutationConfig"
 import EditorHeader from "../../mutation/EditorHeader"
 import EditorFormRowText from "../../mutation/EditorFormRowText"
-import EditorFormRowSelect from "../../mutation/EditorFormRowSelect"
+import EditorFormRowSelectButton from "../../mutation/EditorFormRowSelectButton"
 import {
   NoteEditorMutation,
   NoteEditorMutationVariables,
@@ -33,6 +33,7 @@ import RequireKey from "../../key/RequireKey"
 import { decryptText, encryptText } from "../../../lib/key"
 import { useKeyStore } from "../../../stores/key"
 import NoteEditorGoals from "./NoteEditorGoals"
+import FormRowFlexWrapper from "../../ui/form/FormRowFlexWrapper"
 
 interface FormValues {
   title: string
@@ -201,20 +202,22 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
                   name="title"
                   label="Title"
                 />
-                <EditorFormRowText
-                  {...formikProps}
-                  type="date"
-                  name="date"
-                  label="Date"
-                  style={{ maxWidth: 180 }}
-                />
+                <FormRowFlexWrapper>
+                  <EditorFormRowText
+                    {...formikProps}
+                    type="date"
+                    name="date"
+                    label="Date"
+                    style={{ maxWidth: 180 }}
+                  />
+                  <EditorSwitch {...formikProps} name="pinned" label="Pin" />
+                </FormRowFlexWrapper>
+                <NoteEditorGoals {...formikProps} noteGoals={goalRefs} />
                 <EditorFormRowMarkdown
                   {...formikProps}
                   name="body"
                   label="Body"
                 />
-                <EditorSwitch {...formikProps} name="pinned" label="Pin" />
-                <NoteEditorGoals {...formikProps} noteGoals={goalRefs} />
               </EditorFormWrapper>
             )}
           </Formik>
