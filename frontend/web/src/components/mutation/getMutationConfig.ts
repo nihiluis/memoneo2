@@ -9,7 +9,7 @@ import {
 interface Config<Mutation extends MutationParameters> {
   setErrors(errors: PayloadError[]): void
   setLoading(loading: boolean): void
-  onComplete?: () => void
+  onComplete?: (response: Mutation["response"]) => void
 
   updater?: SelectorStoreUpdater<Mutation["response"]>
   optimisticUpdater?: SelectorStoreUpdater<Mutation["response"]>
@@ -35,7 +35,7 @@ export default function getMutationConfig<Mutation extends MutationParameters>(
       setErrors([error])
       setLoading(false)
     },
-    onCompleted: (_, errors) => {
+    onCompleted: (response, errors) => {
       setLoading(false)
       setErrors(errors ?? [])
 
@@ -45,7 +45,7 @@ export default function getMutationConfig<Mutation extends MutationParameters>(
       }
 
       if (onComplete) {
-        onComplete()
+        onComplete(response)
       }
     },
     optimisticUpdater,

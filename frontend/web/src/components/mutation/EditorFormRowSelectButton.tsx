@@ -1,15 +1,18 @@
 import { FormikProps } from "formik"
 import React from "react"
-import FormRowSelectButton, { Item } from "../ui/form/FormRowSelectButton"
+import { ObjectGeneric } from "../object"
+import FormRowSelectButton from "../ui/form/FormRowSelectButton"
+import { SelectButtonItem } from "../ui/menu/SelectButtonMenu"
 
 interface Props extends FormikProps<any> {
   name: string
   label: string
-  items: Item[]
+  items: SelectButtonItem<ObjectGeneric>[]
+  onToggleItem?: (item: ObjectGeneric) => void
 }
 
 export default function EditorFormRowSelectButton(props: Props): JSX.Element {
-  const { name, label, items, ...formikProps } = props
+  const { name, label, items, onToggleItem, ...formikProps } = props
 
   return (
     <FormRowSelectButton
@@ -18,6 +21,7 @@ export default function EditorFormRowSelectButton(props: Props): JSX.Element {
       name={name}
       label={label}
       items={items}
+      onToggleItem={onToggleItem}
     />
   )
 }

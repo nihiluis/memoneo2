@@ -14,6 +14,7 @@ export default function EditorFormRowMarkdown(props: Props): JSX.Element {
   return (
     <FormRowMarkdown
       innerClassName="bg-gray-50 border border-gray-200"
+      style={{maxWidth: 1060}}
       {...formikProps}
       name={name}
       label={label}

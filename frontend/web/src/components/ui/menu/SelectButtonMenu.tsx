@@ -2,46 +2,47 @@ import React from "react"
 import { cx } from "../../../lib/reexports"
 import Button from "../primitives/Button"
 
-export interface Item {
-  value: string
+export interface SelectButtonItem<T> {
+  value: T
+  id: string
   label: string
 }
 
-interface Props {
-  items: Item[]
-  selectedItems: Item[]
-  toggleItem(item: Item): void
+interface Props<T> {
+  items: SelectButtonItem<T>[]
+  selectedItems: SelectButtonItem<T>[]
+  toggleItem(item: SelectButtonItem<T>): void
 }
 
-export default function SelectButtonMenu(props: Props): JSX.Element {
+export default function SelectButtonMenu<T>(props: Props<T>): JSX.Element {
   const { items, selectedItems, toggleItem } = props
 
-  const selectedItemIdMap: Record<string, Item> = {}
+  const selectedItemIdMap: Record<string, SelectButtonItem<T>> = {}
   for (let item of selectedItems) {
-    selectedItemIdMap[item.value] = item
+    selectedItemIdMap[item.id] = item
   }
 
   return (
     <div className="flex gap-1 flex-wrap">
       {items.map(item => (
         <SelectButtonItem
-          key={`SelectButtonItem-${item.value}`}
+          key={`SelectButtonItem-${item.id}`}
           item={item}
           toggleItem={toggleItem}
-          active={selectedItemIdMap.hasOwnProperty(item.value)}
+          active={selectedItemIdMap.hasOwnProperty(item.id)}
         />
       ))}
     </div>
   )
 }
 
-interface ItemProps {
-  item: Item
+interface ItemProps<T> {
+  item: SelectButtonItem<T>
   active: boolean
-  toggleItem(item: Item): void
+  toggleItem(item: SelectButtonItem<T>): void
 }
 
-function SelectButtonItem(props: ItemProps): JSX.Element {
+function SelectButtonItem<T>(props: ItemProps<T>): JSX.Element {
   const { item, active, toggleItem } = props
 
   return (

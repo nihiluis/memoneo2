@@ -8,7 +8,7 @@ interface Props<T> extends FormikProps<T> {
   type: string
   name: string
   innerClassName?: string
-  style?: React.CSSProperties
+  style?: React.StyleHTMLAttributes<{}>
 }
 
 export default function FormRowInput<T>(props: Props<T>) {

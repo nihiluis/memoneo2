@@ -1,62 +1,58 @@
 import React, { useEffect, useState } from "react"
 import { FormikProps } from "formik"
-import { cx } from "../../../lib/reexports"
 import FormRowWrapper from "./FormRowWrapper"
-import Select, { GroupBase, Options, OptionsOrGroups } from "react-select"
-import SelectButtonMenu from "../menu/SelectButtonMenu"
+import SelectButtonMenu, { SelectButtonItem } from "../menu/SelectButtonMenu"
+import { ObjectGeneric } from "../../object"
 
-export interface Item {
-  label: string
-  value: string
-}
+export type ItemToggleOp = "added" | "removed"
 
 interface Props<T> extends FormikProps<T> {
   label: string
   name: string
   innerClassName?: string
-  items: Item[]
+  items: SelectButtonItem<T>[]
   isMulti?: boolean
+  onToggleItem?: (item: ObjectGeneric, op: ItemToggleOp) => void
 }
 
 export default function FormRowSelectButton<T>(props: Props<T>) {
-  const {
-    name,
-    isMulti,
-    items: rawItems,
-    setFieldValue,
-    handleBlur,
-    values,
-    innerClassName = "",
-  } = props
+  const { name, items: rawItems, setFieldValue, values, onToggleItem } = props
 
-  const [items, setItems] = useState<Record<string, Item>>({})
+  const [items, setItems] = useState<Record<string, SelectButtonItem<T>>>({})
 
   useEffect(() => {
     const itemMap = {}
-    for (let opt of rawItems) {
-      itemMap[opt.value] = opt
+    for (let item of rawItems) {
+      itemMap[item.id] = item
     }
     setItems(itemMap)
   }, [rawItems])
 
-  const selectedItems = values[name].map((value: string) => items[value])
+  const selectedItems = values[name].map((id: string) => items[id])
 
-  function toggleItem(item: Item) {
+  function toggleItem(item: SelectButtonItem<T>) {
     const newItems = [...values[name]]
-    const currentIdx = newItems.findIndex(itemValue => itemValue === item.value)
+    const currentIdx = newItems.findIndex(itemId => itemId === item.id)
 
+    let op: ItemToggleOp
     if (currentIdx !== -1) {
       newItems.splice(currentIdx, 1)
+      op = "removed"
     } else {
-      newItems.push(item.value)
+      newItems.push(item.id)
+      op = "added"
     }
 
     setFieldValue(name, newItems)
+
+    if (onToggleItem) {
+      onToggleItem(item, op)
+    }
   }
 
   return (
     <FormRowWrapper {...props}>
-      <SelectButtonMenu
+      <SelectButtonMenu<T>
         items={rawItems}
         selectedItems={selectedItems}
         toggleItem={toggleItem}
@@ -64,10 +60,3 @@ export default function FormRowSelectButton<T>(props: Props<T>) {
     </FormRowWrapper>
   )
 }
-
-const styleProxy = new Proxy(
-  {},
-  {
-    get: (target, propKey) => () => {},
-  }
-)

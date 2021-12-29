@@ -17,6 +17,7 @@ import EditorFormRowText from "../../mutation/EditorFormRowText"
 import EditorFormRowSelectButton from "../../mutation/EditorFormRowSelectButton"
 import {
   NoteEditorMutation,
+  NoteEditorMutationResponse,
   NoteEditorMutationVariables,
 } from "./__generated__/NoteEditorMutation.graphql"
 import EditorSwitch from "../../mutation/EditorSwitch"
@@ -34,8 +35,9 @@ import { decryptText, encryptText } from "../../../lib/key"
 import { useKeyStore } from "../../../stores/key"
 import NoteEditorGoals from "./NoteEditorGoals"
 import FormRowFlexWrapper from "../../ui/form/FormRowFlexWrapper"
+import { ObjectGeneric } from ".."
 
-interface FormValues {
+export interface FormValues {
   title: string
   body: string
   pinned: boolean
@@ -111,6 +113,8 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
   const [decryptedBody, setDecryptedBody] = useState("")
   const [initializedBody, setInitializedBody] = useState(false)
 
+  // noteditcomplete hook should be next. a bit annoying because the dialog is closed immediately
+
   const { auth } = useContext(AuthContext)
 
   const closed = useRef(false)
@@ -175,7 +179,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
 
   return (
     <Suspense fallback={null}>
-      <div style={{ width: 720 }}>
+      <div style={{ width: 1060 }}>
         <EditorHeader operationType={operationType} objectType="note" />
         {initializedBody && (
           <Formik<FormValues>
@@ -212,7 +216,11 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
                   />
                   <EditorSwitch {...formikProps} name="pinned" label="Pin" />
                 </FormRowFlexWrapper>
-                <NoteEditorGoals {...formikProps} noteGoals={goalRefs} />
+                <NoteEditorGoals
+                  {...formikProps}
+                  noteGoals={goalRefs}
+                  operationType={operationType}
+                />
                 <EditorFormRowMarkdown
                   {...formikProps}
                   name="body"

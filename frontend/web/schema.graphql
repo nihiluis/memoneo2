@@ -1594,6 +1594,7 @@ input note_goal_bool_exp {
   _or: [note_goal_bool_exp!]
   goal: goal_bool_exp
   goal_id: uuid_comparison_exp
+  id: uuid_comparison_exp
   note: note_bool_exp
   note_id: uuid_comparison_exp
 }
@@ -1602,12 +1603,16 @@ input note_goal_bool_exp {
 enum note_goal_constraint {
   # unique or primary key constraint
   note_activity_pkey
+
+  # unique or primary key constraint
+  note_goal_id_key
 }
 
 # input type for inserting data into table "note_goal"
 input note_goal_insert_input {
   goal: goal_obj_rel_insert_input
   goal_id: uuid
+  id: uuid
   note: note_obj_rel_insert_input
   note_id: uuid
 }
@@ -1615,24 +1620,28 @@ input note_goal_insert_input {
 # aggregate max on columns
 type note_goal_max_fields {
   goal_id: uuid
+  id: uuid
   note_id: uuid
 }
 
 # order by max() on columns of table "note_goal"
 input note_goal_max_order_by {
   goal_id: order_by
+  id: order_by
   note_id: order_by
 }
 
 # aggregate min on columns
 type note_goal_min_fields {
   goal_id: uuid
+  id: uuid
   note_id: uuid
 }
 
 # order by min() on columns of table "note_goal"
 input note_goal_min_order_by {
   goal_id: order_by
+  id: order_by
   note_id: order_by
 }
 
@@ -1656,6 +1665,7 @@ input note_goal_on_conflict {
 input note_goal_order_by {
   goal: goal_order_by
   goal_id: order_by
+  id: order_by
   note: note_order_by
   note_id: order_by
 }
@@ -1672,12 +1682,16 @@ enum note_goal_select_column {
   goal_id
 
   # column name
+  id
+
+  # column name
   note_id
 }
 
 # input type for updating data in table "note_goal"
 input note_goal_set_input {
   goal_id: uuid
+  id: uuid
   note_id: uuid
 }
 
@@ -1685,6 +1699,9 @@ input note_goal_set_input {
 enum note_goal_update_column {
   # column name
   goal_id
+
+  # column name
+  id
 
   # column name
   note_id
