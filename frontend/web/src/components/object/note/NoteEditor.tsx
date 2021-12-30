@@ -33,9 +33,10 @@ import EditorFormRowMarkdown from "../../mutation/EditorFormRowMarkdown"
 import RequireKey from "../../key/RequireKey"
 import { decryptText, encryptText } from "../../../lib/key"
 import { useKeyStore } from "../../../stores/key"
-import NoteEditorGoals from "./NoteEditorGoals"
+import NoteEditorGoals, { NoteEditorGoalsHandle } from "./NoteEditorGoals"
 import FormRowFlexWrapper from "../../ui/form/FormRowFlexWrapper"
 import { ObjectGeneric } from ".."
+import { SelectButtonItem } from "../../ui/menu/SelectButtonMenu"
 
 export interface FormValues {
   title: string
@@ -113,11 +114,10 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
   const [decryptedBody, setDecryptedBody] = useState("")
   const [initializedBody, setInitializedBody] = useState(false)
 
-  // noteditcomplete hook should be next. a bit annoying because the dialog is closed immediately
-
   const { auth } = useContext(AuthContext)
 
   const closed = useRef(false)
+  const goalsRef = useRef<NoteEditorGoalsHandle | undefined>()
 
   const key = useKeyStore(state => state.key)
   const salt = useKeyStore(state => state.salt)
@@ -128,7 +128,8 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
 
   const [commit, _] = useMutation<NoteEditorMutation>(mutation)
   const note = useFragment<NoteFragment$key>(noteFragment, noteRef)
-  const goalRefs = note?.note_goal_connection.edges.map(edge => edge.node) ?? []
+  const currentSelectedGoals =
+    note?.note_goal_connection.edges.map(edge => edge.node) ?? []
 
   useEffect(() => {
     async function load() {
@@ -148,6 +149,21 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
       closed.current = true
     }
   }, [note, key, salt])
+
+  function onCompleteEdit(values: FormValues) {
+    return function inner(response?: NoteEditorMutationResponse) {
+      if (!response) {
+        return
+      }
+
+      if (goalsRef.current) {
+        const noteId = response.insert_note.returning[0].id
+        goalsRef.current.submit(noteId, values)
+      }
+
+      onComplete()
+    }
+  }
 
   async function submit(values: FormValues) {
     setLoading(true)
@@ -171,7 +187,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
     const mutationConfig = getMutationConfig<NoteEditorMutation>(variables, {
       setErrors,
       setLoading,
-      onComplete,
+      onComplete: onCompleteEdit(values),
     })
 
     commit(mutationConfig)
@@ -188,7 +204,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
               body: decryptedBody,
               pinned: note?.pinned ?? false,
               date: (note?.date as string) ?? dayjs().format("YYYY-MM-DD"),
-              goals: [],
+              goals: currentSelectedGoals.map(goal => goal.goal.id),
             }}
             validationSchema={FormSchema}
             onSubmit={submit}>
@@ -217,8 +233,9 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
                   <EditorSwitch {...formikProps} name="pinned" label="Pin" />
                 </FormRowFlexWrapper>
                 <NoteEditorGoals
+                  ref={goalsRef}
                   {...formikProps}
-                  noteGoals={goalRefs}
+                  currentSelectedItems={currentSelectedGoals}
                   operationType={operationType}
                 />
                 <EditorFormRowMarkdown

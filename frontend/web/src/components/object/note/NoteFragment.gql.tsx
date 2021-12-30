@@ -15,9 +15,11 @@ export const noteFragment = graphql`
     date
     updated_at
     created_at
-    note_goal_connection {
+    note_goal_connection(first: 10000)
+      @connection(key: "NoteFragment_note_goal_connection") {
       edges {
         node {
+          id
           goal {
             id
             title

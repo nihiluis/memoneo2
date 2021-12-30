@@ -8,9 +8,10 @@ export default function deleteInConnection<T>(
   store: RecordSourceSelectorProxy<T>,
   connectionName: string,
   connectionConfig: any,
-  id: string
+  id: string,
+  storeId: string = ROOT_ID
 ) {
-  const baseRecord = store.get(ROOT_ID)
+  const baseRecord = store.get(storeId)
 
   const connectionRecord = ConnectionHandler.getConnection(
     baseRecord,

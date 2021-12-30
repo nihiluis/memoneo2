@@ -1,10 +1,19 @@
 import { FormikProps } from "formik"
-import React, { useContext, useEffect, useState } from "react"
+import React, {
+  forwardRef,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from "react"
 import { useMutation, usePreloadedQuery } from "react-relay"
 import { Options } from "react-select"
 import { PayloadError } from "relay-runtime"
 import { ObjectGeneric, OperationType } from ".."
+import { NOTE_EDITOR_GOAL_CONNECTION } from "../../../constants/connections"
 import { getIdFromNodeId } from "../../../lib/hasura"
+import deleteInConnection from "../../../relay/deleteInConnection"
+import { getRootConnectionIds } from "../../../relay/getConnection"
 import { DataLoaderContext } from "../../DataLoader"
 import { defaultGoalQuery } from "../../DataLoader.gql"
 import EditorFormRowSelectButton from "../../mutation/EditorFormRowSelectButton"
@@ -27,153 +36,168 @@ type Item = SelectButtonItem<ObjectGeneric>
 
 interface Props extends FormikProps<FormValues> {
   note?: ObjectGeneric
-  noteGoals: NoteGoalRef[]
+  currentSelectedItems: NoteGoalRef[]
   operationType: OperationType
 }
 
-export default function NoteEditorGoals<T>(props: Props): JSX.Element {
-  const {
-    noteGoals,
-    operationType,
-    note,
-    values: formValues,
-    ...formikProps
-  } = props
+export interface NoteEditorGoalsHandle {
+  submit: (noteId: string, values: FormValues) => void
+}
 
-  const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState<PayloadError[]>([])
+const NoteEditorGoals = forwardRef<NoteEditorGoalsHandle, Props>(
+  (props, ref) => {
+    const {
+      currentSelectedItems,
+      operationType,
+      note,
+      values: formValues,
+      ...formikProps
+    } = props
 
-  const [defaultSelectedItems, setDefaultSelectedItems] = useState<Item[]>([])
-  const [items, setItems] = useState<Item[]>([])
+    const [loading, setLoading] = useState(false)
+    const [errors, setErrors] = useState<PayloadError[]>([])
 
-  const { goalQueryRef } = useContext(DataLoaderContext)
-  const data = usePreloadedQuery<DataLoaderInnerGoalQuery>(
-    defaultGoalQuery,
-    goalQueryRef
-  )
-  const [commitAddItems] = useMutation<NoteEditAddGoalsMutation>(
-    addNoteGoalsMutation
-  )
-  const [commitDeleteItems] = useMutation<NoteEditDeleteGoalsMutation>(
-    deleteNoteGoalsMutation
-  )
+    const [items, setItems] = useState<Item[]>([])
 
-  useEffect(
-    () =>
-      setDefaultSelectedItems(
-        noteGoals.map(goal => ({
-          id: goal.goal.id,
-          value: goal.goal,
-          label: goal.goal.title,
-        }))
-      ),
-    [noteGoals, setDefaultSelectedItems]
-  )
-  useEffect(() => {
-    const goals = data.goal_connection.edges
-      .map(edge => edge.node)
-      .filter(node => !node.archived)
-
-    setItems(
-      goals.map(goal => ({
-        id: goal.id,
-        value: goal,
-        label: goal.title,
-      }))
+    const { goalQueryRef } = useContext(DataLoaderContext)
+    const data = usePreloadedQuery<DataLoaderInnerGoalQuery>(
+      defaultGoalQuery,
+      goalQueryRef
     )
-  }, [data, setItems])
+    const [commitAddItems] = useMutation<NoteEditAddGoalsMutation>(
+      addNoteGoalsMutation
+    )
+    const [commitDeleteItems] = useMutation<NoteEditDeleteGoalsMutation>(
+      deleteNoteGoalsMutation
+    )
 
-  async function submit(values: FormValues) {
-    const { goals: selectedItemIds } = values
+    useEffect(() => {
+      const goals = data.goal_connection.edges
+        .map(edge => edge.node)
+        .filter(node => !node.archived)
 
-    const selectedItemMap = selectedItemIds.reduce((map, item) => {
-      map[item] = undefined
-      return map
-    }, {})
-    const defaultSelectedItemMap = defaultSelectedItems.reduce((map, item) => {
-      map[item.id] = item
-      return map
-    }, {})
+      setItems(
+        goals.map(goal => ({
+          id: goal.id,
+          value: goal,
+          label: goal.title,
+        }))
+      )
+    }, [data, setItems])
 
-    const itemIdsToAdd: string[] = []
-    const itemIdsToDelete: string[] = []
+    // note: the id from the n_m table has to be deleted. for the select menu we use the goal ids however. this is confusing!
+    useImperativeHandle(ref, () => ({
+      async submit(noteId: string, values: FormValues) {
+        const { goals: selectedItemIds } = values
 
-    for (const id of selectedItemIds) {
-      if (!defaultSelectedItemMap.hasOwnProperty(id)) {
-        itemIdsToAdd.push(id)
-      }
-    }
+        const selectedItemMap = selectedItemIds.reduce((map, item) => {
+          map[item] = undefined
+          return map
+        }, {})
+        const defaultSelectedItemMap = currentSelectedItems.reduce(
+          (map, item) => {
+            map[item.goal.id] = item
+            return map
+          },
+          {}
+        )
 
-    for (const item of defaultSelectedItems) {
-      if (!selectedItemMap.hasOwnProperty(item.id)) {
-        itemIdsToDelete.push(item.id)
-      }
-    }
+        const itemIdsToAdd: string[] = []
+        const itemIdsToDelete: string[] = []
 
-    await addItems(itemIdsToAdd)
-    await deleteItems(itemIdsToDelete)
-  }
+        for (const id of selectedItemIds) {
+          if (!defaultSelectedItemMap.hasOwnProperty(id)) {
+            itemIdsToAdd.push(id)
+          }
+        }
 
-  async function addItems(items: string[]) {
-    setLoading(true)
+        for (const item of currentSelectedItems) {
+          if (!selectedItemMap.hasOwnProperty(item.goal.id)) {
+            itemIdsToDelete.push(item.id)
+          }
+        }
 
-    if (!note) {
-      console.error("should not call addItems when note is not loaded")
-      return
-    }
-
-    const objects = items.map(item => ({
-      goal_id: getIdFromNodeId(item),
-      note_id: getIdFromNodeId(note.id),
+        if (itemIdsToAdd.length > 0) {
+          await addItems(noteId, itemIdsToAdd)
+        }
+        if (itemIdsToDelete.length > 0) {
+          await deleteItems(noteId, itemIdsToDelete)
+        }
+      },
     }))
 
-    const variables: NoteEditAddGoalsMutationVariables = {
-      objects: objects,
-    }
+    async function addItems(noteId: string, items: string[]) {
+      setLoading(true)
 
-    const mutationConfig = getMutationConfig<NoteEditAddGoalsMutation>(
-      variables,
-      {
-        setErrors,
-        setLoading,
-        onComplete: () => {},
+      if (!noteId) {
+        console.error("should not call addItems when noteId is undefined")
+        return
       }
-    )
 
-    commitAddItems(mutationConfig)
-  }
+      const objects = items.map(item => ({
+        // TODO it should be clear from code where deencoding is needed, this is intransparent atm
+        goal_id: getIdFromNodeId(item),
+        note_id: getIdFromNodeId(noteId),
+      }))
 
-  async function deleteItems(items: string[]) {
-    setLoading(true)
-
-    if (!note) {
-      console.error("should not call addItems when note is not loaded")
-      return
-    }
-
-    const variables: NoteEditDeleteGoalsMutationVariables = {
-      ids: items,
-    }
-
-    const mutationConfig = getMutationConfig<NoteEditDeleteGoalsMutation>(
-      variables,
-      {
-        setErrors,
-        setLoading,
-        onComplete: () => {},
+      const variables: NoteEditAddGoalsMutationVariables = {
+        objects: objects,
+        connections: [
+          ...getRootConnectionIds(NOTE_EDITOR_GOAL_CONNECTION, [], noteId),
+        ],
       }
+
+      const mutationConfig = getMutationConfig<NoteEditAddGoalsMutation>(
+        variables,
+        {
+          setErrors,
+          setLoading,
+          onComplete: () => {},
+        }
+      )
+
+      commitAddItems(mutationConfig)
+    }
+
+    async function deleteItems(noteId: string, itemIds: string[]) {
+      setLoading(true)
+
+      const variables: NoteEditDeleteGoalsMutationVariables = {
+        ids: itemIds.map(id => getIdFromNodeId(id)),
+      }
+
+      const mutationConfig = getMutationConfig<NoteEditDeleteGoalsMutation>(
+        variables,
+        {
+          setErrors,
+          setLoading,
+          onComplete: () => {},
+          updater: store => {
+            for (const itemId of itemIds) {
+              deleteInConnection(
+                store,
+                NOTE_EDITOR_GOAL_CONNECTION,
+                {},
+                itemId,
+                noteId
+              )
+            }
+          },
+        }
+      )
+
+      commitDeleteItems(mutationConfig)
+    }
+
+    return (
+      <EditorFormRowSelectButton
+        values={formValues}
+        {...formikProps}
+        name="goals"
+        label="Goals"
+        items={items}
+      />
     )
-
-    commitDeleteItems(mutationConfig)
   }
-
-  return (
-    <EditorFormRowSelectButton
-      values={formValues}
-      {...formikProps}
-      name="goals"
-      label="Goals"
-      items={items}
-    />
-  )
-}
+)
+export default NoteEditorGoals

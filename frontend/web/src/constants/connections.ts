@@ -8,4 +8,6 @@ export const DEFAULT_ACTIVITY_CONNECTION =
 export const DEFAULT_TODO_CONNECTION =
   "DataLoaderInnerTodoQuery_todo_connection"
 export const DEFAULT_NOTE_CONNECTION =
-"DataLoaderInnerNoteQuery_note_connection"
+  "DataLoaderInnerNoteQuery_note_connection"
+
+export const NOTE_EDITOR_GOAL_CONNECTION = "NoteFragment_note_goal_connection"

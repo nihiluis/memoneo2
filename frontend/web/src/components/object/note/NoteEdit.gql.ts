@@ -1,11 +1,21 @@
 import { graphql } from "react-relay"
 
 export const addNoteGoalsMutation = graphql`
-  mutation NoteEditAddGoalsMutation($objects: [note_goal_insert_input!]!) {
+  mutation NoteEditAddGoalsMutation(
+    $objects: [note_goal_insert_input!]!
+    $connections: [ID!]!
+  ) {
     insert_note_goal(objects: $objects) {
-      returning {
+      returning
+        @appendNode(connections: $connections, edgeTypeName: "note_goalEdge") {
+        id
         note_id
         goal_id
+        goal {
+          id
+          title
+          description
+        }
       }
     }
   }

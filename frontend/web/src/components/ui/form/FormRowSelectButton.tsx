@@ -28,7 +28,14 @@ export default function FormRowSelectButton<T>(props: Props<T>) {
     setItems(itemMap)
   }, [rawItems])
 
-  const selectedItems = values[name].map((id: string) => items[id])
+  const selectedItems = values[name]
+    .map((id: string) => {
+      if (!items.hasOwnProperty(id)) {
+        return null
+      }
+      return items[id]
+    })
+    .filter((item: string) => !!item)
 
   function toggleItem(item: SelectButtonItem<T>) {
     const newItems = [...values[name]]

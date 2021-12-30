@@ -95,7 +95,7 @@ function LeftSidebarItemMenuActivityInner(props: Props): JSX.Element {
         updater: store => {
           deleteInConnection(
             store,
-            DEFAULT_GOAL_CONNECTION,
+            DEFAULT_ACTIVITY_CONNECTION,
             defaultActivityFilters[0],
             item.id
           )

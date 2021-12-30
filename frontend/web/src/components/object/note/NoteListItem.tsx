@@ -1,13 +1,9 @@
 import {
-  ArchiveIcon,
   DrawingPinFilledIcon,
   DrawingPinIcon,
-  Pencil1Icon,
-  TrashIcon,
 } from "@radix-ui/react-icons"
 import React, { useCallback } from "react"
 import { useMutation } from "react-relay"
-import { DEFAULT_NOTE_CONNECTION } from "../../../constants/connections"
 import { getIdFromNodeId } from "../../../lib/hasura"
 import { getRootConnectionIds } from "../../../relay/getConnection"
 import { useFilterStore } from "../../../stores/filter"
