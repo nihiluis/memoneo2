@@ -10,7 +10,11 @@
   "dependencies": {
     "@oclif/core": "^1",
     "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^2.0.1"
+    "@oclif/plugin-plugins": "^2.0.1",
+    "@urql/core": "^2.3.6",
+    "await-protect": "^1.0.14",
+    "axios": "^0.24.0",
+    "graphql": "^16.2.0"
   },
   "devDependencies": {
     "@oclif/test": "^2",
