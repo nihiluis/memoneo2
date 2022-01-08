@@ -1,13 +1,14 @@
 import axios from "axios"
 import { ENDPOINT_AUTH_URL, ENDPOINT_LOGIN_URL } from "../constants/env"
 import protect from "await-protect"
+import * as fs from "fs/promises"
 
 export type Enckey = {
   key: string
   salt: string
 }
 
-interface AuthResult {
+export interface AuthResult {
   success: boolean
   error: string
   enckey?: Enckey
@@ -15,17 +16,12 @@ interface AuthResult {
   userId: string
 }
 
-export async function tryReadToken(): Promise<string> {
-  return ""
-}
-
 export async function checkAuth(
   existingToken: string = ""
 ): Promise<AuthResult> {
   const headers: any = {}
   if (existingToken) {
-    //this seems to break Chrome, but not firefox.
-    //headers["Authorization"] = `Bearer ${existingToken}`
+    headers["Authorization"] = `Bearer ${existingToken}`
   }
 
   const [res, error] = await protect<any, Error>(

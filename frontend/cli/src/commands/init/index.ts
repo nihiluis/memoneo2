@@ -1,9 +1,8 @@
 import { Command, Flags } from "@oclif/core"
 import protect from "await-protect"
-import cli from "cli-ux"
 import * as fs from "fs/promises"
-import { login } from "../../lib/auth"
 import { decryptProtectedKey, getBufferForKey } from "../../lib/key"
+import { performLogin } from "../../shared/login"
 
 export default class Init extends Command {
   static description = "Init Memoneo"
@@ -25,35 +24,20 @@ export default class Init extends Command {
 
   static args = []
 
+  login = performLogin.bind(this)
+
   async run(): Promise<void> {
     const { flags } = await this.parse(Init)
 
     await fs.mkdir("./.memoneo", { recursive: true })
 
-    const mail = flags.mail || (await cli.prompt("What is your mail?"))
-    const password =
-      flags.password ||
-      (await cli.prompt("What is your password?", { type: "hide" }))
-
-    const { enckey, token, error: loginError } = await login(mail, password)
-    if (loginError) {
-      this.error("Unable to auth using given mail and password.")
-    }
-    if (!enckey) {
-      this.error("Your encryption key must be set up before using the CLI.")
-    }
-
-    const encodedToken = Buffer.from(token, "utf8")
-
-    const [_, tokenWriteError] = await protect<void, Error>(
-      fs.writeFile("./.memoneo/token", encodedToken, { encoding: "base64" })
+    const { enckey, password, userId, mail } = await this.login(
+      flags.mail,
+      flags.password
     )
-    if (tokenWriteError) {
-      this.error(tokenWriteError)
-    }
 
     const [key, keyError] = await protect<CryptoKey, Error>(
-      decryptProtectedKey(password, atob(enckey.key), atob(enckey.salt))
+      decryptProtectedKey(password, atob(enckey!.key), atob(enckey!.salt))
     )
     if (keyError) {
       this.log("Unable to decrypt downloaded key\n" + JSON.stringify(enckey))
@@ -70,25 +54,15 @@ export default class Init extends Command {
       this.error(encodeKeyError)
     }
 
-    const [_2, keyWriteError] = await protect<void, Error>(
-      fs.writeFile("./.memoneo/key", encodedKey!.toString("base64"), {
-        encoding: "utf8",
-      })
-    )
-    if (keyWriteError) {
-      this.error(keyWriteError)
-    }
+    await fs.writeFile("./.memoneo/key", encodedKey!.toString("base64"), {
+      encoding: "utf8",
+    })
 
-    const configData = { mail }
+    const configData = { mail, userId }
 
-    const [_3, configWriteError] = await protect(
-      fs.writeFile("./.memoneo/config.json", JSON.stringify(configData), {
-        encoding: "utf-8",
-      })
-    )
-    if (configWriteError) {
-      this.error(configWriteError)
-    }
+    await fs.writeFile("./.memoneo/config.json", JSON.stringify(configData), {
+      encoding: "utf-8",
+    })
 
     this.log("Initialized.")
   }

@@ -1,31 +1,26 @@
 import { Command, Flags } from "@oclif/core"
+import protect from "await-protect"
+import { validateAuth } from "../../shared/validateAuth"
 
-export default class Hello extends Command {
-  static description = "Say hello"
+export default class Download extends Command {
+  static description = "Download notes"
 
-  static examples = [
-    `$ oex hello friend --from oclif
-hello friend from oclif! (./src/commands/hello/index.ts)
-`,
-  ]
+  static examples = []
 
-  static flags = {
-    from: Flags.string({
-      char: "f",
-      description: "Whom is saying hello",
-      required: true,
-    }),
-  }
+  static flags = {}
 
-  static args = [
-    { name: "person", description: "Person to say hello to", required: true },
-  ]
+  static args = []
+
+  validateAuth = validateAuth.bind(this)
 
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(Hello)
+    const { args, flags } = await this.parse(Download)
 
-    this.log(
-      `hello ${args.person} from ${flags.from}! (./src/commands/hello/index.ts)`
-    )
+    const [_, authValidationError] = await protect(this.validateAuth())
+    if (authValidationError) {
+      this.error(authValidationError)
+    }
+
+    this.log("Auth successful.")
   }
 }
