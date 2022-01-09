@@ -2,6 +2,7 @@ import { Command, Flags } from "@oclif/core"
 import protect from "await-protect"
 import * as fs from "fs/promises"
 import { decryptProtectedKey, getBufferForKey } from "../../lib/key"
+import { MemoneoFileConfig } from "../../shared/loadConfig"
 import { performLogin } from "../../shared/login"
 
 export default class Init extends Command {
@@ -58,7 +59,7 @@ export default class Init extends Command {
       encoding: "utf8",
     })
 
-    const configData = { mail, userId }
+    const configData: MemoneoFileConfig = { mail, userId }
 
     await fs.writeFile("./.memoneo/config.json", JSON.stringify(configData), {
       encoding: "utf-8",

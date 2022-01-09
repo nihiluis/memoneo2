@@ -76,9 +76,13 @@ type GraphQLQueryRequestBody struct {
 func (api *API) handleGraphQLQuery(c echo.Context) error {
 	var data map[string]interface{}
 
+	userID := c.Get(api.config.UserIDContextKey).(uuid.UUID)
+	api.logger.Zap.Infow("handling graphql query", "user", userID.String())
+
 	s := sling.New().Post(api.config.GraphQLEndpointURL).
 		Set(api.config.GraphQLSecretHeader, api.config.GraphQLSecret).
-		Set(api.config.GraphQLRoleHeader, api.config.GraphQLRoleName)
+		Set(api.config.GraphQLRoleHeader, api.config.GraphQLRoleName).
+		Set(api.config.GraphQLUserHeader, userID.String())
 	_, err := s.Body(c.Request().Body).ReceiveSuccess(&data)
 	if err != nil {
 		return err
