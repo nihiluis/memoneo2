@@ -2,6 +2,8 @@ import { Command, Flags } from "@oclif/core"
 import protect from "await-protect"
 import * as fs from "fs/promises"
 import { decryptProtectedKey, getBufferForKey } from "../../lib/key"
+import { crypto } from "../../lib/reexports"
+import { encodeBase64String } from "../../shared/base64"
 import { MemoneoFileConfig } from "../../shared/loadConfig"
 import { performLogin } from "../../shared/login"
 
@@ -48,16 +50,17 @@ export default class Init extends Command {
       this.error("Unable to find decrypted key.")
     }
 
-    const [encodedKey, encodeKeyError] = await protect<Buffer, Error>(
-      getBufferForKey(key)
+    const [encodedKey, encodeKeyError] = await protect(
+      crypto.subtle.exportKey("raw", key)
     )
     if (encodeKeyError) {
       this.error(encodeKeyError)
     }
 
-    await fs.writeFile("./.memoneo/key", encodedKey!.toString("base64"), {
-      encoding: "utf8",
-    })
+    const keyArray = Array.from(new Uint8Array(encodedKey!))
+    const keyStr = keyArray.map(byte => String.fromCharCode(byte)).join("")
+
+    await fs.writeFile("./.memoneo/key", encodeBase64String(keyStr))
 
     const configData: MemoneoFileConfig = { mail, userId }
 
