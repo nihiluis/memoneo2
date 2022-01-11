@@ -3,8 +3,9 @@ import protect from "await-protect"
 import * as fs from "fs/promises"
 import { decryptProtectedKey, getBufferForKey } from "../../lib/key"
 import { crypto } from "../../lib/reexports"
-import { encodeBase64String } from "../../shared/base64"
-import { MemoneoFileConfig } from "../../shared/loadConfig"
+import { decodeBase64String, encodeBase64String } from "../../shared/base64"
+import { reloadOrCreateFileCache } from "../../shared/fileCache"
+import { loadConfig, MemoneoInternalConfig } from "../../shared/config"
 import { performLogin } from "../../shared/login"
 
 export default class Init extends Command {
@@ -40,7 +41,11 @@ export default class Init extends Command {
     )
 
     const [key, keyError] = await protect<CryptoKey, Error>(
-      decryptProtectedKey(password, atob(enckey!.key), atob(enckey!.salt))
+      decryptProtectedKey(
+        password,
+        decodeBase64String(enckey!.key),
+        decodeBase64String(enckey!.salt)
+      )
     )
     if (keyError) {
       this.log("Unable to decrypt downloaded key\n" + JSON.stringify(enckey))
@@ -62,11 +67,15 @@ export default class Init extends Command {
 
     await fs.writeFile("./.memoneo/key", encodeBase64String(keyStr))
 
-    const configData: MemoneoFileConfig = { mail, userId }
+    await reloadOrCreateFileCache()
+
+    const configData: MemoneoInternalConfig = { mail, userId }
 
     await fs.writeFile("./.memoneo/config.json", JSON.stringify(configData), {
       encoding: "utf-8",
     })
+
+    loadConfig()
 
     this.log("Initialized.")
   }

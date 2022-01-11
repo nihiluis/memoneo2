@@ -9,4 +9,4 @@ node_modules
 oclif.manifest.json
 bin/
 .memoneo/
-.memoneo/
+config.json

@@ -3,12 +3,12 @@ import protect from "await-protect"
 
 import * as fs from "fs/promises"
 import { AuthResult, checkAuth } from "../lib/auth"
-import { MemoneoFileConfig } from "./loadConfig"
+import { MemoneoInternalConfig } from "./config"
 import { performLogin } from "./login"
 
 export async function validateAuth(
   this: Command,
-  config?: MemoneoFileConfig
+  config?: MemoneoInternalConfig
 ): Promise<AuthResult> {
   const login = performLogin.bind(this)
 

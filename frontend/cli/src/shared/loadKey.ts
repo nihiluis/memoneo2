@@ -9,14 +9,9 @@ export interface MemoneoFileConfig {
 }
 
 export async function loadKey(): Promise<CryptoKey> {
-  const [keyString, err] = await protect(
-    fs.readFile("./.memoneo/key", { encoding: "utf-8" })
-  )
-  if (err) {
-    throw err
-  }
+  const keyString = await fs.readFile("./.memoneo/key", { encoding: "utf-8" })
 
-  const encodedKeyString = decodeBase64String(keyString!)
+  const encodedKeyString = atob(keyString!)
   const encodedKeyArray = new Uint8Array(
     Array.from(encodedKeyString).map(ch => ch.charCodeAt(0))
   )

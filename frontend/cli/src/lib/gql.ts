@@ -1,11 +1,11 @@
 import { createClient, Client } from "@urql/core"
 import { ENDPOINT_GQL_URL } from "../constants/env"
 import fetch from "node-fetch"
-import { MemoneoFileConfig } from "../shared/loadConfig"
+import { MemoneoInternalConfig } from "../shared/config"
 
 export function createGqlClient(
   token: string,
-  config: MemoneoFileConfig
+  config: MemoneoInternalConfig
 ): Client {
   return createClient({
     url: ENDPOINT_GQL_URL,
