@@ -7,6 +7,7 @@ export interface MemoneoInternalConfig {
 }
 
 export interface MemoneoConfig {
+  baseDirectory: string
   defaultDirectory: string
 }
 
@@ -38,7 +39,10 @@ export async function loadConfig(): Promise<MemoneoConfig> {
 
     return config
   } else {
-    const defaultConfig: MemoneoConfig = { defaultDirectory: "_unassigned" }
+    const defaultConfig: MemoneoConfig = {
+      baseDirectory: "_testdata",
+      defaultDirectory: "_unassigned",
+    }
     await fs.writeFile("./config.json", JSON.stringify(defaultConfig), {
       encoding: "utf-8",
     })

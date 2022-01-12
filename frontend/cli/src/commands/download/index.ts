@@ -4,7 +4,7 @@ import protect from "await-protect"
 import { createGqlClient } from "../../lib/gql"
 import { decryptText } from "../../lib/key"
 import { decodeBase64String } from "../../shared/base64"
-import { loadFileCache, saveFileCache } from "../../shared/fileCache"
+import { loadFileCache, reloadOrCreateFileCache, saveFileCache } from "../../shared/fileCache"
 import { loadConfig, loadInternalConfig } from "../../shared/config"
 import { loadKey } from "../../shared/loadKey"
 import { Note, writeNoteToFile } from "../../shared/note"
@@ -20,6 +20,10 @@ const DownloadQuery = gql`
       body
       archived
       title
+      file {
+        path
+        title
+      }
     }
   }
 `
@@ -47,13 +51,9 @@ export default class Download extends Command {
       this.error(configErr ?? "Config null")
     }
 
-    const cache = await loadFileCache()
-    if (!cache) {
-      this.error("Unable to load file cache")
-    }
+    const cache = await reloadOrCreateFileCache()
 
     const key = await loadKey()
-    this.log("Key retrieved")
 
     const [auth, authValidationError] = await protect(
       this.validateAuth(internalConfig)
@@ -61,8 +61,6 @@ export default class Download extends Command {
     if (authValidationError || !auth) {
       this.error(authValidationError ?? new Error("Unable to retrieve auth"))
     }
-
-    this.log("Auth successful")
 
     const gqlClient = createGqlClient(auth.token, internalConfig!)
     const { data, error } = await gqlClient.query(DownloadQuery).toPromise()
@@ -80,15 +78,17 @@ export default class Download extends Command {
       note => !note.archived && !cache.trackedNoteIds.includes(note.id)
     )
 
-    const defaultDirPath = path.join(".", config.defaultDirectory)
-    await fs.mkdir(defaultDirPath, { recursive: true })
+    if (newNotes.length === 0) {
+      this.log("No new notes to download found.")
+      return
+    }
 
     newNotes.forEach(async note => {
       writeNoteToFile(
         note,
-        defaultDirPath,
         decodeBase64String(auth.enckey!.salt),
-        key
+        key,
+        config
       )
       cache.trackedNoteIds.push(note.id)
     })

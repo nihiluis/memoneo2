@@ -22,14 +22,16 @@ export async function saveFileCache(cache: MemoneoFileCache) {
   await fs.writeFile("./.memoneo/cache.json", JSON.stringify(cache))
 }
 
-export async function reloadOrCreateFileCache() {
+export async function reloadOrCreateFileCache(): Promise<MemoneoFileCache> {
   // todo impl load
 
-  await createEmptyFileCache()
+  return await createEmptyFileCache()
 }
 
-export async function createEmptyFileCache() {
+export async function createEmptyFileCache(): Promise<MemoneoFileCache> {
   const cache: MemoneoFileCache = { trackedNoteIds: [] }
 
   await fs.writeFile("./.memoneo/cache.json", JSON.stringify(cache))
+
+  return cache
 }

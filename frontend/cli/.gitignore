@@ -10,3 +10,4 @@ oclif.manifest.json
 bin/
 .memoneo/
 config.json
+_testdata/
