@@ -1,6 +1,6 @@
 .calendar {
-  --column-width: 32px;
-  --column-height: 32px;
+  --column-width: 40px;
+  --column-height: 40px;
   background-color: var(--bg-content-contrast);
   @apply p-4;
   @apply rounded;
@@ -12,7 +12,8 @@
 
 .week {
   @apply flex;
-  @apply gap-2;
+	@apply gap-2;
+	@apply justify-center;
 }
 
 .weekdays {
@@ -33,7 +34,8 @@
 .dayInner {
   @apply p-1;
   @apply rounded-full;
-  width: var(--column-width);
+	width: var(--column-width);
+	height: var(--column-height);
   display: flex;
   align-items: center;
   justify-content: center;

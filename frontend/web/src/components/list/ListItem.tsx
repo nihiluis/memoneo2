@@ -19,6 +19,8 @@ import getMutationConfig from "../mutation/getMutationConfig"
 import { ArchiveAllMutation } from "../mutation/__generated__/ArchiveAllMutation.graphql"
 import { DeleteGoalMutation } from "../mutation/__generated__/DeleteGoalMutation.graphql"
 import { DeleteAllMutation } from "../mutation/__generated__/DeleteAllMutation.graphql"
+import { cx } from "../../lib/reexports"
+import style from "./List.module.css"
 
 interface ItemMin {
   id: string
@@ -113,9 +115,9 @@ export default function ListItem<Item extends ItemMin>(
   ])
 
   return (
-    <div className="pt-2 px-2 hover:bg-gray-50 cursor-pointer">
+    <div className={cx("pt-2 px-2 hover:bg-gray-50 cursor-pointer", style.listItem)}>
       <div className="flex justify-between">
-        <p>{item.title}</p>
+        <p className="truncate">{item.title}</p>
         <div className="flex items-center">
           <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger onClick={event => event.stopPropagation()}>

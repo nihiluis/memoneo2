@@ -24,7 +24,9 @@
   --text-color-dark: rgba(31, 41, 55, var(--tw-text-opacity));
 
   --shadow: rgba(0, 0, 0, 0.1) 0px 5px 30px -5px,
-    rgba(0, 0, 0, 0.2) 0px 1px 3px -1px;
+		rgba(0, 0, 0, 0.2) 0px 1px 3px -1px;
+		
+	--calendar-width: 360px;
 }
 
 @import "button.css";
