@@ -8,6 +8,8 @@ import { loadConfig, loadInternalConfig } from "../../shared/config"
 import { loadKey } from "../../shared/loadKey"
 import { Note, writeNoteToFile } from "../../shared/note"
 import { validateAuth } from "../../shared/validateAuth"
+import * as fs from "fs/promises"
+import { getAllMarkdownFiles } from "../../lib/files"
 
 const InsertNoteMutation = gql`
   mutation InsertNoteMutation($inputs: [note_insert_input!]!) {
@@ -32,7 +34,14 @@ export default class Download extends Command {
 
   static flags = {}
 
-  static args = []
+  static args = [
+    {
+      name: "dir",
+      description:
+        "The target directory that is recursively searched for md files",
+      required: false,
+    },
+  ]
 
   validateAuth = validateAuth.bind(this)
 
@@ -48,6 +57,14 @@ export default class Download extends Command {
       this.error(configErr ?? "Config null")
     }
 
+    const targetDirectory: string = args["dir"] || config.baseDirectory
+    const targetDirectoryStat = await fs.stat(targetDirectory)
+    if (!targetDirectoryStat.isDirectory()) {
+      this.error(
+        `Provided target directory ${targetDirectory} is no valid directory`
+      )
+    }
+
     const cache = await reloadOrCreateFileCache()
 
     const key = await loadKey()
@@ -58,6 +75,10 @@ export default class Download extends Command {
     if (authValidationError || !auth) {
       this.error(authValidationError ?? new Error("Unable to retrieve auth"))
     }
+
+    this.log(`Loading markdown files from ${targetDirectory}`)
+    const mdFiles = await getAllMarkdownFiles(targetDirectory)
+    mdFiles.forEach(file => this.log(JSON.stringify(file)))
 
     const newNotes: Note[] = []
 

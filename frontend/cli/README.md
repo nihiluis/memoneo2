@@ -5,3 +5,7 @@
 
 # Libs
 - urql?
+
+# Todo
+- download needs to respect existing files
+- upload

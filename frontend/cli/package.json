@@ -14,12 +14,15 @@
     "@urql/core": "^2.3.6",
     "await-protect": "^1.0.14",
     "axios": "^0.24.0",
+    "detect-newline": "3.1.0",
     "graphql": "^16.2.0",
+    "js-yaml": "^4.1.0",
     "node-fetch": "2.6.1"
   },
   "devDependencies": {
     "@oclif/test": "^2",
     "@types/chai": "^4",
+    "@types/js-yaml": "^4.0.5",
     "@types/mocha": "^9.0.0",
     "@types/node": "^16.9.4",
     "@types/node-fetch": "^2.5.12",
