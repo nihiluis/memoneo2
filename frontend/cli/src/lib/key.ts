@@ -61,7 +61,7 @@ export async function encryptText(
   const iv = new Uint8Array(Array.from(saltStr).map(ch => ch.charCodeAt(0)))
   const alg = { name: "AES-GCM", iv: iv }
 
-  const ctBuffer = await window.crypto.subtle.encrypt(
+  const ctBuffer = await crypto.subtle.encrypt(
     alg,
     protectedKey,
     new TextEncoder().encode(text)

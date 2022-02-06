@@ -14,6 +14,7 @@
     "@urql/core": "^2.3.6",
     "await-protect": "^1.0.14",
     "axios": "^0.24.0",
+    "dayjs": "^1.10.7",
     "detect-newline": "3.1.0",
     "graphql": "^16.2.0",
     "js-yaml": "^4.1.0",

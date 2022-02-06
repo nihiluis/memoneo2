@@ -1,31 +1,12 @@
 import { Command } from "@oclif/core"
-import { gql } from "@urql/core"
 import protect from "await-protect"
-import { createGqlClient } from "../../lib/gql"
-import { decodeBase64String } from "../../shared/base64"
 import { reloadOrCreateFileCache, saveFileCache } from "../../shared/fileCache"
 import { loadConfig, loadInternalConfig } from "../../shared/config"
 import { loadKey } from "../../shared/loadKey"
-import { Note, writeNoteToFile } from "../../shared/note"
 import { validateAuth } from "../../shared/validateAuth"
 import * as fs from "fs/promises"
-import { getAllMarkdownFiles } from "../../lib/files"
-
-const InsertNoteMutation = gql`
-  mutation InsertNoteMutation($inputs: [note_insert_input!]!) {
-    insert_note(objects: $inputs) {
-      affected_rows
-    }
-  }
-`
-
-const InsertNoteFileDataMutation = gql`
-  mutation InsertFileDataMutation($inputs: [file_data_insert_input!]!) {
-    insert_file_data(objects: $inputs) {
-      affected_rows
-    }
-  }
-`
+import { getAllMarkdownFiles, MarkdownFileInfo } from "../../lib/files"
+import { uploadNewNotes } from "../../shared/note/upload"
 
 export default class Download extends Command {
   static description = "Download notes"
@@ -77,27 +58,20 @@ export default class Download extends Command {
     }
 
     this.log(`Loading markdown files from ${targetDirectory}`)
-    const mdFiles = await getAllMarkdownFiles(targetDirectory)
-    mdFiles.forEach(file => this.log(JSON.stringify(file)))
+    const mdFiles = await getAllMarkdownFiles(
+      config.baseDirectory,
+      targetDirectory
+    )
 
-    const newNotes: Note[] = []
-
-    if (newNotes.length === 0) {
-      this.log("No new notes to upload found.")
-      return
-    }
-
-    const gqlClient = createGqlClient(auth.token, internalConfig!)
-    const { data, error } = await gqlClient
-      .mutation(InsertNoteMutation, { inputs: newNotes })
-      .toPromise()
-    if (error) {
-      this.error(error)
-    }
-
-    if (!data) {
-      this.error("Unable to mutate data with the GQL API")
-    }
+    uploadNewNotes({
+      mdFiles,
+      auth,
+      key,
+      config,
+      internalConfig,
+      cache,
+      command: this,
+    })
 
     saveFileCache(cache)
   }

@@ -9,12 +9,15 @@ export interface MarkdownFileMetadata {
 }
 
 export interface MarkdownFileInfo {
+  fileName: string
   path: string
   text: string
-  metadata?: MarkdownFileMetadata
+  time: Date
+  metadata: MarkdownFileMetadata
 }
 
 export async function getAllMarkdownFiles(
+  baseDir: string,
   dir: string,
   arrayOfFiles: MarkdownFileInfo[] = []
 ): Promise<MarkdownFileInfo[]> {
@@ -24,7 +27,11 @@ export async function getAllMarkdownFiles(
     const filePath = path.join(dir, file)
     const stat = await fs.stat(filePath)
     if (stat.isDirectory()) {
-      const dirFiles = await getAllMarkdownFiles(filePath, arrayOfFiles)
+      const dirFiles = await getAllMarkdownFiles(
+        baseDir,
+        filePath,
+        arrayOfFiles
+      )
       arrayOfFiles = dirFiles
     } else {
       if (file.endsWith(".md")) {
@@ -34,8 +41,13 @@ export async function getAllMarkdownFiles(
         const mdContent = markdownParser(fileContent)
 
         const info: MarkdownFileInfo = {
-          path: path.join(__dirname, filePath),
+          fileName: file,
+          path: filePath.slice(
+            baseDir.length + 1,
+            filePath.length - file.length - 1
+          ),
           text: mdContent.content,
+          time: stat.mtime,
           metadata: mdContent.metadata,
         }
         arrayOfFiles.push(info)
