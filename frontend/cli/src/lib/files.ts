@@ -1,11 +1,13 @@
 import * as fs from "fs/promises"
 import * as path from "path"
 import markdownParser from "./markdownParser"
+import * as crypto from "crypto"
 
 export interface MarkdownFileMetadata {
   id: string
   title: string
   date: string
+  version: number
 }
 
 export interface MarkdownFileInfo {
@@ -41,7 +43,7 @@ export async function getAllMarkdownFiles(
         const mdContent = markdownParser(fileContent)
 
         const info: MarkdownFileInfo = {
-          fileName: file,
+          fileName: file.slice(0, file.length - ".md".length),
           path: filePath.slice(
             baseDir.length + 1,
             filePath.length - file.length - 1
@@ -56,4 +58,8 @@ export async function getAllMarkdownFiles(
   }
 
   return arrayOfFiles
+}
+
+function md5text(text: string): string {
+  return crypto.createHash("md5").update(text).digest("base64")
 }

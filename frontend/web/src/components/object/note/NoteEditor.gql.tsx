@@ -21,6 +21,7 @@ export const mutation = graphql`
     $date: date!
     $id: uuid
     $user_id: uuid
+    $version: Int!
     $connections: [ID!]!
   ) {
     insert_note(
@@ -31,10 +32,11 @@ export const mutation = graphql`
         date: $date
         id: $id
         user_id: $user_id
+        version: $version
       }
       on_conflict: {
         constraint: note_pkey
-        update_columns: [title, body, pinned, date]
+        update_columns: [title, body, pinned, date, version]
       }
     ) {
       returning
@@ -45,6 +47,7 @@ export const mutation = graphql`
         date
         body
         archived
+        version
       }
     }
   }

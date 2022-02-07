@@ -13,6 +13,7 @@ export const noteFragment = graphql`
     pinned
     archived
     date
+    version
     updated_at
     created_at
     note_goal_connection(first: 10000)

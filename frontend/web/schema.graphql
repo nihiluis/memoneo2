@@ -312,6 +312,143 @@ type enckeyEdge {
   node: enckey!
 }
 
+# columns and relationships of "file_data"
+type file_data implements Node {
+  created_at: timestamptz!
+  id: ID!
+
+  # An object relationship
+  note: note!
+  note_id: uuid!
+  path: String!
+  title: String!
+  updated_at: timestamptz!
+}
+
+# Boolean expression to filter rows from the table "file_data". All fields are combined with a logical 'AND'.
+input file_data_bool_exp {
+  _and: [file_data_bool_exp!]
+  _not: file_data_bool_exp
+  _or: [file_data_bool_exp!]
+  created_at: timestamptz_comparison_exp
+  note: note_bool_exp
+  note_id: uuid_comparison_exp
+  path: String_comparison_exp
+  title: String_comparison_exp
+  updated_at: timestamptz_comparison_exp
+}
+
+# unique or primary key constraints on table "file_data"
+enum file_data_constraint {
+  # unique or primary key constraint
+  file_data_pkey
+}
+
+# input type for inserting data into table "file_data"
+input file_data_insert_input {
+  created_at: timestamptz
+  note: note_obj_rel_insert_input
+  note_id: uuid
+  path: String
+  title: String
+  updated_at: timestamptz
+}
+
+# response of any mutation on the table "file_data"
+type file_data_mutation_response {
+  # number of rows affected by the mutation
+  affected_rows: Int!
+
+  # data from the rows affected by the mutation
+  returning: [file_data!]!
+}
+
+# input type for inserting object relation for remote table "file_data"
+input file_data_obj_rel_insert_input {
+  data: file_data_insert_input!
+
+  # on conflict condition
+  on_conflict: file_data_on_conflict
+}
+
+# on conflict condition type for table "file_data"
+input file_data_on_conflict {
+  constraint: file_data_constraint!
+  update_columns: [file_data_update_column!]! = []
+  where: file_data_bool_exp
+}
+
+# Ordering options when selecting data from "file_data".
+input file_data_order_by {
+  created_at: order_by
+  note: note_order_by
+  note_id: order_by
+  path: order_by
+  title: order_by
+  updated_at: order_by
+}
+
+# primary key columns input for table: file_data
+input file_data_pk_columns_input {
+  note_id: uuid!
+}
+
+# select columns of table "file_data"
+enum file_data_select_column {
+  # column name
+  created_at
+
+  # column name
+  note_id
+
+  # column name
+  path
+
+  # column name
+  title
+
+  # column name
+  updated_at
+}
+
+# input type for updating data in table "file_data"
+input file_data_set_input {
+  created_at: timestamptz
+  note_id: uuid
+  path: String
+  title: String
+  updated_at: timestamptz
+}
+
+# update columns of table "file_data"
+enum file_data_update_column {
+  # column name
+  created_at
+
+  # column name
+  note_id
+
+  # column name
+  path
+
+  # column name
+  title
+
+  # column name
+  updated_at
+}
+
+# A Relay connection object on "file_data"
+type file_dataConnection {
+  edges: [file_dataEdge!]!
+  pageInfo: PageInfo!
+}
+
+type file_dataEdge {
+  cursor: String!
+  node: file_data!
+}
+
 # columns and relationships of "goal"
 type goal implements Node {
   archived: Boolean!
@@ -1036,6 +1173,15 @@ type mutation_root {
   # delete single row from the table: "enckey"
   delete_enckey_by_pk(id: uuid!): enckey
 
+  # delete data from the table: "file_data"
+  delete_file_data(
+    # filter the rows which have to be deleted
+    where: file_data_bool_exp!
+  ): file_data_mutation_response
+
+  # delete single row from the table: "file_data"
+  delete_file_data_by_pk(note_id: uuid!): file_data
+
   # delete data from the table: "goal"
   delete_goal(
     # filter the rows which have to be deleted
@@ -1070,7 +1216,7 @@ type mutation_root {
   ): note_goal_mutation_response
 
   # delete single row from the table: "note_goal"
-  delete_note_goal_by_pk(goal_id: uuid!, note_id: uuid!): note_goal
+  delete_note_goal_by_pk(id: uuid!): note_goal
 
   # delete data from the table: "status_simple"
   delete_status_simple(
@@ -1125,6 +1271,24 @@ type mutation_root {
     # on conflict condition
     on_conflict: enckey_on_conflict
   ): enckey
+
+  # insert data into the table: "file_data"
+  insert_file_data(
+    # the rows to be inserted
+    objects: [file_data_insert_input!]!
+
+    # on conflict condition
+    on_conflict: file_data_on_conflict
+  ): file_data_mutation_response
+
+  # insert a single row into the table: "file_data"
+  insert_file_data_one(
+    # the row to be inserted
+    object: file_data_insert_input!
+
+    # on conflict condition
+    on_conflict: file_data_on_conflict
+  ): file_data
 
   # insert data into the table: "goal"
   insert_goal(
@@ -1272,6 +1436,22 @@ type mutation_root {
     pk_columns: enckey_pk_columns_input!
   ): enckey
 
+  # update data of the table: "file_data"
+  update_file_data(
+    # sets the columns of the filtered rows to the given values
+    _set: file_data_set_input
+
+    # filter the rows which have to be updated
+    where: file_data_bool_exp!
+  ): file_data_mutation_response
+
+  # update single row of the table: "file_data"
+  update_file_data_by_pk(
+    # sets the columns of the filtered rows to the given values
+    _set: file_data_set_input
+    pk_columns: file_data_pk_columns_input!
+  ): file_data
+
   # update data of the table: "goal"
   update_goal(
     # increments the numeric columns with given value of the filtered values
@@ -1318,6 +1498,9 @@ type mutation_root {
 
   # update data of the table: "note"
   update_note(
+    # increments the numeric columns with given value of the filtered values
+    _inc: note_inc_input
+
     # sets the columns of the filtered rows to the given values
     _set: note_set_input
 
@@ -1327,6 +1510,9 @@ type mutation_root {
 
   # update single row of the table: "note"
   update_note_by_pk(
+    # increments the numeric columns with given value of the filtered values
+    _inc: note_inc_input
+
     # sets the columns of the filtered rows to the given values
     _set: note_set_input
     pk_columns: note_pk_columns_input!
@@ -1399,6 +1585,9 @@ type note implements Node {
   body: String!
   created_at: timestamptz!
   date: date!
+
+  # An object relationship
+  file: file_data
 
   # An array relationship
   goals(
@@ -1493,6 +1682,7 @@ type note implements Node {
   title: String!
   updated_at: timestamptz
   user_id: uuid!
+  version: Int!
 }
 
 # aggregated selection of "note"
@@ -1503,16 +1693,32 @@ type note_aggregate {
 
 # aggregate fields of "note"
 type note_aggregate_fields {
+  avg: note_avg_fields
   count(columns: [note_select_column!], distinct: Boolean): Int!
   max: note_max_fields
   min: note_min_fields
+  stddev: note_stddev_fields
+  stddev_pop: note_stddev_pop_fields
+  stddev_samp: note_stddev_samp_fields
+  sum: note_sum_fields
+  var_pop: note_var_pop_fields
+  var_samp: note_var_samp_fields
+  variance: note_variance_fields
 }
 
 # order by aggregate values of table "note"
 input note_aggregate_order_by {
+  avg: note_avg_order_by
   count: order_by
   max: note_max_order_by
   min: note_min_order_by
+  stddev: note_stddev_order_by
+  stddev_pop: note_stddev_pop_order_by
+  stddev_samp: note_stddev_samp_order_by
+  sum: note_sum_order_by
+  var_pop: note_var_pop_order_by
+  var_samp: note_var_samp_order_by
+  variance: note_variance_order_by
 }
 
 # input type for inserting array relation for remote table "note"
@@ -1521,6 +1727,16 @@ input note_arr_rel_insert_input {
 
   # on conflict condition
   on_conflict: note_on_conflict
+}
+
+# aggregate avg on columns
+type note_avg_fields {
+  version: Float
+}
+
+# order by avg() on columns of table "note"
+input note_avg_order_by {
+  version: order_by
 }
 
 # Boolean expression to filter rows from the table "note". All fields are combined with a logical 'AND'.
@@ -1532,6 +1748,7 @@ input note_bool_exp {
   body: String_comparison_exp
   created_at: timestamptz_comparison_exp
   date: date_comparison_exp
+  file: file_data_bool_exp
   goals: note_goal_view_bool_exp
   id: uuid_comparison_exp
   note_goal: note_goal_bool_exp
@@ -1539,10 +1756,14 @@ input note_bool_exp {
   title: String_comparison_exp
   updated_at: timestamptz_comparison_exp
   user_id: uuid_comparison_exp
+  version: Int_comparison_exp
 }
 
 # unique or primary key constraints on table "note"
 enum note_constraint {
+  # unique or primary key constraint
+  note_date_title_key
+
   # unique or primary key constraint
   note_pkey
 }
@@ -1605,7 +1826,7 @@ enum note_goal_constraint {
   note_activity_pkey
 
   # unique or primary key constraint
-  note_goal_id_key
+  note_goal_note_id_goal_id_key
 }
 
 # input type for inserting data into table "note_goal"
@@ -1672,8 +1893,7 @@ input note_goal_order_by {
 
 # primary key columns input for table: note_goal
 input note_goal_pk_columns_input {
-  goal_id: uuid!
-  note_id: uuid!
+  id: uuid!
 }
 
 # select columns of table "note_goal"
@@ -2009,12 +2229,18 @@ type note_goalEdge {
   node: note_goal!
 }
 
+# input type for incrementing numeric columns in table "note"
+input note_inc_input {
+  version: Int
+}
+
 # input type for inserting data into table "note"
 input note_insert_input {
   archived: Boolean
   body: String
   created_at: timestamptz
   date: date
+  file: file_data_obj_rel_insert_input
   goals: note_goal_view_arr_rel_insert_input
   id: uuid
   note_goal: note_goal_arr_rel_insert_input
@@ -2022,6 +2248,7 @@ input note_insert_input {
   title: String
   updated_at: timestamptz
   user_id: uuid
+  version: Int
 }
 
 # aggregate max on columns
@@ -2033,6 +2260,7 @@ type note_max_fields {
   title: String
   updated_at: timestamptz
   user_id: uuid
+  version: Int
 }
 
 # order by max() on columns of table "note"
@@ -2044,6 +2272,7 @@ input note_max_order_by {
   title: order_by
   updated_at: order_by
   user_id: order_by
+  version: order_by
 }
 
 # aggregate min on columns
@@ -2055,6 +2284,7 @@ type note_min_fields {
   title: String
   updated_at: timestamptz
   user_id: uuid
+  version: Int
 }
 
 # order by min() on columns of table "note"
@@ -2066,6 +2296,7 @@ input note_min_order_by {
   title: order_by
   updated_at: order_by
   user_id: order_by
+  version: order_by
 }
 
 # response of any mutation on the table "note"
@@ -2098,6 +2329,7 @@ input note_order_by {
   body: order_by
   created_at: order_by
   date: order_by
+  file: file_data_order_by
   goals_aggregate: note_goal_view_aggregate_order_by
   id: order_by
   note_goal_aggregate: note_goal_aggregate_order_by
@@ -2105,6 +2337,7 @@ input note_order_by {
   title: order_by
   updated_at: order_by
   user_id: order_by
+  version: order_by
 }
 
 # primary key columns input for table: note
@@ -2140,6 +2373,9 @@ enum note_select_column {
 
   # column name
   user_id
+
+  # column name
+  version
 }
 
 # input type for updating data in table "note"
@@ -2153,6 +2389,47 @@ input note_set_input {
   title: String
   updated_at: timestamptz
   user_id: uuid
+  version: Int
+}
+
+# aggregate stddev on columns
+type note_stddev_fields {
+  version: Float
+}
+
+# order by stddev() on columns of table "note"
+input note_stddev_order_by {
+  version: order_by
+}
+
+# aggregate stddev_pop on columns
+type note_stddev_pop_fields {
+  version: Float
+}
+
+# order by stddev_pop() on columns of table "note"
+input note_stddev_pop_order_by {
+  version: order_by
+}
+
+# aggregate stddev_samp on columns
+type note_stddev_samp_fields {
+  version: Float
+}
+
+# order by stddev_samp() on columns of table "note"
+input note_stddev_samp_order_by {
+  version: order_by
+}
+
+# aggregate sum on columns
+type note_sum_fields {
+  version: Int
+}
+
+# order by sum() on columns of table "note"
+input note_sum_order_by {
+  version: order_by
 }
 
 # update columns of table "note"
@@ -2183,6 +2460,39 @@ enum note_update_column {
 
   # column name
   user_id
+
+  # column name
+  version
+}
+
+# aggregate var_pop on columns
+type note_var_pop_fields {
+  version: Float
+}
+
+# order by var_pop() on columns of table "note"
+input note_var_pop_order_by {
+  version: order_by
+}
+
+# aggregate var_samp on columns
+type note_var_samp_fields {
+  version: Float
+}
+
+# order by var_samp() on columns of table "note"
+input note_var_samp_order_by {
+  version: order_by
+}
+
+# aggregate variance on columns
+type note_variance_fields {
+  version: Float
+}
+
+# order by variance() on columns of table "note"
+input note_variance_order_by {
+  version: order_by
 }
 
 # A Relay connection object on "note"
@@ -2258,6 +2568,23 @@ type query_root {
     # filter the rows returned
     where: enckey_bool_exp
   ): enckeyConnection!
+
+  # fetch data from the table: "file_data"
+  file_data_connection(
+    after: String
+    before: String
+
+    # distinct select on columns
+    distinct_on: [file_data_select_column!]
+    first: Int
+    last: Int
+
+    # sort the rows by one or more columns
+    order_by: [file_data_order_by!]
+
+    # filter the rows returned
+    where: file_data_bool_exp
+  ): file_dataConnection!
 
   # fetch data from the table: "goal"
   goal_connection(
@@ -2537,6 +2864,23 @@ type subscription_root {
     # filter the rows returned
     where: enckey_bool_exp
   ): enckeyConnection!
+
+  # fetch data from the table: "file_data"
+  file_data_connection(
+    after: String
+    before: String
+
+    # distinct select on columns
+    distinct_on: [file_data_select_column!]
+    first: Int
+    last: Int
+
+    # sort the rows by one or more columns
+    order_by: [file_data_order_by!]
+
+    # filter the rows returned
+    where: file_data_bool_exp
+  ): file_dataConnection!
 
   # fetch data from the table: "goal"
   goal_connection(

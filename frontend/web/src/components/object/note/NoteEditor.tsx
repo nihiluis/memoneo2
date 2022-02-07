@@ -171,6 +171,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
     // if equals nullUuid, we are creating a new note and need a new uuid
     const id = noteId === nullUuid ? uuidv4() : noteId
     const encryptedBody = await encryptText(values["body"], salt, key)
+    const version = note?.version + 1 ?? 1
 
     const variables: NoteEditorMutationVariables = {
       id: id,
@@ -179,6 +180,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
       body: window.btoa(encryptedBody.ctStr),
       pinned: values["pinned"] ?? false,
       date: values["date"],
+      version,
       connections: [
         ...getRootConnectionIds(DEFAULT_NOTE_CONNECTION, defaultNoteFilters),
       ],

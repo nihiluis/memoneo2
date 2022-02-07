@@ -1,4 +1,3 @@
-import { Command } from "@oclif/core"
 import protect from "await-protect"
 
 import * as fs from "fs/promises"
@@ -7,11 +6,8 @@ import { MemoneoInternalConfig } from "./config"
 import { performLogin } from "./login"
 
 export async function validateAuth(
-  this: Command,
   config?: MemoneoInternalConfig
 ): Promise<AuthResult> {
-  const login = performLogin.bind(this)
-
   const [_, fileExistsError] = await protect(fs.stat("./.memoneo/token"))
   if (fileExistsError) {
     throw new Error(
@@ -25,7 +21,7 @@ export async function validateAuth(
   const authResult = await checkAuth(tokenString)
 
   if (!authResult.success) {
-    return await login(config?.mail)
+    return await performLogin(config?.mail)
   } else {
     return authResult
   }

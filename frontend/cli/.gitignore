@@ -11,3 +11,4 @@ bin/
 .memoneo/
 config.json
 _testdata/
+_backups/

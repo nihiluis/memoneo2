@@ -5,6 +5,7 @@ const CACHE_PATH = "./.memoneo/cache.json"
 
 export interface MemoneoFileCache {
   trackedNoteIds: string[]
+  lastSync: Record<string, string>
 }
 
 export async function loadFileCache(): Promise<MemoneoFileCache | undefined> {
@@ -28,21 +29,21 @@ export async function reloadOrCreateFileCache(): Promise<MemoneoFileCache> {
   // todo impl load
 
   const cacheStat = await fs.stat(CACHE_PATH)
-  
+
   if (!cacheStat.isFile()) {
     return await createEmptyFileCache()
   }
-  
+
   const cache = await loadFileCache()
   if (!cache) {
     throw new Error("unable to load cache")
   }
-  
+
   return cache
 }
 
 export async function createEmptyFileCache(): Promise<MemoneoFileCache> {
-  const cache: MemoneoFileCache = { trackedNoteIds: [] }
+  const cache: MemoneoFileCache = { trackedNoteIds: [], lastSync: {} }
 
   await fs.writeFile(CACHE_PATH, JSON.stringify(cache))
 

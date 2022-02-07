@@ -1,4 +1,5 @@
 import { Command } from "@oclif/core"
+import { Client } from "@urql/core"
 import dayjs = require("dayjs")
 import { Note, NoteFileData } from "."
 import { AuthResult } from "../../lib/auth"
@@ -19,9 +20,11 @@ interface UploadNewNotesConfig {
   config: MemoneoConfig
   cache: MemoneoFileCache
   command: Command
+  gqlClient: Client
 }
 
 export async function uploadNewNotes({
+  gqlClient,
   mdFiles,
   auth,
   key,
@@ -41,9 +44,10 @@ export async function uploadNewNotes({
 
       newNotes.push({
         body: encodeBase64String(encryptedText.ctStr),
-        title: mdFile.fileName.slice(0, mdFile.fileName.length - ".md".length),
+        title: mdFile.fileName,
         date: mdFile.time.toISOString(),
         archived: false,
+        version: 1,
         user_id: internalConfig.userId,
       })
     }
@@ -54,7 +58,6 @@ export async function uploadNewNotes({
     return
   }
 
-  const gqlClient = createGqlClient(auth.token, internalConfig!)
   const { data, error } = await gqlClient
     .mutation(InsertNoteMutation, { inputs: newNotes })
     .toPromise()
@@ -73,8 +76,7 @@ export async function uploadNewNotes({
     const mdFile = mdFiles.find(
       mdFile =>
         dayjs(mdFile.time).format("YYYY-MM-DD") === note.date &&
-        mdFile.fileName.slice(0, mdFile.fileName.length - ".md".length) ===
-          note.title
+        mdFile.fileName === note.title
     )
 
     if (!mdFile) {

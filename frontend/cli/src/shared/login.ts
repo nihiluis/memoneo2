@@ -8,7 +8,6 @@ import { Command } from "@oclif/core"
 export type LoginResult = AuthResult & { password: string; mail: string }
 
 export async function performLogin(
-  this: Command,
   mail: string = "",
   password: string = ""
 ): Promise<LoginResult> {
@@ -19,20 +18,15 @@ export async function performLogin(
   const authResult = await login(mail, password)
   const { error: loginError, enckey, token } = authResult
   if (loginError) {
-    this.error("Unable to auth using given mail and password.")
+    throw new Error("Unable to auth using given mail and password.")
   }
   if (!enckey) {
-    this.error("Your encryption key must be set up before using the CLI.")
+    throw new Error("Your encryption key must be set up before using the CLI.")
   }
 
   const encodedToken = Buffer.from(token, "utf8")
 
-  const [_, tokenWriteError] = await protect<void, Error>(
-    fs.writeFile("./.memoneo/token", encodedToken, { encoding: "base64" })
-  )
-  if (tokenWriteError) {
-    this.error(tokenWriteError)
-  }
+  await fs.writeFile("./.memoneo/token", encodedToken, { encoding: "base64" })
 
   return { ...authResult, password, mail }
 }

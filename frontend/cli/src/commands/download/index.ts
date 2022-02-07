@@ -14,7 +14,8 @@ import { loadKey } from "../../shared/loadKey"
 import { validateAuth } from "../../shared/validateAuth"
 import * as path from "path"
 import * as fs from "fs/promises"
-import { downloadNewNotes } from "../../shared/note/download"
+import { downloadNotes, writeNewNotes } from "../../shared/note/download"
+import loadPrerequisites from "../../shared/loadPrerequisites"
 
 export default class Download extends Command {
   static description = "Download notes"
@@ -30,35 +31,28 @@ export default class Download extends Command {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Download)
 
-    const internalConfig = await loadInternalConfig()
-    if (!internalConfig) {
-      this.error(new Error("Initialize first via the init command"))
-    }
-    const [config, configErr] = await protect(loadConfig())
-    if (configErr || !config) {
-      this.error(configErr ?? "Config null")
-    }
+    const {
+      config,
+      auth,
+      key,
+      internalConfig,
+      cache,
+      gqlClient,
+    } = await loadPrerequisites()
 
-    const cache = await reloadOrCreateFileCache()
-
-    const key = await loadKey()
-
-    const [auth, authValidationError] = await protect(
-      this.validateAuth(internalConfig)
-    )
-    if (authValidationError || !auth) {
-      this.error(authValidationError ?? new Error("Unable to retrieve auth"))
-    }
-
-    downloadNewNotes({
+    const downloadConfig = {
+      gqlClient,
       auth,
       key,
       config,
       internalConfig,
       cache,
       command: this,
-    })
+    }
 
-    saveFileCache(cache)
+    const notes = await downloadNotes(downloadConfig)
+    await writeNewNotes(notes, downloadConfig)
+
+    await saveFileCache(cache)
   }
 }

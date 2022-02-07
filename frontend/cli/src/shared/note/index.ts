@@ -3,9 +3,11 @@ export interface Note {
   date: string
   body: string
   archived: boolean
+  version: number
   title: string
   file?: NoteFileData
   user_id: string
+  updated_at: string
 }
 
 export interface NoteFileData {

@@ -7,6 +7,7 @@ import { validateAuth } from "../../shared/validateAuth"
 import * as fs from "fs/promises"
 import { getAllMarkdownFiles, MarkdownFileInfo } from "../../lib/files"
 import { uploadNewNotes } from "../../shared/note/upload"
+import loadPrerequisites from "../../shared/loadPrerequisites"
 
 export default class Download extends Command {
   static description = "Download notes"
@@ -24,19 +25,17 @@ export default class Download extends Command {
     },
   ]
 
-  validateAuth = validateAuth.bind(this)
-
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Download)
 
-    const internalConfig = await loadInternalConfig()
-    if (!internalConfig) {
-      this.error(new Error("Initialize first via the init command"))
-    }
-    const [config, configErr] = await protect(loadConfig())
-    if (configErr || !config) {
-      this.error(configErr ?? "Config null")
-    }
+    const {
+      config,
+      gqlClient,
+      auth,
+      key,
+      internalConfig,
+      cache,
+    } = await loadPrerequisites()
 
     const targetDirectory: string = args["dir"] || config.baseDirectory
     const targetDirectoryStat = await fs.stat(targetDirectory)
@@ -46,25 +45,15 @@ export default class Download extends Command {
       )
     }
 
-    const cache = await reloadOrCreateFileCache()
-
-    const key = await loadKey()
-
-    const [auth, authValidationError] = await protect(
-      this.validateAuth(internalConfig)
-    )
-    if (authValidationError || !auth) {
-      this.error(authValidationError ?? new Error("Unable to retrieve auth"))
-    }
-
     this.log(`Loading markdown files from ${targetDirectory}`)
     const mdFiles = await getAllMarkdownFiles(
       config.baseDirectory,
       targetDirectory
     )
 
-    uploadNewNotes({
+    await uploadNewNotes({
       mdFiles,
+      gqlClient,
       auth,
       key,
       config,
@@ -73,6 +62,6 @@ export default class Download extends Command {
       command: this,
     })
 
-    saveFileCache(cache)
+    await saveFileCache(cache)
   }
 }
