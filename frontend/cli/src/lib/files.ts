@@ -48,7 +48,7 @@ export async function getAllMarkdownFiles(
             baseDir.length + 1,
             filePath.length - file.length - 1
           ),
-          text: mdContent.content,
+          text: mdContent.content.trim(),
           time: stat.mtime,
           metadata: mdContent.metadata,
         }
@@ -60,6 +60,6 @@ export async function getAllMarkdownFiles(
   return arrayOfFiles
 }
 
-function md5text(text: string): string {
+export function md5HashText(text: string): string {
   return crypto.createHash("md5").update(text).digest("base64")
 }

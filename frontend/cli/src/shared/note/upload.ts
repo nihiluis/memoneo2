@@ -3,7 +3,7 @@ import { Client } from "@urql/core"
 import dayjs = require("dayjs")
 import { Note, NoteFileData } from "."
 import { AuthResult } from "../../lib/auth"
-import { MarkdownFileInfo } from "../../lib/files"
+import { MarkdownFileInfo, md5HashText } from "../../lib/files"
 import { createGqlClient } from "../../lib/gql"
 import { encryptText } from "../../lib/key"
 import { decodeBase64String, encodeBase64String } from "../base64"
@@ -98,6 +98,9 @@ export async function uploadNewNotes({
     noteFileData.push(fileData)
 
     cache.trackedNoteIds.push(note.id)
+    
+    const noteCacheData = cache.getOrCreateNoteCacheData(note.id)
+    noteCacheData.lastMd5Hash = md5HashText(note.body)
   }
 
   const { error: error2 } = await gqlClient

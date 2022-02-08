@@ -4,7 +4,7 @@ import dayjs = require("dayjs")
 import { fstat } from "fs"
 import { Note, NoteFileData } from "."
 import { AuthResult } from "../../lib/auth"
-import { MarkdownFileInfo } from "../../lib/files"
+import { MarkdownFileInfo, md5HashText } from "../../lib/files"
 import { createGqlClient } from "../../lib/gql"
 import { encryptText } from "../../lib/key"
 import { decodeBase64String, encodeBase64String } from "../base64"
@@ -63,20 +63,20 @@ export async function syncNotes({
       continue
     }
 
+    const noteCacheData = cache.getOrCreateNoteCacheData(id)
+
     const note = noteMap[id]
 
     const noteDate = dayjs(note.updated_at)
     const mdFileDate = dayjs(mdFile.time)
 
-    const localSyncDate = cache.lastSync.hasOwnProperty(note.id)
-      ? dayjs(cache.lastSync[note.id])
-      : null
+    const md5Hash = md5HashText(mdFile.text)
+    const lastMd5Hash = noteCacheData.lastMd5Hash
 
-    command.log(
-      `notedate ${noteDate.toISOString()} vs mdFileDate ${mdFileDate.toISOString()}`
-    )
+    const hasNewMd5Hash = lastMd5Hash.length > 0 && md5Hash !== lastMd5Hash
+    const isMdFileNew = lastMd5Hash.length === 0 && mdFileDate.isAfter(noteDate)
 
-    if (mdFileDate.isAfter(noteDate)) {
+    if (hasNewMd5Hash || isMdFileNew) {
       // set remote content to local
       const encryptedBody = await encryptText(
         mdFile.text,
@@ -107,7 +107,8 @@ export async function syncNotes({
         throw error
       }
 
-      cache.lastSync[note.id] = data.update_note_by_pk.updated_at
+      noteCacheData.lastMd5Hash = md5Hash
+      noteCacheData.lastSync = data.update_note_by_pk.updated_at
 
       const { error: error2 } = await gqlClient
         .mutation(UpdateNoteFileDataMutation, noteFileData)
@@ -116,10 +117,6 @@ export async function syncNotes({
         throw error2
       }
     } else {
-      command.log(
-        `note.version ${note.version} vs mdfileversion ${mdFile.metadata.version}`
-      )
-
       if (note.file && note.version > mdFile.metadata.version) {
         const updateFileName = note.file.title !== mdFile.fileName
         const updatePath = note.file.path !== mdFile.path
@@ -129,7 +126,8 @@ export async function syncNotes({
           title: note.file.title,
         })
 
-        cache.lastSync[note.id] = note.updated_at
+        noteCacheData.lastSync = note.updated_at
+        noteCacheData.lastMd5Hash = md5HashText(note.body)
 
         if (updateFileName || updatePath) {
           await deleteMdFile(mdFile, config)
