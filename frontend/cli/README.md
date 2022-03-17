@@ -9,3 +9,4 @@
 # Todo
 - download needs to respect existing files
 - upload
+- https://github.com/npkgz/cli-progress

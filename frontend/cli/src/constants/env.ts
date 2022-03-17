@@ -18,3 +18,5 @@ export const ENDPOINT_SAVE_KEY_URL = `${AUTH_API_URL}/enckey/save`
 
 export const ENDPOINT_GQL_URL = `${MASTER_API_URL}/v1/graphql`
 export const ENDPOINT_RELAY_URL = `${MASTER_API_URL}/v1/relay`
+
+export const VERSION = "0.0.1"

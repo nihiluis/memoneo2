@@ -29,6 +29,8 @@ export async function downloadNotes({
   gqlClient,
   command,
 }: DownloadNotesConfig): Promise<Note[]> {
+  command.log("Downloading notes...")
+
   const { data, error } = await gqlClient.query(DownloadQuery).toPromise()
   if (error) {
     command.error(error)
