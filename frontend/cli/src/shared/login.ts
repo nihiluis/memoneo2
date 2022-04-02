@@ -18,7 +18,7 @@ export async function performLogin(
   const authResult = await login(mail, password)
   const { error: loginError, enckey, token } = authResult
   if (loginError) {
-    throw new Error("Unable to auth using given mail and password.")
+    throw new Error(`Unable to auth using given mail and password due to: ${loginError}.`)
   }
   if (!enckey) {
     throw new Error("Your encryption key must be set up before using the CLI.")

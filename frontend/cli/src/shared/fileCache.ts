@@ -35,10 +35,10 @@ export async function saveFileCache(cache: MemoneoFileCache) {
 
 export async function reloadOrCreateFileCache(): Promise<MemoneoFileCache> {
   // todo impl load
+  const [_, err] = await protect(fs.access(CACHE_PATH))
 
-  const cacheStat = await fs.stat(CACHE_PATH)
-
-  if (!cacheStat.isFile()) {
+  if (err) {
+    // assuming file does not exist
     return await createEmptyFileCache()
   }
 
