@@ -11,6 +11,7 @@ export const InsertNoteMutation = gql`
         title
         body
         date
+        version
       }
     }
   }
@@ -39,7 +40,7 @@ export const UpdateNoteMutation = gql`
 
 export const InsertNoteFileDataMutation = gql`
   mutation InsertFileDataMutation($inputs: [file_data_insert_input!]!) {
-    insert_file_data(objects: $inputs) {
+    insert_file_data(objects: $inputs, on_conflict: {constraint: file_data_pkey, update_columns: [path, title]}) {
       affected_rows
     }
   }

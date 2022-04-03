@@ -38,6 +38,5 @@ export async function writeNoteToFile(
     recursive: true,
   })
 
-  console.log(`writing ${targetFilePath}`)
   await fs.writeFile(targetFilePath, fileText)
 }

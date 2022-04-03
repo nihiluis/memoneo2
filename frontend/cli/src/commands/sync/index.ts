@@ -6,6 +6,8 @@ import { uploadNewNotes } from "../../shared/note/upload"
 import loadPrerequisites from "../../shared/loadPrerequisites"
 import { downloadNotes, writeNewNotes } from "../../shared/note/download"
 import { syncNotes } from "../../shared/note/sync"
+import { dirxml } from "console"
+import { cli } from "../../lib/reexports"
 
 export default class Sync extends Command {
   static description = "Download notes"
@@ -43,11 +45,12 @@ export default class Sync extends Command {
       )
     }
 
-    this.log(`Loading markdown files from ${targetDirectory}`)
+    cli.ux.action.start(`Loading markdown files from ${targetDirectory}`)
     const mdFiles = await getAllMarkdownFiles(
       config.baseDirectory,
       targetDirectory
     )
+    cli.ux.action.stop()
 
     const downloadConfig = {
       auth,

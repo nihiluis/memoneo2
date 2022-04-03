@@ -6,6 +6,7 @@ import { AuthResult } from "../../lib/auth"
 import { MarkdownFileInfo, md5HashText } from "../../lib/files"
 import { createGqlClient } from "../../lib/gql"
 import { encryptText } from "../../lib/key"
+import { cli } from "../../lib/reexports"
 import { decodeBase64String, encodeBase64String } from "../base64"
 import { MemoneoConfig, MemoneoInternalConfig } from "../config"
 import { MemoneoFileCache } from "../fileCache"
@@ -34,29 +35,41 @@ export async function uploadNewNotes({
   command,
 }: UploadNewNotesConfig) {
   const newNotes: Partial<Note>[] = []
-  for (let mdFile of mdFiles) {
-    if (!mdFile.metadata.hasOwnProperty("id")) {
-      const encryptedText = await encryptText(
-        mdFile.text,
-        decodeBase64String(auth.enckey!.salt),
-        key
-      )
+  const newMdFiles = mdFiles.filter(mdFile => !mdFile.metadata.hasOwnProperty("id"))
 
-      newNotes.push({
-        body: encodeBase64String(encryptedText.ctStr),
-        title: mdFile.fileName,
-        date: mdFile.time.toISOString(),
-        archived: false,
-        version: 1,
-        user_id: internalConfig.userId,
-      })
-    }
+  const progress = cli.ux.progress({
+    format: 'Encrypting... | {bar} | {value}/{total} notes',
+    barCompleteChar: '\u2588',
+    barIncompleteChar: '\u2591',
+  })
+
+  progress.start(newMdFiles.length, 0)
+  for (let mdFile of newMdFiles) {
+    const encryptedText = await encryptText(
+      mdFile.text,
+      decodeBase64String(auth.enckey!.salt),
+      key
+    )
+
+    newNotes.push({
+      body: encodeBase64String(encryptedText.ctStr),
+      title: mdFile.fileName,
+      date: mdFile.time.toISOString(),
+      archived: false,
+      version: 1,
+      user_id: internalConfig.userId,
+    })
+
+    progress.increment()
   }
+  progress.stop()
 
   if (newNotes.length === 0) {
     command.log("No new notes to upload found.")
     return
   }
+
+  cli.ux.action.start("Uploading new notes")
 
   const { data, error } = await gqlClient
     .mutation(InsertNoteMutation, { inputs: newNotes })
@@ -69,9 +82,18 @@ export async function uploadNewNotes({
     throw new Error("data not found")
   }
 
+  cli.ux.action.stop()
+
   const insertedNotes: Note[] = data.insert_note.returning
   const noteFileData: NoteFileData[] = []
 
+  const progress2 = cli.ux.progress({
+    format: 'Updating metadata... | {bar} | {value}/{total} notes',
+    barCompleteChar: '\u2588',
+    barIncompleteChar: '\u2591',
+  })
+
+  progress2.start(insertedNotes.length, 0)
   for (let note of insertedNotes) {
     const mdFile = mdFiles.find(
       mdFile =>
@@ -98,10 +120,13 @@ export async function uploadNewNotes({
     noteFileData.push(fileData)
 
     cache.trackedNoteIds.push(note.id)
-    
+
     const noteCacheData = cache.getOrCreateNoteCacheData(note.id)
     noteCacheData.lastMd5Hash = md5HashText(note.body)
+
+    progress2.increment()
   }
+  progress2.stop()
 
   const { error: error2 } = await gqlClient
     .mutation(InsertNoteFileDataMutation, { inputs: noteFileData })
