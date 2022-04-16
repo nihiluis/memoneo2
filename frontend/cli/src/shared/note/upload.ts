@@ -6,7 +6,7 @@ import { AuthResult } from "../../lib/auth"
 import { MarkdownFileInfo, md5HashText } from "../../lib/files"
 import { createGqlClient } from "../../lib/gql"
 import { encryptText } from "../../lib/key"
-import { cli } from "../../lib/reexports"
+import { cli, generateUuid } from "../../lib/reexports"
 import { decodeBase64String, encodeBase64String } from "../base64"
 import { MemoneoConfig, MemoneoInternalConfig } from "../config"
 import { MemoneoFileCache } from "../fileCache"
@@ -51,10 +51,14 @@ export async function uploadNewNotes({
       key
     )
 
+    const uuid = generateUuid()
+    mdFile.willBeCreated = uuid
+
     newNotes.push({
+      id: uuid,
       body: encodeBase64String(encryptedText.ctStr),
       title: mdFile.fileName,
-      date: mdFile.time.toISOString(),
+      date: mdFile.modifiedTime.toISOString(),
       archived: false,
       version: 1,
       user_id: internalConfig.userId,
@@ -97,9 +101,10 @@ export async function uploadNewNotes({
   for (let note of insertedNotes) {
     const mdFile = mdFiles.find(
       mdFile =>
-        dayjs(mdFile.time).format("YYYY-MM-DD") === note.date &&
-        mdFile.fileName === note.title
+        mdFile.willBeCreated === note.id
     )
+
+    // dayjs(mdFile.time).format("YYYY-MM-DD") === note.date &&
 
     if (!mdFile) {
       throw new Error(

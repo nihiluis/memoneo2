@@ -14,8 +14,10 @@ export interface MarkdownFileInfo {
   fileName: string
   path: string
   text: string
-  time: Date
+  modifiedTime: Date
+  createdTime: Date
   metadata: MarkdownFileMetadata
+  willBeCreated?: string
 }
 
 export async function getAllMarkdownFiles(
@@ -49,7 +51,8 @@ export async function getAllMarkdownFiles(
             filePath.length - file.length - 1
           ),
           text: mdContent.content.trim(),
-          time: stat.mtime,
+          modifiedTime: stat.mtime,
+          createdTime: stat.ctime,
           metadata: mdContent.metadata,
         }
         arrayOfFiles.push(info)
