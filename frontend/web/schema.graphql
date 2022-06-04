@@ -4,16 +4,114 @@ schema {
   subscription: subscription_root
 }
 
-# whether this query should be cached (Hasura Cloud only)
+"""whether this query should be cached (Hasura Cloud only)"""
 directive @cached(
-  # measured in seconds
+  """measured in seconds"""
   ttl: Int! = 60
 
-  # refresh the cache entry
+  """refresh the cache entry"""
   refresh: Boolean! = false
 ) on QUERY
 
-# columns and relationships of "activity"
+"""
+Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'.
+"""
+input Boolean_comparison_exp {
+  _eq: Boolean
+  _gt: Boolean
+  _gte: Boolean
+  _in: [Boolean!]
+  _is_null: Boolean
+  _lt: Boolean
+  _lte: Boolean
+  _neq: Boolean
+  _nin: [Boolean!]
+}
+
+"""
+Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
+"""
+input Int_comparison_exp {
+  _eq: Int
+  _gt: Int
+  _gte: Int
+  _in: [Int!]
+  _is_null: Boolean
+  _lt: Int
+  _lte: Int
+  _neq: Int
+  _nin: [Int!]
+}
+
+"""An object with globally unique ID"""
+interface Node {
+  """A globally unique identifier"""
+  id: ID!
+}
+
+type PageInfo {
+  endCursor: String!
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String!
+}
+
+"""
+Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'.
+"""
+input String_comparison_exp {
+  _eq: String
+  _gt: String
+  _gte: String
+
+  """does the column match the given case-insensitive pattern"""
+  _ilike: String
+  _in: [String!]
+
+  """
+  does the column match the given POSIX regular expression, case insensitive
+  """
+  _iregex: String
+  _is_null: Boolean
+
+  """does the column match the given pattern"""
+  _like: String
+  _lt: String
+  _lte: String
+  _neq: String
+
+  """does the column NOT match the given case-insensitive pattern"""
+  _nilike: String
+  _nin: [String!]
+
+  """
+  does the column NOT match the given POSIX regular expression, case insensitive
+  """
+  _niregex: String
+
+  """does the column NOT match the given pattern"""
+  _nlike: String
+
+  """
+  does the column NOT match the given POSIX regular expression, case sensitive
+  """
+  _nregex: String
+
+  """does the column NOT match the given SQL regular expression"""
+  _nsimilar: String
+
+  """
+  does the column match the given POSIX regular expression, case sensitive
+  """
+  _regex: String
+
+  """does the column match the given SQL regular expression"""
+  _similar: String
+}
+
+"""
+columns and relationships of "activity"
+"""
 type activity implements Node {
   archived: Boolean!
   created_at: timestamptz!
@@ -25,7 +123,22 @@ type activity implements Node {
   user_id: uuid!
 }
 
-# Boolean expression to filter rows from the table "activity". All fields are combined with a logical 'AND'.
+"""
+A Relay connection object on "activity"
+"""
+type activityConnection {
+  edges: [activityEdge!]!
+  pageInfo: PageInfo!
+}
+
+type activityEdge {
+  cursor: String!
+  node: activity!
+}
+
+"""
+Boolean expression to filter rows from the table "activity". All fields are combined with a logical 'AND'.
+"""
 input activity_bool_exp {
   _and: [activity_bool_exp!]
   _not: activity_bool_exp
@@ -40,18 +153,24 @@ input activity_bool_exp {
   user_id: uuid_comparison_exp
 }
 
-# unique or primary key constraints on table "activity"
+"""
+unique or primary key constraints on table "activity"
+"""
 enum activity_constraint {
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   activity_pkey
 }
 
-# input type for incrementing numeric columns in table "activity"
+"""
+input type for incrementing numeric columns in table "activity"
+"""
 input activity_inc_input {
   rank: Int
 }
 
-# input type for inserting data into table "activity"
+"""
+input type for inserting data into table "activity"
+"""
 input activity_insert_input {
   archived: Boolean
   created_at: timestamptz
@@ -63,23 +182,27 @@ input activity_insert_input {
   user_id: uuid
 }
 
-# response of any mutation on the table "activity"
+"""
+response of any mutation on the table "activity"
+"""
 type activity_mutation_response {
-  # number of rows affected by the mutation
+  """number of rows affected by the mutation"""
   affected_rows: Int!
 
-  # data from the rows affected by the mutation
+  """data from the rows affected by the mutation"""
   returning: [activity!]!
 }
 
-# on conflict condition type for table "activity"
+"""
+on conflict condition type for table "activity"
+"""
 input activity_on_conflict {
   constraint: activity_constraint!
   update_columns: [activity_update_column!]! = []
   where: activity_bool_exp
 }
 
-# Ordering options when selecting data from "activity".
+"""Ordering options when selecting data from "activity"."""
 input activity_order_by {
   archived: order_by
   created_at: order_by
@@ -91,39 +214,43 @@ input activity_order_by {
   user_id: order_by
 }
 
-# primary key columns input for table: activity
+"""primary key columns input for table: activity"""
 input activity_pk_columns_input {
   id: uuid!
 }
 
-# select columns of table "activity"
+"""
+select columns of table "activity"
+"""
 enum activity_select_column {
-  # column name
+  """column name"""
   archived
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   description
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   rank
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 
-  # column name
+  """column name"""
   user_id
 }
 
-# input type for updating data in table "activity"
+"""
+input type for updating data in table "activity"
+"""
 input activity_set_input {
   archived: Boolean
   created_at: timestamptz
@@ -135,60 +262,40 @@ input activity_set_input {
   user_id: uuid
 }
 
-# update columns of table "activity"
+"""
+update columns of table "activity"
+"""
 enum activity_update_column {
-  # column name
+  """column name"""
   archived
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   description
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   rank
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 
-  # column name
+  """column name"""
   user_id
-}
-
-# A Relay connection object on "activity"
-type activityConnection {
-  edges: [activityEdge!]!
-  pageInfo: PageInfo!
-}
-
-type activityEdge {
-  cursor: String!
-  node: activity!
-}
-
-# Boolean expression to compare columns of type "Boolean". All fields are combined with logical 'AND'.
-input Boolean_comparison_exp {
-  _eq: Boolean
-  _gt: Boolean
-  _gte: Boolean
-  _in: [Boolean!]
-  _is_null: Boolean
-  _lt: Boolean
-  _lte: Boolean
-  _neq: Boolean
-  _nin: [Boolean!]
 }
 
 scalar date
 
-# Boolean expression to compare columns of type "date". All fields are combined with logical 'AND'.
+"""
+Boolean expression to compare columns of type "date". All fields are combined with logical 'AND'.
+"""
 input date_comparison_exp {
   _eq: date
   _gt: date
@@ -201,7 +308,9 @@ input date_comparison_exp {
   _nin: [date!]
 }
 
-# columns and relationships of "enckey"
+"""
+columns and relationships of "enckey"
+"""
 type enckey implements Node {
   created_at: timestamptz!
   id: ID!
@@ -209,99 +318,9 @@ type enckey implements Node {
   salt: String!
 }
 
-# Boolean expression to filter rows from the table "enckey". All fields are combined with a logical 'AND'.
-input enckey_bool_exp {
-  _and: [enckey_bool_exp!]
-  _not: enckey_bool_exp
-  _or: [enckey_bool_exp!]
-  created_at: timestamptz_comparison_exp
-  id: uuid_comparison_exp
-  key: String_comparison_exp
-  salt: String_comparison_exp
-}
-
-# unique or primary key constraints on table "enckey"
-enum enckey_constraint {
-  # unique or primary key constraint
-  keypair_pkey
-}
-
-# input type for inserting data into table "enckey"
-input enckey_insert_input {
-  created_at: timestamptz
-  id: uuid
-  key: String
-  salt: String
-}
-
-# response of any mutation on the table "enckey"
-type enckey_mutation_response {
-  # number of rows affected by the mutation
-  affected_rows: Int!
-
-  # data from the rows affected by the mutation
-  returning: [enckey!]!
-}
-
-# on conflict condition type for table "enckey"
-input enckey_on_conflict {
-  constraint: enckey_constraint!
-  update_columns: [enckey_update_column!]! = []
-  where: enckey_bool_exp
-}
-
-# Ordering options when selecting data from "enckey".
-input enckey_order_by {
-  created_at: order_by
-  id: order_by
-  key: order_by
-  salt: order_by
-}
-
-# primary key columns input for table: enckey
-input enckey_pk_columns_input {
-  id: uuid!
-}
-
-# select columns of table "enckey"
-enum enckey_select_column {
-  # column name
-  created_at
-
-  # column name
-  id
-
-  # column name
-  key
-
-  # column name
-  salt
-}
-
-# input type for updating data in table "enckey"
-input enckey_set_input {
-  created_at: timestamptz
-  id: uuid
-  key: String
-  salt: String
-}
-
-# update columns of table "enckey"
-enum enckey_update_column {
-  # column name
-  created_at
-
-  # column name
-  id
-
-  # column name
-  key
-
-  # column name
-  salt
-}
-
-# A Relay connection object on "enckey"
+"""
+A Relay connection object on "enckey"
+"""
 type enckeyConnection {
   edges: [enckeyEdge!]!
   pageInfo: PageInfo!
@@ -312,12 +331,122 @@ type enckeyEdge {
   node: enckey!
 }
 
-# columns and relationships of "file_data"
+"""
+Boolean expression to filter rows from the table "enckey". All fields are combined with a logical 'AND'.
+"""
+input enckey_bool_exp {
+  _and: [enckey_bool_exp!]
+  _not: enckey_bool_exp
+  _or: [enckey_bool_exp!]
+  created_at: timestamptz_comparison_exp
+  id: uuid_comparison_exp
+  key: String_comparison_exp
+  salt: String_comparison_exp
+}
+
+"""
+unique or primary key constraints on table "enckey"
+"""
+enum enckey_constraint {
+  """unique or primary key constraint"""
+  keypair_pkey
+}
+
+"""
+input type for inserting data into table "enckey"
+"""
+input enckey_insert_input {
+  created_at: timestamptz
+  id: uuid
+  key: String
+  salt: String
+}
+
+"""
+response of any mutation on the table "enckey"
+"""
+type enckey_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
+
+  """data from the rows affected by the mutation"""
+  returning: [enckey!]!
+}
+
+"""
+on conflict condition type for table "enckey"
+"""
+input enckey_on_conflict {
+  constraint: enckey_constraint!
+  update_columns: [enckey_update_column!]! = []
+  where: enckey_bool_exp
+}
+
+"""Ordering options when selecting data from "enckey"."""
+input enckey_order_by {
+  created_at: order_by
+  id: order_by
+  key: order_by
+  salt: order_by
+}
+
+"""primary key columns input for table: enckey"""
+input enckey_pk_columns_input {
+  id: uuid!
+}
+
+"""
+select columns of table "enckey"
+"""
+enum enckey_select_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  key
+
+  """column name"""
+  salt
+}
+
+"""
+input type for updating data in table "enckey"
+"""
+input enckey_set_input {
+  created_at: timestamptz
+  id: uuid
+  key: String
+  salt: String
+}
+
+"""
+update columns of table "enckey"
+"""
+enum enckey_update_column {
+  """column name"""
+  created_at
+
+  """column name"""
+  id
+
+  """column name"""
+  key
+
+  """column name"""
+  salt
+}
+
+"""
+columns and relationships of "file_data"
+"""
 type file_data implements Node {
   created_at: timestamptz!
   id: ID!
 
-  # An object relationship
+  """An object relationship"""
   note: note!
   note_id: uuid!
   path: String!
@@ -325,7 +454,22 @@ type file_data implements Node {
   updated_at: timestamptz!
 }
 
-# Boolean expression to filter rows from the table "file_data". All fields are combined with a logical 'AND'.
+"""
+A Relay connection object on "file_data"
+"""
+type file_dataConnection {
+  edges: [file_dataEdge!]!
+  pageInfo: PageInfo!
+}
+
+type file_dataEdge {
+  cursor: String!
+  node: file_data!
+}
+
+"""
+Boolean expression to filter rows from the table "file_data". All fields are combined with a logical 'AND'.
+"""
 input file_data_bool_exp {
   _and: [file_data_bool_exp!]
   _not: file_data_bool_exp
@@ -338,13 +482,17 @@ input file_data_bool_exp {
   updated_at: timestamptz_comparison_exp
 }
 
-# unique or primary key constraints on table "file_data"
+"""
+unique or primary key constraints on table "file_data"
+"""
 enum file_data_constraint {
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   file_data_pkey
 }
 
-# input type for inserting data into table "file_data"
+"""
+input type for inserting data into table "file_data"
+"""
 input file_data_insert_input {
   created_at: timestamptz
   note: note_obj_rel_insert_input
@@ -354,31 +502,37 @@ input file_data_insert_input {
   updated_at: timestamptz
 }
 
-# response of any mutation on the table "file_data"
+"""
+response of any mutation on the table "file_data"
+"""
 type file_data_mutation_response {
-  # number of rows affected by the mutation
+  """number of rows affected by the mutation"""
   affected_rows: Int!
 
-  # data from the rows affected by the mutation
+  """data from the rows affected by the mutation"""
   returning: [file_data!]!
 }
 
-# input type for inserting object relation for remote table "file_data"
+"""
+input type for inserting object relation for remote table "file_data"
+"""
 input file_data_obj_rel_insert_input {
   data: file_data_insert_input!
 
-  # on conflict condition
+  """on conflict condition"""
   on_conflict: file_data_on_conflict
 }
 
-# on conflict condition type for table "file_data"
+"""
+on conflict condition type for table "file_data"
+"""
 input file_data_on_conflict {
   constraint: file_data_constraint!
   update_columns: [file_data_update_column!]! = []
   where: file_data_bool_exp
 }
 
-# Ordering options when selecting data from "file_data".
+"""Ordering options when selecting data from "file_data"."""
 input file_data_order_by {
   created_at: order_by
   note: note_order_by
@@ -388,30 +542,34 @@ input file_data_order_by {
   updated_at: order_by
 }
 
-# primary key columns input for table: file_data
+"""primary key columns input for table: file_data"""
 input file_data_pk_columns_input {
   note_id: uuid!
 }
 
-# select columns of table "file_data"
+"""
+select columns of table "file_data"
+"""
 enum file_data_select_column {
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   note_id
 
-  # column name
+  """column name"""
   path
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 }
 
-# input type for updating data in table "file_data"
+"""
+input type for updating data in table "file_data"
+"""
 input file_data_set_input {
   created_at: timestamptz
   note_id: uuid
@@ -420,36 +578,29 @@ input file_data_set_input {
   updated_at: timestamptz
 }
 
-# update columns of table "file_data"
+"""
+update columns of table "file_data"
+"""
 enum file_data_update_column {
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   note_id
 
-  # column name
+  """column name"""
   path
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 }
 
-# A Relay connection object on "file_data"
-type file_dataConnection {
-  edges: [file_dataEdge!]!
-  pageInfo: PageInfo!
-}
-
-type file_dataEdge {
-  cursor: String!
-  node: file_data!
-}
-
-# columns and relationships of "goal"
+"""
+columns and relationships of "goal"
+"""
 type goal implements Node {
   archived: Boolean!
   created_at: timestamptz
@@ -463,13 +614,30 @@ type goal implements Node {
   user_id: uuid!
 }
 
-# aggregated selection of "goal"
+"""
+A Relay connection object on "goal"
+"""
+type goalConnection {
+  edges: [goalEdge!]!
+  pageInfo: PageInfo!
+}
+
+type goalEdge {
+  cursor: String!
+  node: goal!
+}
+
+"""
+aggregated selection of "goal"
+"""
 type goal_aggregate {
   aggregate: goal_aggregate_fields
   nodes: [goal!]!
 }
 
-# aggregate fields of "goal"
+"""
+aggregate fields of "goal"
+"""
 type goal_aggregate_fields {
   avg: goal_avg_fields
   count(columns: [goal_select_column!], distinct: Boolean): Int!
@@ -484,7 +652,9 @@ type goal_aggregate_fields {
   variance: goal_variance_fields
 }
 
-# order by aggregate values of table "goal"
+"""
+order by aggregate values of table "goal"
+"""
 input goal_aggregate_order_by {
   avg: goal_avg_order_by
   count: order_by
@@ -499,27 +669,33 @@ input goal_aggregate_order_by {
   variance: goal_variance_order_by
 }
 
-# input type for inserting array relation for remote table "goal"
+"""
+input type for inserting array relation for remote table "goal"
+"""
 input goal_arr_rel_insert_input {
   data: [goal_insert_input!]!
 
-  # on conflict condition
+  """on conflict condition"""
   on_conflict: goal_on_conflict
 }
 
-# aggregate avg on columns
+"""aggregate avg on columns"""
 type goal_avg_fields {
   progress: Float
   rank: Float
 }
 
-# order by avg() on columns of table "goal"
+"""
+order by avg() on columns of table "goal"
+"""
 input goal_avg_order_by {
   progress: order_by
   rank: order_by
 }
 
-# Boolean expression to filter rows from the table "goal". All fields are combined with a logical 'AND'.
+"""
+Boolean expression to filter rows from the table "goal". All fields are combined with a logical 'AND'.
+"""
 input goal_bool_exp {
   _and: [goal_bool_exp!]
   _not: goal_bool_exp
@@ -536,19 +712,25 @@ input goal_bool_exp {
   user_id: uuid_comparison_exp
 }
 
-# unique or primary key constraints on table "goal"
+"""
+unique or primary key constraints on table "goal"
+"""
 enum goal_constraint {
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   goal_pkey
 }
 
-# input type for incrementing numeric columns in table "goal"
+"""
+input type for incrementing numeric columns in table "goal"
+"""
 input goal_inc_input {
   progress: Int
   rank: Int
 }
 
-# input type for inserting data into table "goal"
+"""
+input type for inserting data into table "goal"
+"""
 input goal_insert_input {
   archived: Boolean
   created_at: timestamptz
@@ -562,7 +744,7 @@ input goal_insert_input {
   user_id: uuid
 }
 
-# aggregate max on columns
+"""aggregate max on columns"""
 type goal_max_fields {
   created_at: timestamptz
   description: String
@@ -574,7 +756,9 @@ type goal_max_fields {
   user_id: uuid
 }
 
-# order by max() on columns of table "goal"
+"""
+order by max() on columns of table "goal"
+"""
 input goal_max_order_by {
   created_at: order_by
   description: order_by
@@ -586,7 +770,7 @@ input goal_max_order_by {
   user_id: order_by
 }
 
-# aggregate min on columns
+"""aggregate min on columns"""
 type goal_min_fields {
   created_at: timestamptz
   description: String
@@ -598,7 +782,9 @@ type goal_min_fields {
   user_id: uuid
 }
 
-# order by min() on columns of table "goal"
+"""
+order by min() on columns of table "goal"
+"""
 input goal_min_order_by {
   created_at: order_by
   description: order_by
@@ -610,31 +796,37 @@ input goal_min_order_by {
   user_id: order_by
 }
 
-# response of any mutation on the table "goal"
+"""
+response of any mutation on the table "goal"
+"""
 type goal_mutation_response {
-  # number of rows affected by the mutation
+  """number of rows affected by the mutation"""
   affected_rows: Int!
 
-  # data from the rows affected by the mutation
+  """data from the rows affected by the mutation"""
   returning: [goal!]!
 }
 
-# input type for inserting object relation for remote table "goal"
+"""
+input type for inserting object relation for remote table "goal"
+"""
 input goal_obj_rel_insert_input {
   data: goal_insert_input!
 
-  # on conflict condition
+  """on conflict condition"""
   on_conflict: goal_on_conflict
 }
 
-# on conflict condition type for table "goal"
+"""
+on conflict condition type for table "goal"
+"""
 input goal_on_conflict {
   constraint: goal_constraint!
   update_columns: [goal_update_column!]! = []
   where: goal_bool_exp
 }
 
-# Ordering options when selecting data from "goal".
+"""Ordering options when selecting data from "goal"."""
 input goal_order_by {
   archived: order_by
   created_at: order_by
@@ -648,45 +840,49 @@ input goal_order_by {
   user_id: order_by
 }
 
-# primary key columns input for table: goal
+"""primary key columns input for table: goal"""
 input goal_pk_columns_input {
   id: uuid!
 }
 
-# select columns of table "goal"
+"""
+select columns of table "goal"
+"""
 enum goal_select_column {
-  # column name
+  """column name"""
   archived
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   description
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   progress
 
-  # column name
+  """column name"""
   rank
 
-  # column name
+  """column name"""
   status
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 
-  # column name
+  """column name"""
   user_id
 }
 
-# input type for updating data in table "goal"
+"""
+input type for updating data in table "goal"
+"""
 input goal_set_input {
   archived: Boolean
   created_at: timestamptz
@@ -700,319 +896,328 @@ input goal_set_input {
   user_id: uuid
 }
 
-# aggregate stddev on columns
+"""aggregate stddev on columns"""
 type goal_stddev_fields {
   progress: Float
   rank: Float
 }
 
-# order by stddev() on columns of table "goal"
+"""
+order by stddev() on columns of table "goal"
+"""
 input goal_stddev_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate stddev_pop on columns
+"""aggregate stddev_pop on columns"""
 type goal_stddev_pop_fields {
   progress: Float
   rank: Float
 }
 
-# order by stddev_pop() on columns of table "goal"
+"""
+order by stddev_pop() on columns of table "goal"
+"""
 input goal_stddev_pop_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate stddev_samp on columns
+"""aggregate stddev_samp on columns"""
 type goal_stddev_samp_fields {
   progress: Float
   rank: Float
 }
 
-# order by stddev_samp() on columns of table "goal"
+"""
+order by stddev_samp() on columns of table "goal"
+"""
 input goal_stddev_samp_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate sum on columns
+"""aggregate sum on columns"""
 type goal_sum_fields {
   progress: Int
   rank: Int
 }
 
-# order by sum() on columns of table "goal"
+"""
+order by sum() on columns of table "goal"
+"""
 input goal_sum_order_by {
   progress: order_by
   rank: order_by
 }
 
-# update columns of table "goal"
+"""
+update columns of table "goal"
+"""
 enum goal_update_column {
-  # column name
+  """column name"""
   archived
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   description
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   progress
 
-  # column name
+  """column name"""
   rank
 
-  # column name
+  """column name"""
   status
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 
-  # column name
+  """column name"""
   user_id
 }
 
-# aggregate var_pop on columns
+"""aggregate var_pop on columns"""
 type goal_var_pop_fields {
   progress: Float
   rank: Float
 }
 
-# order by var_pop() on columns of table "goal"
+"""
+order by var_pop() on columns of table "goal"
+"""
 input goal_var_pop_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate var_samp on columns
+"""aggregate var_samp on columns"""
 type goal_var_samp_fields {
   progress: Float
   rank: Float
 }
 
-# order by var_samp() on columns of table "goal"
+"""
+order by var_samp() on columns of table "goal"
+"""
 input goal_var_samp_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate variance on columns
+"""aggregate variance on columns"""
 type goal_variance_fields {
   progress: Float
   rank: Float
 }
 
-# order by variance() on columns of table "goal"
+"""
+order by variance() on columns of table "goal"
+"""
 input goal_variance_order_by {
   progress: order_by
   rank: order_by
 }
 
-# A Relay connection object on "goal"
-type goalConnection {
-  edges: [goalEdge!]!
-  pageInfo: PageInfo!
-}
-
-type goalEdge {
-  cursor: String!
-  node: goal!
-}
-
-# Boolean expression to compare columns of type "Int". All fields are combined with logical 'AND'.
-input Int_comparison_exp {
-  _eq: Int
-  _gt: Int
-  _gte: Int
-  _in: [Int!]
-  _is_null: Boolean
-  _lt: Int
-  _lte: Int
-  _neq: Int
-  _nin: [Int!]
-}
-
-# columns and relationships of "memouser"
+"""
+columns and relationships of "memouser"
+"""
 type memouser implements Node {
   auth_id: uuid!
   created_at: timestamptz!
 
-  # An array relationship
+  """An array relationship"""
   goals(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [goal_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: goal_bool_exp
   ): [goal!]!
 
-  # An aggregate relationship
+  """An aggregate relationship"""
   goals_aggregate(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [goal_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: goal_bool_exp
   ): goal_aggregate!
 
-  # An array relationship connection
+  """An array relationship connection"""
   goals_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [goal_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: goal_bool_exp
   ): goalConnection!
   id: ID!
 
-  # An object relationship
+  """An object relationship"""
   invited_by: memouser
   invited_by_id: uuid
   level: Int!
 
-  # An array relationship
+  """An array relationship"""
   notes(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_bool_exp
   ): [note!]!
 
-  # An aggregate relationship
+  """An aggregate relationship"""
   notes_aggregate(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_bool_exp
   ): note_aggregate!
 
-  # An array relationship connection
+  """An array relationship connection"""
   notes_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_bool_exp
   ): noteConnection!
 
-  # An array relationship
+  """An array relationship"""
   todos(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [todo_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [todo_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: todo_bool_exp
   ): [todo!]!
 
-  # An aggregate relationship
+  """An aggregate relationship"""
   todos_aggregate(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [todo_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [todo_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: todo_bool_exp
   ): todo_aggregate!
 
-  # An array relationship connection
+  """An array relationship connection"""
   todos_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [todo_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [todo_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: todo_bool_exp
   ): todoConnection!
 }
 
-# Boolean expression to filter rows from the table "memouser". All fields are combined with a logical 'AND'.
+"""
+A Relay connection object on "memouser"
+"""
+type memouserConnection {
+  edges: [memouserEdge!]!
+  pageInfo: PageInfo!
+}
+
+type memouserEdge {
+  cursor: String!
+  node: memouser!
+}
+
+"""
+Boolean expression to filter rows from the table "memouser". All fields are combined with a logical 'AND'.
+"""
 input memouser_bool_exp {
   _and: [memouser_bool_exp!]
   _not: memouser_bool_exp
@@ -1028,21 +1233,27 @@ input memouser_bool_exp {
   todos: todo_bool_exp
 }
 
-# unique or primary key constraints on table "memouser"
+"""
+unique or primary key constraints on table "memouser"
+"""
 enum memouser_constraint {
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   memouser_auth_id_key
 
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   user_pkey
 }
 
-# input type for incrementing numeric columns in table "memouser"
+"""
+input type for incrementing numeric columns in table "memouser"
+"""
 input memouser_inc_input {
   level: Int
 }
 
-# input type for inserting data into table "memouser"
+"""
+input type for inserting data into table "memouser"
+"""
 input memouser_insert_input {
   auth_id: uuid
   created_at: timestamptz
@@ -1055,31 +1266,37 @@ input memouser_insert_input {
   todos: todo_arr_rel_insert_input
 }
 
-# response of any mutation on the table "memouser"
+"""
+response of any mutation on the table "memouser"
+"""
 type memouser_mutation_response {
-  # number of rows affected by the mutation
+  """number of rows affected by the mutation"""
   affected_rows: Int!
 
-  # data from the rows affected by the mutation
+  """data from the rows affected by the mutation"""
   returning: [memouser!]!
 }
 
-# input type for inserting object relation for remote table "memouser"
+"""
+input type for inserting object relation for remote table "memouser"
+"""
 input memouser_obj_rel_insert_input {
   data: memouser_insert_input!
 
-  # on conflict condition
+  """on conflict condition"""
   on_conflict: memouser_on_conflict
 }
 
-# on conflict condition type for table "memouser"
+"""
+on conflict condition type for table "memouser"
+"""
 input memouser_on_conflict {
   constraint: memouser_constraint!
   update_columns: [memouser_update_column!]! = []
   where: memouser_bool_exp
 }
 
-# Ordering options when selecting data from "memouser".
+"""Ordering options when selecting data from "memouser"."""
 input memouser_order_by {
   auth_id: order_by
   created_at: order_by
@@ -1092,30 +1309,34 @@ input memouser_order_by {
   todos_aggregate: todo_aggregate_order_by
 }
 
-# primary key columns input for table: memouser
+"""primary key columns input for table: memouser"""
 input memouser_pk_columns_input {
   id: uuid!
 }
 
-# select columns of table "memouser"
+"""
+select columns of table "memouser"
+"""
 enum memouser_select_column {
-  # column name
+  """column name"""
   auth_id
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   invited_by_id
 
-  # column name
+  """column name"""
   level
 }
 
-# input type for updating data in table "memouser"
+"""
+input type for updating data in table "memouser"
+"""
 input memouser_set_input {
   auth_id: uuid
   created_at: timestamptz
@@ -1124,558 +1345,653 @@ input memouser_set_input {
   level: Int
 }
 
-# update columns of table "memouser"
+"""
+update columns of table "memouser"
+"""
 enum memouser_update_column {
-  # column name
+  """column name"""
   auth_id
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   invited_by_id
 
-  # column name
+  """column name"""
   level
 }
 
-# A Relay connection object on "memouser"
-type memouserConnection {
-  edges: [memouserEdge!]!
-  pageInfo: PageInfo!
-}
-
-type memouserEdge {
-  cursor: String!
-  node: memouser!
-}
-
-# mutation root
+"""mutation root"""
 type mutation_root {
-  # delete data from the table: "activity"
+  """
+  delete data from the table: "activity"
+  """
   delete_activity(
-    # filter the rows which have to be deleted
+    """filter the rows which have to be deleted"""
     where: activity_bool_exp!
   ): activity_mutation_response
 
-  # delete single row from the table: "activity"
+  """
+  delete single row from the table: "activity"
+  """
   delete_activity_by_pk(id: uuid!): activity
 
-  # delete data from the table: "enckey"
+  """
+  delete data from the table: "enckey"
+  """
   delete_enckey(
-    # filter the rows which have to be deleted
+    """filter the rows which have to be deleted"""
     where: enckey_bool_exp!
   ): enckey_mutation_response
 
-  # delete single row from the table: "enckey"
+  """
+  delete single row from the table: "enckey"
+  """
   delete_enckey_by_pk(id: uuid!): enckey
 
-  # delete data from the table: "file_data"
+  """
+  delete data from the table: "file_data"
+  """
   delete_file_data(
-    # filter the rows which have to be deleted
+    """filter the rows which have to be deleted"""
     where: file_data_bool_exp!
   ): file_data_mutation_response
 
-  # delete single row from the table: "file_data"
+  """
+  delete single row from the table: "file_data"
+  """
   delete_file_data_by_pk(note_id: uuid!): file_data
 
-  # delete data from the table: "goal"
+  """
+  delete data from the table: "goal"
+  """
   delete_goal(
-    # filter the rows which have to be deleted
+    """filter the rows which have to be deleted"""
     where: goal_bool_exp!
   ): goal_mutation_response
 
-  # delete single row from the table: "goal"
+  """
+  delete single row from the table: "goal"
+  """
   delete_goal_by_pk(id: uuid!): goal
 
-  # delete data from the table: "memouser"
+  """
+  delete data from the table: "memouser"
+  """
   delete_memouser(
-    # filter the rows which have to be deleted
+    """filter the rows which have to be deleted"""
     where: memouser_bool_exp!
   ): memouser_mutation_response
 
-  # delete single row from the table: "memouser"
+  """
+  delete single row from the table: "memouser"
+  """
   delete_memouser_by_pk(id: uuid!): memouser
 
-  # delete data from the table: "note"
+  """
+  delete data from the table: "note"
+  """
   delete_note(
-    # filter the rows which have to be deleted
+    """filter the rows which have to be deleted"""
     where: note_bool_exp!
   ): note_mutation_response
 
-  # delete single row from the table: "note"
+  """
+  delete single row from the table: "note"
+  """
   delete_note_by_pk(id: uuid!): note
 
-  # delete data from the table: "note_goal"
+  """
+  delete data from the table: "note_goal"
+  """
   delete_note_goal(
-    # filter the rows which have to be deleted
+    """filter the rows which have to be deleted"""
     where: note_goal_bool_exp!
   ): note_goal_mutation_response
 
-  # delete single row from the table: "note_goal"
+  """
+  delete single row from the table: "note_goal"
+  """
   delete_note_goal_by_pk(id: uuid!): note_goal
 
-  # delete data from the table: "status_simple"
+  """
+  delete data from the table: "status_simple"
+  """
   delete_status_simple(
-    # filter the rows which have to be deleted
+    """filter the rows which have to be deleted"""
     where: status_simple_bool_exp!
   ): status_simple_mutation_response
 
-  # delete single row from the table: "status_simple"
+  """
+  delete single row from the table: "status_simple"
+  """
   delete_status_simple_by_pk(value: String!): status_simple
 
-  # delete data from the table: "todo"
+  """
+  delete data from the table: "todo"
+  """
   delete_todo(
-    # filter the rows which have to be deleted
+    """filter the rows which have to be deleted"""
     where: todo_bool_exp!
   ): todo_mutation_response
 
-  # delete single row from the table: "todo"
+  """
+  delete single row from the table: "todo"
+  """
   delete_todo_by_pk(id: uuid!): todo
 
-  # insert data into the table: "activity"
+  """
+  insert data into the table: "activity"
+  """
   insert_activity(
-    # the rows to be inserted
+    """the rows to be inserted"""
     objects: [activity_insert_input!]!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: activity_on_conflict
   ): activity_mutation_response
 
-  # insert a single row into the table: "activity"
+  """
+  insert a single row into the table: "activity"
+  """
   insert_activity_one(
-    # the row to be inserted
+    """the row to be inserted"""
     object: activity_insert_input!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: activity_on_conflict
   ): activity
 
-  # insert data into the table: "enckey"
+  """
+  insert data into the table: "enckey"
+  """
   insert_enckey(
-    # the rows to be inserted
+    """the rows to be inserted"""
     objects: [enckey_insert_input!]!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: enckey_on_conflict
   ): enckey_mutation_response
 
-  # insert a single row into the table: "enckey"
+  """
+  insert a single row into the table: "enckey"
+  """
   insert_enckey_one(
-    # the row to be inserted
+    """the row to be inserted"""
     object: enckey_insert_input!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: enckey_on_conflict
   ): enckey
 
-  # insert data into the table: "file_data"
+  """
+  insert data into the table: "file_data"
+  """
   insert_file_data(
-    # the rows to be inserted
+    """the rows to be inserted"""
     objects: [file_data_insert_input!]!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: file_data_on_conflict
   ): file_data_mutation_response
 
-  # insert a single row into the table: "file_data"
+  """
+  insert a single row into the table: "file_data"
+  """
   insert_file_data_one(
-    # the row to be inserted
+    """the row to be inserted"""
     object: file_data_insert_input!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: file_data_on_conflict
   ): file_data
 
-  # insert data into the table: "goal"
+  """
+  insert data into the table: "goal"
+  """
   insert_goal(
-    # the rows to be inserted
+    """the rows to be inserted"""
     objects: [goal_insert_input!]!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: goal_on_conflict
   ): goal_mutation_response
 
-  # insert a single row into the table: "goal"
+  """
+  insert a single row into the table: "goal"
+  """
   insert_goal_one(
-    # the row to be inserted
+    """the row to be inserted"""
     object: goal_insert_input!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: goal_on_conflict
   ): goal
 
-  # insert data into the table: "memouser"
+  """
+  insert data into the table: "memouser"
+  """
   insert_memouser(
-    # the rows to be inserted
+    """the rows to be inserted"""
     objects: [memouser_insert_input!]!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: memouser_on_conflict
   ): memouser_mutation_response
 
-  # insert a single row into the table: "memouser"
+  """
+  insert a single row into the table: "memouser"
+  """
   insert_memouser_one(
-    # the row to be inserted
+    """the row to be inserted"""
     object: memouser_insert_input!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: memouser_on_conflict
   ): memouser
 
-  # insert data into the table: "note"
+  """
+  insert data into the table: "note"
+  """
   insert_note(
-    # the rows to be inserted
+    """the rows to be inserted"""
     objects: [note_insert_input!]!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: note_on_conflict
   ): note_mutation_response
 
-  # insert data into the table: "note_goal"
+  """
+  insert data into the table: "note_goal"
+  """
   insert_note_goal(
-    # the rows to be inserted
+    """the rows to be inserted"""
     objects: [note_goal_insert_input!]!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: note_goal_on_conflict
   ): note_goal_mutation_response
 
-  # insert a single row into the table: "note_goal"
+  """
+  insert a single row into the table: "note_goal"
+  """
   insert_note_goal_one(
-    # the row to be inserted
+    """the row to be inserted"""
     object: note_goal_insert_input!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: note_goal_on_conflict
   ): note_goal
 
-  # insert a single row into the table: "note"
+  """
+  insert a single row into the table: "note"
+  """
   insert_note_one(
-    # the row to be inserted
+    """the row to be inserted"""
     object: note_insert_input!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: note_on_conflict
   ): note
 
-  # insert data into the table: "status_simple"
+  """
+  insert data into the table: "status_simple"
+  """
   insert_status_simple(
-    # the rows to be inserted
+    """the rows to be inserted"""
     objects: [status_simple_insert_input!]!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: status_simple_on_conflict
   ): status_simple_mutation_response
 
-  # insert a single row into the table: "status_simple"
+  """
+  insert a single row into the table: "status_simple"
+  """
   insert_status_simple_one(
-    # the row to be inserted
+    """the row to be inserted"""
     object: status_simple_insert_input!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: status_simple_on_conflict
   ): status_simple
 
-  # insert data into the table: "todo"
+  """
+  insert data into the table: "todo"
+  """
   insert_todo(
-    # the rows to be inserted
+    """the rows to be inserted"""
     objects: [todo_insert_input!]!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: todo_on_conflict
   ): todo_mutation_response
 
-  # insert a single row into the table: "todo"
+  """
+  insert a single row into the table: "todo"
+  """
   insert_todo_one(
-    # the row to be inserted
+    """the row to be inserted"""
     object: todo_insert_input!
 
-    # on conflict condition
+    """on conflict condition"""
     on_conflict: todo_on_conflict
   ): todo
 
-  # update data of the table: "activity"
+  """
+  update data of the table: "activity"
+  """
   update_activity(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: activity_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: activity_set_input
 
-    # filter the rows which have to be updated
+    """filter the rows which have to be updated"""
     where: activity_bool_exp!
   ): activity_mutation_response
 
-  # update single row of the table: "activity"
+  """
+  update single row of the table: "activity"
+  """
   update_activity_by_pk(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: activity_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: activity_set_input
     pk_columns: activity_pk_columns_input!
   ): activity
 
-  # update data of the table: "enckey"
+  """
+  update data of the table: "enckey"
+  """
   update_enckey(
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: enckey_set_input
 
-    # filter the rows which have to be updated
+    """filter the rows which have to be updated"""
     where: enckey_bool_exp!
   ): enckey_mutation_response
 
-  # update single row of the table: "enckey"
+  """
+  update single row of the table: "enckey"
+  """
   update_enckey_by_pk(
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: enckey_set_input
     pk_columns: enckey_pk_columns_input!
   ): enckey
 
-  # update data of the table: "file_data"
+  """
+  update data of the table: "file_data"
+  """
   update_file_data(
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: file_data_set_input
 
-    # filter the rows which have to be updated
+    """filter the rows which have to be updated"""
     where: file_data_bool_exp!
   ): file_data_mutation_response
 
-  # update single row of the table: "file_data"
+  """
+  update single row of the table: "file_data"
+  """
   update_file_data_by_pk(
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: file_data_set_input
     pk_columns: file_data_pk_columns_input!
   ): file_data
 
-  # update data of the table: "goal"
+  """
+  update data of the table: "goal"
+  """
   update_goal(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: goal_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: goal_set_input
 
-    # filter the rows which have to be updated
+    """filter the rows which have to be updated"""
     where: goal_bool_exp!
   ): goal_mutation_response
 
-  # update single row of the table: "goal"
+  """
+  update single row of the table: "goal"
+  """
   update_goal_by_pk(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: goal_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: goal_set_input
     pk_columns: goal_pk_columns_input!
   ): goal
 
-  # update data of the table: "memouser"
+  """
+  update data of the table: "memouser"
+  """
   update_memouser(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: memouser_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: memouser_set_input
 
-    # filter the rows which have to be updated
+    """filter the rows which have to be updated"""
     where: memouser_bool_exp!
   ): memouser_mutation_response
 
-  # update single row of the table: "memouser"
+  """
+  update single row of the table: "memouser"
+  """
   update_memouser_by_pk(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: memouser_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: memouser_set_input
     pk_columns: memouser_pk_columns_input!
   ): memouser
 
-  # update data of the table: "note"
+  """
+  update data of the table: "note"
+  """
   update_note(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: note_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: note_set_input
 
-    # filter the rows which have to be updated
+    """filter the rows which have to be updated"""
     where: note_bool_exp!
   ): note_mutation_response
 
-  # update single row of the table: "note"
+  """
+  update single row of the table: "note"
+  """
   update_note_by_pk(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: note_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: note_set_input
     pk_columns: note_pk_columns_input!
   ): note
 
-  # update data of the table: "note_goal"
+  """
+  update data of the table: "note_goal"
+  """
   update_note_goal(
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: note_goal_set_input
 
-    # filter the rows which have to be updated
+    """filter the rows which have to be updated"""
     where: note_goal_bool_exp!
   ): note_goal_mutation_response
 
-  # update single row of the table: "note_goal"
+  """
+  update single row of the table: "note_goal"
+  """
   update_note_goal_by_pk(
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: note_goal_set_input
     pk_columns: note_goal_pk_columns_input!
   ): note_goal
 
-  # update data of the table: "status_simple"
+  """
+  update data of the table: "status_simple"
+  """
   update_status_simple(
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: status_simple_set_input
 
-    # filter the rows which have to be updated
+    """filter the rows which have to be updated"""
     where: status_simple_bool_exp!
   ): status_simple_mutation_response
 
-  # update single row of the table: "status_simple"
+  """
+  update single row of the table: "status_simple"
+  """
   update_status_simple_by_pk(
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: status_simple_set_input
     pk_columns: status_simple_pk_columns_input!
   ): status_simple
 
-  # update data of the table: "todo"
+  """
+  update data of the table: "todo"
+  """
   update_todo(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: todo_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: todo_set_input
 
-    # filter the rows which have to be updated
+    """filter the rows which have to be updated"""
     where: todo_bool_exp!
   ): todo_mutation_response
 
-  # update single row of the table: "todo"
+  """
+  update single row of the table: "todo"
+  """
   update_todo_by_pk(
-    # increments the numeric columns with given value of the filtered values
+    """increments the numeric columns with given value of the filtered values"""
     _inc: todo_inc_input
 
-    # sets the columns of the filtered rows to the given values
+    """sets the columns of the filtered rows to the given values"""
     _set: todo_set_input
     pk_columns: todo_pk_columns_input!
   ): todo
 }
 
-# An object with globally unique ID
-interface Node {
-  # A globally unique identifier
-  id: ID!
-}
-
-# columns and relationships of "note"
+"""
+columns and relationships of "note"
+"""
 type note implements Node {
   archived: Boolean!
   body: String!
   created_at: timestamptz!
   date: date!
 
-  # An object relationship
+  """An object relationship"""
   file: file_data
 
-  # An array relationship
+  """An array relationship"""
   goals(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_goal_view_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_goal_view_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_goal_view_bool_exp
   ): [note_goal_view!]!
 
-  # An aggregate relationship
+  """An aggregate relationship"""
   goals_aggregate(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_goal_view_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_goal_view_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_goal_view_bool_exp
   ): note_goal_view_aggregate!
   id: ID!
 
-  # An array relationship
+  """An array relationship"""
   note_goal(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_goal_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_goal_bool_exp
   ): [note_goal!]!
 
-  # An aggregate relationship
+  """An aggregate relationship"""
   note_goal_aggregate(
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_goal_select_column!]
 
-    # limit the number of rows returned
+    """limit the number of rows returned"""
     limit: Int
 
-    # skip the first n rows. Use only with order_by
+    """skip the first n rows. Use only with order_by"""
     offset: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_goal_bool_exp
   ): note_goal_aggregate!
 
-  # An array relationship connection
+  """An array relationship connection"""
   note_goal_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_goal_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_goal_bool_exp
   ): note_goalConnection!
   pinned: Boolean!
@@ -1685,13 +2001,30 @@ type note implements Node {
   version: Int!
 }
 
-# aggregated selection of "note"
+"""
+A Relay connection object on "note"
+"""
+type noteConnection {
+  edges: [noteEdge!]!
+  pageInfo: PageInfo!
+}
+
+type noteEdge {
+  cursor: String!
+  node: note!
+}
+
+"""
+aggregated selection of "note"
+"""
 type note_aggregate {
   aggregate: note_aggregate_fields
   nodes: [note!]!
 }
 
-# aggregate fields of "note"
+"""
+aggregate fields of "note"
+"""
 type note_aggregate_fields {
   avg: note_avg_fields
   count(columns: [note_select_column!], distinct: Boolean): Int!
@@ -1706,7 +2039,9 @@ type note_aggregate_fields {
   variance: note_variance_fields
 }
 
-# order by aggregate values of table "note"
+"""
+order by aggregate values of table "note"
+"""
 input note_aggregate_order_by {
   avg: note_avg_order_by
   count: order_by
@@ -1721,25 +2056,31 @@ input note_aggregate_order_by {
   variance: note_variance_order_by
 }
 
-# input type for inserting array relation for remote table "note"
+"""
+input type for inserting array relation for remote table "note"
+"""
 input note_arr_rel_insert_input {
   data: [note_insert_input!]!
 
-  # on conflict condition
+  """on conflict condition"""
   on_conflict: note_on_conflict
 }
 
-# aggregate avg on columns
+"""aggregate avg on columns"""
 type note_avg_fields {
   version: Float
 }
 
-# order by avg() on columns of table "note"
+"""
+order by avg() on columns of table "note"
+"""
 input note_avg_order_by {
   version: order_by
 }
 
-# Boolean expression to filter rows from the table "note". All fields are combined with a logical 'AND'.
+"""
+Boolean expression to filter rows from the table "note". All fields are combined with a logical 'AND'.
+"""
 input note_bool_exp {
   _and: [note_bool_exp!]
   _not: note_bool_exp
@@ -1759,56 +2100,83 @@ input note_bool_exp {
   version: Int_comparison_exp
 }
 
-# unique or primary key constraints on table "note"
+"""
+unique or primary key constraints on table "note"
+"""
 enum note_constraint {
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   note_date_title_key
 
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   note_pkey
 }
 
-# columns and relationships of "note_goal"
+"""
+columns and relationships of "note_goal"
+"""
 type note_goal implements Node {
-  # An object relationship
+  """An object relationship"""
   goal: goal!
   goal_id: uuid!
   id: ID!
 
-  # An object relationship
+  """An object relationship"""
   note: note!
   note_id: uuid!
 }
 
-# aggregated selection of "note_goal"
+"""
+A Relay connection object on "note_goal"
+"""
+type note_goalConnection {
+  edges: [note_goalEdge!]!
+  pageInfo: PageInfo!
+}
+
+type note_goalEdge {
+  cursor: String!
+  node: note_goal!
+}
+
+"""
+aggregated selection of "note_goal"
+"""
 type note_goal_aggregate {
   aggregate: note_goal_aggregate_fields
   nodes: [note_goal!]!
 }
 
-# aggregate fields of "note_goal"
+"""
+aggregate fields of "note_goal"
+"""
 type note_goal_aggregate_fields {
   count(columns: [note_goal_select_column!], distinct: Boolean): Int!
   max: note_goal_max_fields
   min: note_goal_min_fields
 }
 
-# order by aggregate values of table "note_goal"
+"""
+order by aggregate values of table "note_goal"
+"""
 input note_goal_aggregate_order_by {
   count: order_by
   max: note_goal_max_order_by
   min: note_goal_min_order_by
 }
 
-# input type for inserting array relation for remote table "note_goal"
+"""
+input type for inserting array relation for remote table "note_goal"
+"""
 input note_goal_arr_rel_insert_input {
   data: [note_goal_insert_input!]!
 
-  # on conflict condition
+  """on conflict condition"""
   on_conflict: note_goal_on_conflict
 }
 
-# Boolean expression to filter rows from the table "note_goal". All fields are combined with a logical 'AND'.
+"""
+Boolean expression to filter rows from the table "note_goal". All fields are combined with a logical 'AND'.
+"""
 input note_goal_bool_exp {
   _and: [note_goal_bool_exp!]
   _not: note_goal_bool_exp
@@ -1820,16 +2188,20 @@ input note_goal_bool_exp {
   note_id: uuid_comparison_exp
 }
 
-# unique or primary key constraints on table "note_goal"
+"""
+unique or primary key constraints on table "note_goal"
+"""
 enum note_goal_constraint {
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   note_activity_pkey
 
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   note_goal_note_id_goal_id_key
 }
 
-# input type for inserting data into table "note_goal"
+"""
+input type for inserting data into table "note_goal"
+"""
 input note_goal_insert_input {
   goal: goal_obj_rel_insert_input
   goal_id: uuid
@@ -1838,51 +2210,59 @@ input note_goal_insert_input {
   note_id: uuid
 }
 
-# aggregate max on columns
+"""aggregate max on columns"""
 type note_goal_max_fields {
   goal_id: uuid
   id: uuid
   note_id: uuid
 }
 
-# order by max() on columns of table "note_goal"
+"""
+order by max() on columns of table "note_goal"
+"""
 input note_goal_max_order_by {
   goal_id: order_by
   id: order_by
   note_id: order_by
 }
 
-# aggregate min on columns
+"""aggregate min on columns"""
 type note_goal_min_fields {
   goal_id: uuid
   id: uuid
   note_id: uuid
 }
 
-# order by min() on columns of table "note_goal"
+"""
+order by min() on columns of table "note_goal"
+"""
 input note_goal_min_order_by {
   goal_id: order_by
   id: order_by
   note_id: order_by
 }
 
-# response of any mutation on the table "note_goal"
+"""
+response of any mutation on the table "note_goal"
+"""
 type note_goal_mutation_response {
-  # number of rows affected by the mutation
+  """number of rows affected by the mutation"""
   affected_rows: Int!
 
-  # data from the rows affected by the mutation
+  """data from the rows affected by the mutation"""
   returning: [note_goal!]!
 }
 
-# on conflict condition type for table "note_goal"
+"""
+on conflict condition type for table "note_goal"
+"""
 input note_goal_on_conflict {
   constraint: note_goal_constraint!
   update_columns: [note_goal_update_column!]! = []
   where: note_goal_bool_exp
 }
 
-# Ordering options when selecting data from "note_goal".
+"""Ordering options when selecting data from "note_goal"."""
 input note_goal_order_by {
   goal: goal_order_by
   goal_id: order_by
@@ -1891,43 +2271,51 @@ input note_goal_order_by {
   note_id: order_by
 }
 
-# primary key columns input for table: note_goal
+"""primary key columns input for table: note_goal"""
 input note_goal_pk_columns_input {
   id: uuid!
 }
 
-# select columns of table "note_goal"
+"""
+select columns of table "note_goal"
+"""
 enum note_goal_select_column {
-  # column name
+  """column name"""
   goal_id
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   note_id
 }
 
-# input type for updating data in table "note_goal"
+"""
+input type for updating data in table "note_goal"
+"""
 input note_goal_set_input {
   goal_id: uuid
   id: uuid
   note_id: uuid
 }
 
-# update columns of table "note_goal"
+"""
+update columns of table "note_goal"
+"""
 enum note_goal_update_column {
-  # column name
+  """column name"""
   goal_id
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   note_id
 }
 
-# columns and relationships of "note_goal_view"
+"""
+columns and relationships of "note_goal_view"
+"""
 type note_goal_view {
   archived: Boolean
   created_at: timestamptz
@@ -1941,13 +2329,17 @@ type note_goal_view {
   user_id: uuid
 }
 
-# aggregated selection of "note_goal_view"
+"""
+aggregated selection of "note_goal_view"
+"""
 type note_goal_view_aggregate {
   aggregate: note_goal_view_aggregate_fields
   nodes: [note_goal_view!]!
 }
 
-# aggregate fields of "note_goal_view"
+"""
+aggregate fields of "note_goal_view"
+"""
 type note_goal_view_aggregate_fields {
   avg: note_goal_view_avg_fields
   count(columns: [note_goal_view_select_column!], distinct: Boolean): Int!
@@ -1962,7 +2354,9 @@ type note_goal_view_aggregate_fields {
   variance: note_goal_view_variance_fields
 }
 
-# order by aggregate values of table "note_goal_view"
+"""
+order by aggregate values of table "note_goal_view"
+"""
 input note_goal_view_aggregate_order_by {
   avg: note_goal_view_avg_order_by
   count: order_by
@@ -1977,24 +2371,30 @@ input note_goal_view_aggregate_order_by {
   variance: note_goal_view_variance_order_by
 }
 
-# input type for inserting array relation for remote table "note_goal_view"
+"""
+input type for inserting array relation for remote table "note_goal_view"
+"""
 input note_goal_view_arr_rel_insert_input {
   data: [note_goal_view_insert_input!]!
 }
 
-# aggregate avg on columns
+"""aggregate avg on columns"""
 type note_goal_view_avg_fields {
   progress: Float
   rank: Float
 }
 
-# order by avg() on columns of table "note_goal_view"
+"""
+order by avg() on columns of table "note_goal_view"
+"""
 input note_goal_view_avg_order_by {
   progress: order_by
   rank: order_by
 }
 
-# Boolean expression to filter rows from the table "note_goal_view". All fields are combined with a logical 'AND'.
+"""
+Boolean expression to filter rows from the table "note_goal_view". All fields are combined with a logical 'AND'.
+"""
 input note_goal_view_bool_exp {
   _and: [note_goal_view_bool_exp!]
   _not: note_goal_view_bool_exp
@@ -2012,7 +2412,9 @@ input note_goal_view_bool_exp {
   user_id: uuid_comparison_exp
 }
 
-# input type for inserting data into table "note_goal_view"
+"""
+input type for inserting data into table "note_goal_view"
+"""
 input note_goal_view_insert_input {
   archived: Boolean
   created_at: timestamptz
@@ -2027,7 +2429,7 @@ input note_goal_view_insert_input {
   user_id: uuid
 }
 
-# aggregate max on columns
+"""aggregate max on columns"""
 type note_goal_view_max_fields {
   created_at: timestamptz
   description: String
@@ -2041,7 +2443,9 @@ type note_goal_view_max_fields {
   user_id: uuid
 }
 
-# order by max() on columns of table "note_goal_view"
+"""
+order by max() on columns of table "note_goal_view"
+"""
 input note_goal_view_max_order_by {
   created_at: order_by
   description: order_by
@@ -2055,7 +2459,7 @@ input note_goal_view_max_order_by {
   user_id: order_by
 }
 
-# aggregate min on columns
+"""aggregate min on columns"""
 type note_goal_view_min_fields {
   created_at: timestamptz
   description: String
@@ -2069,7 +2473,9 @@ type note_goal_view_min_fields {
   user_id: uuid
 }
 
-# order by min() on columns of table "note_goal_view"
+"""
+order by min() on columns of table "note_goal_view"
+"""
 input note_goal_view_min_order_by {
   created_at: order_by
   description: order_by
@@ -2083,7 +2489,7 @@ input note_goal_view_min_order_by {
   user_id: order_by
 }
 
-# Ordering options when selecting data from "note_goal_view".
+"""Ordering options when selecting data from "note_goal_view"."""
 input note_goal_view_order_by {
   archived: order_by
   created_at: order_by
@@ -2098,143 +2504,152 @@ input note_goal_view_order_by {
   user_id: order_by
 }
 
-# select columns of table "note_goal_view"
+"""
+select columns of table "note_goal_view"
+"""
 enum note_goal_view_select_column {
-  # column name
+  """column name"""
   archived
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   description
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   note_id
 
-  # column name
+  """column name"""
   progress
 
-  # column name
+  """column name"""
   rank
 
-  # column name
+  """column name"""
   status
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 
-  # column name
+  """column name"""
   user_id
 }
 
-# aggregate stddev on columns
+"""aggregate stddev on columns"""
 type note_goal_view_stddev_fields {
   progress: Float
   rank: Float
 }
 
-# order by stddev() on columns of table "note_goal_view"
+"""
+order by stddev() on columns of table "note_goal_view"
+"""
 input note_goal_view_stddev_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate stddev_pop on columns
+"""aggregate stddev_pop on columns"""
 type note_goal_view_stddev_pop_fields {
   progress: Float
   rank: Float
 }
 
-# order by stddev_pop() on columns of table "note_goal_view"
+"""
+order by stddev_pop() on columns of table "note_goal_view"
+"""
 input note_goal_view_stddev_pop_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate stddev_samp on columns
+"""aggregate stddev_samp on columns"""
 type note_goal_view_stddev_samp_fields {
   progress: Float
   rank: Float
 }
 
-# order by stddev_samp() on columns of table "note_goal_view"
+"""
+order by stddev_samp() on columns of table "note_goal_view"
+"""
 input note_goal_view_stddev_samp_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate sum on columns
+"""aggregate sum on columns"""
 type note_goal_view_sum_fields {
   progress: Int
   rank: Int
 }
 
-# order by sum() on columns of table "note_goal_view"
+"""
+order by sum() on columns of table "note_goal_view"
+"""
 input note_goal_view_sum_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate var_pop on columns
+"""aggregate var_pop on columns"""
 type note_goal_view_var_pop_fields {
   progress: Float
   rank: Float
 }
 
-# order by var_pop() on columns of table "note_goal_view"
+"""
+order by var_pop() on columns of table "note_goal_view"
+"""
 input note_goal_view_var_pop_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate var_samp on columns
+"""aggregate var_samp on columns"""
 type note_goal_view_var_samp_fields {
   progress: Float
   rank: Float
 }
 
-# order by var_samp() on columns of table "note_goal_view"
+"""
+order by var_samp() on columns of table "note_goal_view"
+"""
 input note_goal_view_var_samp_order_by {
   progress: order_by
   rank: order_by
 }
 
-# aggregate variance on columns
+"""aggregate variance on columns"""
 type note_goal_view_variance_fields {
   progress: Float
   rank: Float
 }
 
-# order by variance() on columns of table "note_goal_view"
+"""
+order by variance() on columns of table "note_goal_view"
+"""
 input note_goal_view_variance_order_by {
   progress: order_by
   rank: order_by
 }
 
-# A Relay connection object on "note_goal"
-type note_goalConnection {
-  edges: [note_goalEdge!]!
-  pageInfo: PageInfo!
-}
-
-type note_goalEdge {
-  cursor: String!
-  node: note_goal!
-}
-
-# input type for incrementing numeric columns in table "note"
+"""
+input type for incrementing numeric columns in table "note"
+"""
 input note_inc_input {
   version: Int
 }
 
-# input type for inserting data into table "note"
+"""
+input type for inserting data into table "note"
+"""
 input note_insert_input {
   archived: Boolean
   body: String
@@ -2251,7 +2666,7 @@ input note_insert_input {
   version: Int
 }
 
-# aggregate max on columns
+"""aggregate max on columns"""
 type note_max_fields {
   body: String
   created_at: timestamptz
@@ -2263,7 +2678,9 @@ type note_max_fields {
   version: Int
 }
 
-# order by max() on columns of table "note"
+"""
+order by max() on columns of table "note"
+"""
 input note_max_order_by {
   body: order_by
   created_at: order_by
@@ -2275,7 +2692,7 @@ input note_max_order_by {
   version: order_by
 }
 
-# aggregate min on columns
+"""aggregate min on columns"""
 type note_min_fields {
   body: String
   created_at: timestamptz
@@ -2287,7 +2704,9 @@ type note_min_fields {
   version: Int
 }
 
-# order by min() on columns of table "note"
+"""
+order by min() on columns of table "note"
+"""
 input note_min_order_by {
   body: order_by
   created_at: order_by
@@ -2299,31 +2718,37 @@ input note_min_order_by {
   version: order_by
 }
 
-# response of any mutation on the table "note"
+"""
+response of any mutation on the table "note"
+"""
 type note_mutation_response {
-  # number of rows affected by the mutation
+  """number of rows affected by the mutation"""
   affected_rows: Int!
 
-  # data from the rows affected by the mutation
+  """data from the rows affected by the mutation"""
   returning: [note!]!
 }
 
-# input type for inserting object relation for remote table "note"
+"""
+input type for inserting object relation for remote table "note"
+"""
 input note_obj_rel_insert_input {
   data: note_insert_input!
 
-  # on conflict condition
+  """on conflict condition"""
   on_conflict: note_on_conflict
 }
 
-# on conflict condition type for table "note"
+"""
+on conflict condition type for table "note"
+"""
 input note_on_conflict {
   constraint: note_constraint!
   update_columns: [note_update_column!]! = []
   where: note_bool_exp
 }
 
-# Ordering options when selecting data from "note".
+"""Ordering options when selecting data from "note"."""
 input note_order_by {
   archived: order_by
   body: order_by
@@ -2340,45 +2765,49 @@ input note_order_by {
   version: order_by
 }
 
-# primary key columns input for table: note
+"""primary key columns input for table: note"""
 input note_pk_columns_input {
   id: uuid!
 }
 
-# select columns of table "note"
+"""
+select columns of table "note"
+"""
 enum note_select_column {
-  # column name
+  """column name"""
   archived
 
-  # column name
+  """column name"""
   body
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   date
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   pinned
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 
-  # column name
+  """column name"""
   user_id
 
-  # column name
+  """column name"""
   version
 }
 
-# input type for updating data in table "note"
+"""
+input type for updating data in table "note"
+"""
 input note_set_input {
   archived: Boolean
   body: String
@@ -2392,391 +2821,332 @@ input note_set_input {
   version: Int
 }
 
-# aggregate stddev on columns
+"""aggregate stddev on columns"""
 type note_stddev_fields {
   version: Float
 }
 
-# order by stddev() on columns of table "note"
+"""
+order by stddev() on columns of table "note"
+"""
 input note_stddev_order_by {
   version: order_by
 }
 
-# aggregate stddev_pop on columns
+"""aggregate stddev_pop on columns"""
 type note_stddev_pop_fields {
   version: Float
 }
 
-# order by stddev_pop() on columns of table "note"
+"""
+order by stddev_pop() on columns of table "note"
+"""
 input note_stddev_pop_order_by {
   version: order_by
 }
 
-# aggregate stddev_samp on columns
+"""aggregate stddev_samp on columns"""
 type note_stddev_samp_fields {
   version: Float
 }
 
-# order by stddev_samp() on columns of table "note"
+"""
+order by stddev_samp() on columns of table "note"
+"""
 input note_stddev_samp_order_by {
   version: order_by
 }
 
-# aggregate sum on columns
+"""aggregate sum on columns"""
 type note_sum_fields {
   version: Int
 }
 
-# order by sum() on columns of table "note"
+"""
+order by sum() on columns of table "note"
+"""
 input note_sum_order_by {
   version: order_by
 }
 
-# update columns of table "note"
+"""
+update columns of table "note"
+"""
 enum note_update_column {
-  # column name
+  """column name"""
   archived
 
-  # column name
+  """column name"""
   body
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   date
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   pinned
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 
-  # column name
+  """column name"""
   user_id
 
-  # column name
+  """column name"""
   version
 }
 
-# aggregate var_pop on columns
+"""aggregate var_pop on columns"""
 type note_var_pop_fields {
   version: Float
 }
 
-# order by var_pop() on columns of table "note"
+"""
+order by var_pop() on columns of table "note"
+"""
 input note_var_pop_order_by {
   version: order_by
 }
 
-# aggregate var_samp on columns
+"""aggregate var_samp on columns"""
 type note_var_samp_fields {
   version: Float
 }
 
-# order by var_samp() on columns of table "note"
+"""
+order by var_samp() on columns of table "note"
+"""
 input note_var_samp_order_by {
   version: order_by
 }
 
-# aggregate variance on columns
+"""aggregate variance on columns"""
 type note_variance_fields {
   version: Float
 }
 
-# order by variance() on columns of table "note"
+"""
+order by variance() on columns of table "note"
+"""
 input note_variance_order_by {
   version: order_by
 }
 
-# A Relay connection object on "note"
-type noteConnection {
-  edges: [noteEdge!]!
-  pageInfo: PageInfo!
-}
-
-type noteEdge {
-  cursor: String!
-  node: note!
-}
-
-# column ordering options
+"""column ordering options"""
 enum order_by {
-  # in ascending order, nulls last
+  """in ascending order, nulls last"""
   asc
 
-  # in ascending order, nulls first
+  """in ascending order, nulls first"""
   asc_nulls_first
 
-  # in ascending order, nulls last
+  """in ascending order, nulls last"""
   asc_nulls_last
 
-  # in descending order, nulls first
+  """in descending order, nulls first"""
   desc
 
-  # in descending order, nulls first
+  """in descending order, nulls first"""
   desc_nulls_first
 
-  # in descending order, nulls last
+  """in descending order, nulls last"""
   desc_nulls_last
 }
 
-type PageInfo {
-  endCursor: String!
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String!
-}
-
 type query_root {
-  # fetch data from the table: "activity"
+  """
+  fetch data from the table: "activity"
+  """
   activity_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [activity_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [activity_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: activity_bool_exp
   ): activityConnection!
 
-  # fetch data from the table: "enckey"
+  """
+  fetch data from the table: "enckey"
+  """
   enckey_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [enckey_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [enckey_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: enckey_bool_exp
   ): enckeyConnection!
 
-  # fetch data from the table: "file_data"
+  """
+  fetch data from the table: "file_data"
+  """
   file_data_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [file_data_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [file_data_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: file_data_bool_exp
   ): file_dataConnection!
 
-  # fetch data from the table: "goal"
+  """
+  fetch data from the table: "goal"
+  """
   goal_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [goal_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: goal_bool_exp
   ): goalConnection!
 
-  # fetch data from the table: "memouser"
+  """
+  fetch data from the table: "memouser"
+  """
   memouser_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [memouser_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [memouser_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: memouser_bool_exp
   ): memouserConnection!
   node(
-    # A globally unique id
+    """A globally unique id"""
     id: ID!
   ): Node
 
-  # fetch data from the table: "note"
+  """
+  fetch data from the table: "note"
+  """
   note_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_bool_exp
   ): noteConnection!
 
-  # An array relationship connection
+  """An array relationship connection"""
   note_goal_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_goal_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_goal_bool_exp
   ): note_goalConnection!
 
-  # fetch data from the table: "status_simple"
+  """
+  fetch data from the table: "status_simple"
+  """
   status_simple_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [status_simple_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [status_simple_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: status_simple_bool_exp
   ): status_simpleConnection!
 
-  # fetch data from the table: "todo"
+  """
+  fetch data from the table: "todo"
+  """
   todo_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [todo_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [todo_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: todo_bool_exp
   ): todoConnection!
 }
 
-# columns and relationships of "status_simple"
+"""
+columns and relationships of "status_simple"
+"""
 type status_simple implements Node {
   id: ID!
   value: String!
 }
 
-# Boolean expression to filter rows from the table "status_simple". All fields are combined with a logical 'AND'.
-input status_simple_bool_exp {
-  _and: [status_simple_bool_exp!]
-  _not: status_simple_bool_exp
-  _or: [status_simple_bool_exp!]
-  value: String_comparison_exp
-}
-
-# unique or primary key constraints on table "status_simple"
-enum status_simple_constraint {
-  # unique or primary key constraint
-  goal_status_pkey
-}
-
-enum status_simple_enum {
-  active
-  inactive
-  onhold
-}
-
-# Boolean expression to compare columns of type "status_simple_enum". All fields are combined with logical 'AND'.
-input status_simple_enum_comparison_exp {
-  _eq: status_simple_enum
-  _in: [status_simple_enum!]
-  _is_null: Boolean
-  _neq: status_simple_enum
-  _nin: [status_simple_enum!]
-}
-
-# input type for inserting data into table "status_simple"
-input status_simple_insert_input {
-  value: String
-}
-
-# response of any mutation on the table "status_simple"
-type status_simple_mutation_response {
-  # number of rows affected by the mutation
-  affected_rows: Int!
-
-  # data from the rows affected by the mutation
-  returning: [status_simple!]!
-}
-
-# on conflict condition type for table "status_simple"
-input status_simple_on_conflict {
-  constraint: status_simple_constraint!
-  update_columns: [status_simple_update_column!]! = []
-  where: status_simple_bool_exp
-}
-
-# Ordering options when selecting data from "status_simple".
-input status_simple_order_by {
-  value: order_by
-}
-
-# primary key columns input for table: status_simple
-input status_simple_pk_columns_input {
-  value: String!
-}
-
-# select columns of table "status_simple"
-enum status_simple_select_column {
-  # column name
-  value
-}
-
-# input type for updating data in table "status_simple"
-input status_simple_set_input {
-  value: String
-}
-
-# update columns of table "status_simple"
-enum status_simple_update_column {
-  # column name
-  value
-}
-
-# A Relay connection object on "status_simple"
+"""
+A Relay connection object on "status_simple"
+"""
 type status_simpleConnection {
   edges: [status_simpleEdge!]!
   pageInfo: PageInfo!
@@ -2787,211 +3157,281 @@ type status_simpleEdge {
   node: status_simple!
 }
 
-# Boolean expression to compare columns of type "String". All fields are combined with logical 'AND'.
-input String_comparison_exp {
-  _eq: String
-  _gt: String
-  _gte: String
+"""
+Boolean expression to filter rows from the table "status_simple". All fields are combined with a logical 'AND'.
+"""
+input status_simple_bool_exp {
+  _and: [status_simple_bool_exp!]
+  _not: status_simple_bool_exp
+  _or: [status_simple_bool_exp!]
+  value: String_comparison_exp
+}
 
-  # does the column match the given case-insensitive pattern
-  _ilike: String
-  _in: [String!]
+"""
+unique or primary key constraints on table "status_simple"
+"""
+enum status_simple_constraint {
+  """unique or primary key constraint"""
+  goal_status_pkey
+}
 
-  # does the column match the given POSIX regular expression, case insensitive
-  _iregex: String
+enum status_simple_enum {
+  active
+  inactive
+  onhold
+}
+
+"""
+Boolean expression to compare columns of type "status_simple_enum". All fields are combined with logical 'AND'.
+"""
+input status_simple_enum_comparison_exp {
+  _eq: status_simple_enum
+  _in: [status_simple_enum!]
   _is_null: Boolean
+  _neq: status_simple_enum
+  _nin: [status_simple_enum!]
+}
 
-  # does the column match the given pattern
-  _like: String
-  _lt: String
-  _lte: String
-  _neq: String
+"""
+input type for inserting data into table "status_simple"
+"""
+input status_simple_insert_input {
+  value: String
+}
 
-  # does the column NOT match the given case-insensitive pattern
-  _nilike: String
-  _nin: [String!]
+"""
+response of any mutation on the table "status_simple"
+"""
+type status_simple_mutation_response {
+  """number of rows affected by the mutation"""
+  affected_rows: Int!
 
-  # does the column NOT match the given POSIX regular expression, case insensitive
-  _niregex: String
+  """data from the rows affected by the mutation"""
+  returning: [status_simple!]!
+}
 
-  # does the column NOT match the given pattern
-  _nlike: String
+"""
+on conflict condition type for table "status_simple"
+"""
+input status_simple_on_conflict {
+  constraint: status_simple_constraint!
+  update_columns: [status_simple_update_column!]! = []
+  where: status_simple_bool_exp
+}
 
-  # does the column NOT match the given POSIX regular expression, case sensitive
-  _nregex: String
+"""Ordering options when selecting data from "status_simple"."""
+input status_simple_order_by {
+  value: order_by
+}
 
-  # does the column NOT match the given SQL regular expression
-  _nsimilar: String
+"""primary key columns input for table: status_simple"""
+input status_simple_pk_columns_input {
+  value: String!
+}
 
-  # does the column match the given POSIX regular expression, case sensitive
-  _regex: String
+"""
+select columns of table "status_simple"
+"""
+enum status_simple_select_column {
+  """column name"""
+  value
+}
 
-  # does the column match the given SQL regular expression
-  _similar: String
+"""
+input type for updating data in table "status_simple"
+"""
+input status_simple_set_input {
+  value: String
+}
+
+"""
+update columns of table "status_simple"
+"""
+enum status_simple_update_column {
+  """column name"""
+  value
 }
 
 type subscription_root {
-  # fetch data from the table: "activity"
+  """
+  fetch data from the table: "activity"
+  """
   activity_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [activity_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [activity_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: activity_bool_exp
   ): activityConnection!
 
-  # fetch data from the table: "enckey"
+  """
+  fetch data from the table: "enckey"
+  """
   enckey_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [enckey_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [enckey_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: enckey_bool_exp
   ): enckeyConnection!
 
-  # fetch data from the table: "file_data"
+  """
+  fetch data from the table: "file_data"
+  """
   file_data_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [file_data_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [file_data_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: file_data_bool_exp
   ): file_dataConnection!
 
-  # fetch data from the table: "goal"
+  """
+  fetch data from the table: "goal"
+  """
   goal_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [goal_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: goal_bool_exp
   ): goalConnection!
 
-  # fetch data from the table: "memouser"
+  """
+  fetch data from the table: "memouser"
+  """
   memouser_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [memouser_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [memouser_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: memouser_bool_exp
   ): memouserConnection!
   node(
-    # A globally unique id
+    """A globally unique id"""
     id: ID!
   ): Node
 
-  # fetch data from the table: "note"
+  """
+  fetch data from the table: "note"
+  """
   note_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_bool_exp
   ): noteConnection!
 
-  # An array relationship connection
+  """An array relationship connection"""
   note_goal_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [note_goal_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [note_goal_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: note_goal_bool_exp
   ): note_goalConnection!
 
-  # fetch data from the table: "status_simple"
+  """
+  fetch data from the table: "status_simple"
+  """
   status_simple_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [status_simple_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [status_simple_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: status_simple_bool_exp
   ): status_simpleConnection!
 
-  # fetch data from the table: "todo"
+  """
+  fetch data from the table: "todo"
+  """
   todo_connection(
     after: String
     before: String
 
-    # distinct select on columns
+    """distinct select on columns"""
     distinct_on: [todo_select_column!]
     first: Int
     last: Int
 
-    # sort the rows by one or more columns
+    """sort the rows by one or more columns"""
     order_by: [todo_order_by!]
 
-    # filter the rows returned
+    """filter the rows returned"""
     where: todo_bool_exp
   ): todoConnection!
 }
 
 scalar timestamptz
 
-# Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'.
+"""
+Boolean expression to compare columns of type "timestamptz". All fields are combined with logical 'AND'.
+"""
 input timestamptz_comparison_exp {
   _eq: timestamptz
   _gt: timestamptz
@@ -3004,7 +3444,9 @@ input timestamptz_comparison_exp {
   _nin: [timestamptz!]
 }
 
-# columns and relationships of "todo"
+"""
+columns and relationships of "todo"
+"""
 type todo implements Node {
   archived: Boolean!
   created_at: timestamptz!
@@ -3015,13 +3457,30 @@ type todo implements Node {
   user_id: uuid!
 }
 
-# aggregated selection of "todo"
+"""
+A Relay connection object on "todo"
+"""
+type todoConnection {
+  edges: [todoEdge!]!
+  pageInfo: PageInfo!
+}
+
+type todoEdge {
+  cursor: String!
+  node: todo!
+}
+
+"""
+aggregated selection of "todo"
+"""
 type todo_aggregate {
   aggregate: todo_aggregate_fields
   nodes: [todo!]!
 }
 
-# aggregate fields of "todo"
+"""
+aggregate fields of "todo"
+"""
 type todo_aggregate_fields {
   avg: todo_avg_fields
   count(columns: [todo_select_column!], distinct: Boolean): Int!
@@ -3036,7 +3495,9 @@ type todo_aggregate_fields {
   variance: todo_variance_fields
 }
 
-# order by aggregate values of table "todo"
+"""
+order by aggregate values of table "todo"
+"""
 input todo_aggregate_order_by {
   avg: todo_avg_order_by
   count: order_by
@@ -3051,25 +3512,31 @@ input todo_aggregate_order_by {
   variance: todo_variance_order_by
 }
 
-# input type for inserting array relation for remote table "todo"
+"""
+input type for inserting array relation for remote table "todo"
+"""
 input todo_arr_rel_insert_input {
   data: [todo_insert_input!]!
 
-  # on conflict condition
+  """on conflict condition"""
   on_conflict: todo_on_conflict
 }
 
-# aggregate avg on columns
+"""aggregate avg on columns"""
 type todo_avg_fields {
   rank: Float
 }
 
-# order by avg() on columns of table "todo"
+"""
+order by avg() on columns of table "todo"
+"""
 input todo_avg_order_by {
   rank: order_by
 }
 
-# Boolean expression to filter rows from the table "todo". All fields are combined with a logical 'AND'.
+"""
+Boolean expression to filter rows from the table "todo". All fields are combined with a logical 'AND'.
+"""
 input todo_bool_exp {
   _and: [todo_bool_exp!]
   _not: todo_bool_exp
@@ -3083,18 +3550,24 @@ input todo_bool_exp {
   user_id: uuid_comparison_exp
 }
 
-# unique or primary key constraints on table "todo"
+"""
+unique or primary key constraints on table "todo"
+"""
 enum todo_constraint {
-  # unique or primary key constraint
+  """unique or primary key constraint"""
   todo_pkey
 }
 
-# input type for incrementing numeric columns in table "todo"
+"""
+input type for incrementing numeric columns in table "todo"
+"""
 input todo_inc_input {
   rank: Int
 }
 
-# input type for inserting data into table "todo"
+"""
+input type for inserting data into table "todo"
+"""
 input todo_insert_input {
   archived: Boolean
   created_at: timestamptz
@@ -3105,7 +3578,7 @@ input todo_insert_input {
   user_id: uuid
 }
 
-# aggregate max on columns
+"""aggregate max on columns"""
 type todo_max_fields {
   created_at: timestamptz
   id: uuid
@@ -3115,7 +3588,9 @@ type todo_max_fields {
   user_id: uuid
 }
 
-# order by max() on columns of table "todo"
+"""
+order by max() on columns of table "todo"
+"""
 input todo_max_order_by {
   created_at: order_by
   id: order_by
@@ -3125,7 +3600,7 @@ input todo_max_order_by {
   user_id: order_by
 }
 
-# aggregate min on columns
+"""aggregate min on columns"""
 type todo_min_fields {
   created_at: timestamptz
   id: uuid
@@ -3135,7 +3610,9 @@ type todo_min_fields {
   user_id: uuid
 }
 
-# order by min() on columns of table "todo"
+"""
+order by min() on columns of table "todo"
+"""
 input todo_min_order_by {
   created_at: order_by
   id: order_by
@@ -3145,23 +3622,27 @@ input todo_min_order_by {
   user_id: order_by
 }
 
-# response of any mutation on the table "todo"
+"""
+response of any mutation on the table "todo"
+"""
 type todo_mutation_response {
-  # number of rows affected by the mutation
+  """number of rows affected by the mutation"""
   affected_rows: Int!
 
-  # data from the rows affected by the mutation
+  """data from the rows affected by the mutation"""
   returning: [todo!]!
 }
 
-# on conflict condition type for table "todo"
+"""
+on conflict condition type for table "todo"
+"""
 input todo_on_conflict {
   constraint: todo_constraint!
   update_columns: [todo_update_column!]! = []
   where: todo_bool_exp
 }
 
-# Ordering options when selecting data from "todo".
+"""Ordering options when selecting data from "todo"."""
 input todo_order_by {
   archived: order_by
   created_at: order_by
@@ -3172,36 +3653,40 @@ input todo_order_by {
   user_id: order_by
 }
 
-# primary key columns input for table: todo
+"""primary key columns input for table: todo"""
 input todo_pk_columns_input {
   id: uuid!
 }
 
-# select columns of table "todo"
+"""
+select columns of table "todo"
+"""
 enum todo_select_column {
-  # column name
+  """column name"""
   archived
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   rank
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 
-  # column name
+  """column name"""
   user_id
 }
 
-# input type for updating data in table "todo"
+"""
+input type for updating data in table "todo"
+"""
 input todo_set_input {
   archived: Boolean
   created_at: timestamptz
@@ -3212,114 +3697,121 @@ input todo_set_input {
   user_id: uuid
 }
 
-# aggregate stddev on columns
+"""aggregate stddev on columns"""
 type todo_stddev_fields {
   rank: Float
 }
 
-# order by stddev() on columns of table "todo"
+"""
+order by stddev() on columns of table "todo"
+"""
 input todo_stddev_order_by {
   rank: order_by
 }
 
-# aggregate stddev_pop on columns
+"""aggregate stddev_pop on columns"""
 type todo_stddev_pop_fields {
   rank: Float
 }
 
-# order by stddev_pop() on columns of table "todo"
+"""
+order by stddev_pop() on columns of table "todo"
+"""
 input todo_stddev_pop_order_by {
   rank: order_by
 }
 
-# aggregate stddev_samp on columns
+"""aggregate stddev_samp on columns"""
 type todo_stddev_samp_fields {
   rank: Float
 }
 
-# order by stddev_samp() on columns of table "todo"
+"""
+order by stddev_samp() on columns of table "todo"
+"""
 input todo_stddev_samp_order_by {
   rank: order_by
 }
 
-# aggregate sum on columns
+"""aggregate sum on columns"""
 type todo_sum_fields {
   rank: Int
 }
 
-# order by sum() on columns of table "todo"
+"""
+order by sum() on columns of table "todo"
+"""
 input todo_sum_order_by {
   rank: order_by
 }
 
-# update columns of table "todo"
+"""
+update columns of table "todo"
+"""
 enum todo_update_column {
-  # column name
+  """column name"""
   archived
 
-  # column name
+  """column name"""
   created_at
 
-  # column name
+  """column name"""
   id
 
-  # column name
+  """column name"""
   rank
 
-  # column name
+  """column name"""
   title
 
-  # column name
+  """column name"""
   updated_at
 
-  # column name
+  """column name"""
   user_id
 }
 
-# aggregate var_pop on columns
+"""aggregate var_pop on columns"""
 type todo_var_pop_fields {
   rank: Float
 }
 
-# order by var_pop() on columns of table "todo"
+"""
+order by var_pop() on columns of table "todo"
+"""
 input todo_var_pop_order_by {
   rank: order_by
 }
 
-# aggregate var_samp on columns
+"""aggregate var_samp on columns"""
 type todo_var_samp_fields {
   rank: Float
 }
 
-# order by var_samp() on columns of table "todo"
+"""
+order by var_samp() on columns of table "todo"
+"""
 input todo_var_samp_order_by {
   rank: order_by
 }
 
-# aggregate variance on columns
+"""aggregate variance on columns"""
 type todo_variance_fields {
   rank: Float
 }
 
-# order by variance() on columns of table "todo"
+"""
+order by variance() on columns of table "todo"
+"""
 input todo_variance_order_by {
   rank: order_by
 }
 
-# A Relay connection object on "todo"
-type todoConnection {
-  edges: [todoEdge!]!
-  pageInfo: PageInfo!
-}
-
-type todoEdge {
-  cursor: String!
-  node: todo!
-}
-
 scalar uuid
 
-# Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'.
+"""
+Boolean expression to compare columns of type "uuid". All fields are combined with logical 'AND'.
+"""
 input uuid_comparison_exp {
   _eq: uuid
   _gt: uuid

@@ -79,7 +79,7 @@ export async function syncNotes({
     // can this even exist in sync? should be uploaded earlier
     const isMdFileNew = lastMd5Hash.length === 0 && mdFileDate.isAfter(noteDate)
     const newFileNameOrPath = (mdFile.fileName !== note.file?.title) || (mdFile.path !== note.file?.path)
-    console.log(`note ${note.title} hasNewMd5Hash ${hasNewMd5Hash} isMdFileNew ${isMdFileNew} newFileNameOrPath ${newFileNameOrPath}`)
+    // console.log(`note ${note.title} hasNewMd5Hash ${hasNewMd5Hash} isMdFileNew ${isMdFileNew} newFileNameOrPath ${newFileNameOrPath}`)
 
     return {
       hasNewMd5Hash,

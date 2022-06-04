@@ -37,3 +37,5 @@ yarn-error.log*
 *.tsbuildinfo
 
 __generated__/
+
+download_schema.sh
