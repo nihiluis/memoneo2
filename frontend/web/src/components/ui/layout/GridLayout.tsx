@@ -74,7 +74,6 @@ export default function GridLayout(props: React.PropsWithChildren<Props>) {
             </IconButton>
           </div>
           <div className={cx(layoutStyle.contentPaddingLeft, "flex")}>
-            <MiniSearch className="flex py-3" />
           </div>
           <div className="flex gap-3 items-center justify-end pr-8">
             <IconButton>

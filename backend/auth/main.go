@@ -63,5 +63,6 @@ func main() {
 
 	logger.Zap.Info("Loaded all services")
 	logger.Zap.Infow("HTTP server starting", zap.String("port", httpConfig.Port))
+
 	server.Start()
 }

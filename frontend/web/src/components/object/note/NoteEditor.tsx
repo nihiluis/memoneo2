@@ -37,6 +37,9 @@ import NoteEditorGoals, { NoteEditorGoalsHandle } from "./NoteEditorGoals"
 import FormRowFlexWrapper from "../../ui/form/FormRowFlexWrapper"
 import { ObjectGeneric } from ".."
 import { SelectButtonItem } from "../../ui/menu/SelectButtonMenu"
+import FormRowInput from "../../ui/form/FormRowInput"
+import FormInput from "../../ui/form/FormInput"
+import { SeparatorHorizontal } from "../../ui/Separator"
 
 export interface FormValues {
   title: string
@@ -117,6 +120,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
   const { auth } = useContext(AuthContext)
 
   const closed = useRef(false)
+  const titleInputRef = useRef()
   const goalsRef = useRef<NoteEditorGoalsHandle | undefined>()
 
   const key = useKeyStore(state => state.key)
@@ -197,8 +201,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
 
   return (
     <Suspense fallback={null}>
-      <div style={{ width: 1060 }}>
-        <EditorHeader operationType={operationType} objectType="note" />
+      <div>
         {initializedBody && (
           <Formik<FormValues>
             initialValues={{
@@ -216,34 +219,37 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
                 error={errors.length > 0 ? "error" : ""}
                 onCancel={onCancel}
                 type={operationType}
-                loading={loading}
-                className="w-full">
-                <EditorFormRowText
+                loading={loading}>
+                <FormInput
                   {...formikProps}
                   type="text"
                   name="title"
-                  label="Title"
+                  autoFocus
+                  className="pl-0 mb-2 text-lg font-semibold"
+                  applyDefaultClass={false}
                 />
+                <SeparatorHorizontal className="mb-2" />
                 <FormRowFlexWrapper>
                   <EditorFormRowText
                     {...formikProps}
                     type="date"
                     name="date"
                     label="Date"
+                    className="mr-2"
                     style={{ maxWidth: 180 }}
                   />
                   <EditorSwitch {...formikProps} name="pinned" label="Pin" />
                 </FormRowFlexWrapper>
+                <EditorFormRowMarkdown
+                  {...formikProps}
+                  name="body"
+                  label="Body"
+                />
                 <NoteEditorGoals
                   ref={goalsRef}
                   {...formikProps}
                   currentSelectedItems={currentSelectedGoals}
                   operationType={operationType}
-                />
-                <EditorFormRowMarkdown
-                  {...formikProps}
-                  name="body"
-                  label="Body"
                 />
               </EditorFormWrapper>
             )}

@@ -110,21 +110,20 @@ h4 {
 }
 
 .form-row {
-  @apply mb-4;
+  @apply mb-2;
 }
 
 .form-label {
   @apply block;
-  @apply mb-2;
+  @apply mb-1;
   @apply font-semibold;
 }
 
 .form-input {
   @apply block;
-  @apply mb-2;
   @apply w-full;
-  @apply px-4;
-  @apply py-2;
+  @apply px-2;
+  @apply py-1;
   @apply rounded-sm;
 }
 
