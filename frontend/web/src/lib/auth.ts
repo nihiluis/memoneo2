@@ -49,6 +49,7 @@ export async function checkAuth(
   const userId: string = res.data.userId
   const enckey: Enckey = res.data.enckey
 
+  console.log("auth success")
   return { success: true, token, enckey, userId, error: "" }
 }
 

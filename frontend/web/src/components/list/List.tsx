@@ -16,10 +16,11 @@ export interface ListItemProps<Item extends ItemMin> {
   isLast: boolean
   loading: boolean
   setLoading: (loading: boolean) => void
+  onClickEdit?: (item: Item) => void
   errors: PayloadError[]
   setErrors: (errors: PayloadError[]) => void
   connection: string
-  MutateComponent: ListMutateComponent<Item>
+  MutateComponent?: ListMutateComponent<Item>
 }
 
 export type ListMutateComponent<Item extends ItemMin> = (props: {
@@ -33,8 +34,9 @@ interface Props<Item extends ItemMin> {
   type: string
   showArchived: boolean
   connection: string
+  onClickEdit?: (item: Item) => void
   ItemComponent?: ListItemComponent<Item>
-  MutateComponent: ListMutateComponent<Item>
+  MutateComponent?: ListMutateComponent<Item>
 }
 
 export default function List<Item extends ItemMin>(
@@ -47,6 +49,7 @@ export default function List<Item extends ItemMin>(
     connection,
     ItemComponent,
     MutateComponent,
+    onClickEdit
   } = props
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<PayloadError[]>([])
@@ -78,6 +81,7 @@ export default function List<Item extends ItemMin>(
           errors={errors}
           setErrors={setErrors}
           MutateComponent={MutateComponent}
+          onClickEdit={onClickEdit}
           connection={connection}
         />
       ))}

@@ -1,5 +1,5 @@
 import { ArchiveIcon, Pencil1Icon, TrashIcon } from "@radix-ui/react-icons"
-import React, { useCallback, useState } from "react"
+import React, { PropsWithChildren, useCallback, useState } from "react"
 import {
   DialogContent,
   DialogRoot,
@@ -45,9 +45,8 @@ export default function ListItem<Item extends ItemMin>(
     setErrors,
     MutateComponent,
     connection,
+    onClickEdit,
   } = props
-  const [openDialog, setOpenDialog] = useState(false)
-
   const [commitDelete] = useMutation<DeleteAllMutation>(deleteAllMutation)
   const [commitArchive] = useMutation<ArchiveAllMutation>(archiveAllMutation)
 
@@ -70,14 +69,7 @@ export default function ListItem<Item extends ItemMin>(
     })
 
     commitDelete(mutationConfig)
-  }, [
-    item.id,
-    setLoading,
-    setErrors,
-    filters,
-    commitDelete,
-    connection,
-  ])
+  }, [item.id, setLoading, setErrors, filters, commitDelete, connection])
 
   const onArchive = useCallback(() => {
     setLoading(true)
@@ -115,27 +107,15 @@ export default function ListItem<Item extends ItemMin>(
   ])
 
   return (
-    <div className={cx("pt-2 px-2 hover:bg-gray-50 cursor-pointer", style.listItem)}>
+    <div
+      className={cx(
+        "pt-2 px-2 hover:bg-gray-50 cursor-pointer",
+        style.listItem
+      )}>
       <div className="flex justify-between">
         <p className="truncate">{item.title}</p>
         <div className="flex items-center">
-          <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
-            <DialogTrigger onClick={event => event.stopPropagation()}>
-              <Pencil1Icon
-                color="var(--icon-color)"
-                width={20}
-                height={20}
-                className="icon-20 icon-bg-dark"
-              />
-            </DialogTrigger>
-            <DialogContent>
-              <MutateComponent
-                item={item}
-                onComplete={() => setOpenDialog(false)}
-                onCancel={() => setOpenDialog(false)}
-              />
-            </DialogContent>
-          </DialogRoot>
+          <DialogWrapper {...props} />
           {additionalIcons}
           <ArchiveIcon
             color="var(--icon-color)"
@@ -157,4 +137,51 @@ export default function ListItem<Item extends ItemMin>(
       {isLast && <div className="pt-2" />}
     </div>
   )
+}
+
+function DialogWrapper(
+  props: PropsWithChildren<{ type: string } & Props<ItemMin>>
+): JSX.Element {
+  const { type, MutateComponent, item, onClickEdit } = props
+  const [openDialog, setOpenDialog] = useState(false)
+
+  function handleEdit() {
+    if (!onClickEdit) {
+      return
+    }
+
+    onClickEdit(item)
+  }
+
+  if (onClickEdit) {
+    return (
+      <Pencil1Icon
+        color="var(--icon-color)"
+        onClick={handleEdit}
+        width={20}
+        height={20}
+        className="icon-20 icon-bg-dark"
+      />
+    )
+  } else {
+    return (
+      <DialogRoot open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogTrigger onClick={event => event.stopPropagation()}>
+          <Pencil1Icon
+            color="var(--icon-color)"
+            width={20}
+            height={20}
+            className="icon-20 icon-bg-dark"
+          />
+        </DialogTrigger>
+        <DialogContent>
+          <MutateComponent
+            item={item}
+            onComplete={() => setOpenDialog(false)}
+            onCancel={() => setOpenDialog(false)}
+          />
+        </DialogContent>
+      </DialogRoot>
+    )
+  }
 }

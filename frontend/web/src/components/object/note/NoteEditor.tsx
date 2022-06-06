@@ -1,4 +1,4 @@
-import { Formik } from "formik"
+import { Formik, FormikProps } from "formik"
 import React, { Suspense, useContext, useEffect, useRef, useState } from "react"
 import { useFragment, useLazyLoadQuery, useMutation } from "react-relay"
 import * as Yup from "yup"
@@ -68,26 +68,22 @@ interface Note {
 }
 
 interface Props {
-  item?: Note
+  id?: string
   onComplete(): void
   onCancel(): void
 }
 
 export default function NoteEditor(props: Props): JSX.Element {
   return (
-    <RequireKey>
-      <Suspense fallback={null}>
-        <NoteEditorLoader {...props} />
-      </Suspense>
-    </RequireKey>
+    <Suspense fallback={null}>
+      <NoteEditorLoader {...props} />
+    </Suspense>
   )
 }
 
 function NoteEditorLoader(props: Props): JSX.Element {
-  const { item: preloadedNote } = props
+  const { id: noteId } = props
   const [nullId] = useState(nullUuid)
-
-  const noteId = preloadedNote ? getIdFromNodeId(preloadedNote.id) : null
 
   const data = useLazyLoadQuery<NoteEditorDataQuery>(query, {
     id: noteId ?? nullId,
@@ -109,8 +105,8 @@ interface InnerProps {
 }
 
 function NoteEditorInner(props: Props & InnerProps): JSX.Element {
-  const { item: preloadedNote, onComplete, onCancel, noteId, noteRef } = props
-  const operationType = !!preloadedNote ? "edit" : "add"
+  const { onComplete, onCancel, noteId, noteRef } = props
+  const operationType = !!noteId ? "edit" : "add"
 
   const [errors, setErrors] = useState<PayloadError[]>([])
   const [loading, setLoading] = useState<boolean>(false)
@@ -136,10 +132,12 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
     note?.note_goal_connection.edges.map(edge => edge.node) ?? []
 
   useEffect(() => {
+    closed.current = false
     async function load() {
       if (closed.current) return
 
-      if (note) {
+      if (note && key) {
+        console.log("decrypting text")
         const text = await decryptText(window.atob(note.body), salt, key)
         setDecryptedBody(text)
       }
@@ -225,7 +223,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
                   type="text"
                   name="title"
                   autoFocus
-                  className="pl-0 mb-2 text-lg font-semibold"
+                  className="pl-0 mb-2 text-lg font-semibold w-full"
                   applyDefaultClass={false}
                 />
                 <SeparatorHorizontal className="mb-2" />
@@ -240,11 +238,18 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
                   />
                   <EditorSwitch {...formikProps} name="pinned" label="Pin" />
                 </FormRowFlexWrapper>
-                <EditorFormRowMarkdown
-                  {...formikProps}
-                  name="body"
-                  label="Body"
-                />
+                <RequireKey>
+                  <DecryptedBodyUpdater
+                    {...formikProps}
+                    fieldName="body"
+                    decryptedBody={decryptedBody}
+                  />
+                  <EditorFormRowMarkdown
+                    {...formikProps}
+                    name="body"
+                    label="Body"
+                  />
+                </RequireKey>
                 <NoteEditorGoals
                   ref={goalsRef}
                   {...formikProps}
@@ -258,4 +263,16 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
       </div>
     </Suspense>
   )
+}
+
+function DecryptedBodyUpdater(
+  props: FormikProps<{}> & { decryptedBody: string; fieldName: string }
+): JSX.Element {
+  const { decryptedBody, fieldName, setFieldValue } = props
+
+  useEffect(() => {
+    setFieldValue(fieldName, decryptedBody)
+  }, [decryptedBody])
+
+  return null
 }

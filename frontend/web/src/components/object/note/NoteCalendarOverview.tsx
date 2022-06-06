@@ -24,12 +24,15 @@ import {
   DialogRoot,
   DialogTrigger,
 } from "../../ui/primitives/Dialog"
+import { useRouter } from "next/router"
+import { getIdFromNodeId } from "../../../lib/hasura"
 
 interface Props {
   className?: string
 }
 
-type Item = DataLoaderInnerNoteQueryResponse["note_connection"]["edges"][0]["node"]
+type Item =
+  DataLoaderInnerNoteQueryResponse["note_connection"]["edges"][0]["node"]
 
 export default function NoteCalendarOverview(props: Props): JSX.Element {
   return (
@@ -45,6 +48,8 @@ function NoteCalendarOverviewInner(props: Props): JSX.Element {
   const [activeMonth, setActiveMonth] = useState<Dayjs>(dayjs())
 
   const { noteQueryRef } = useContext(DataLoaderContext)
+
+  const router = useRouter()
 
   const data = usePreloadedQuery<DataLoaderInnerNoteQuery>(
     defaultNoteQuery,
@@ -72,9 +77,8 @@ function NoteCalendarOverviewInner(props: Props): JSX.Element {
     setShownItems(items)
   }, [data, focusedDay, showArchived])
 
-  const [addNoteDialogOpen, setAddNoteDialogOpen] = useState(false)
-  function onCloseEditor() {
-    setAddNoteDialogOpen(false)
+  function handleEdit(note: Item) {
+    router.push(`/edit/${getIdFromNodeId(note.id)}`)
   }
 
   return (
@@ -83,41 +87,40 @@ function NoteCalendarOverviewInner(props: Props): JSX.Element {
       showArchived={showArchived}
       setShowArchived={setShowArchived}
       className="mb-10">
-      <DialogRoot open={addNoteDialogOpen} onOpenChange={setAddNoteDialogOpen}>
-        <Calendar
-          focusedDay={focusedDay}
-          focusDay={setFocusedDay}
-          month={activeMonth}
-          setMonth={month => setActiveMonth(activeMonth.month(month))}
-          className={style.calendar}
-          contextMenuItems={DropdownMenuItems}
-          activeDays={activeItemsDate}
+      <Calendar
+        focusedDay={focusedDay}
+        focusDay={setFocusedDay}
+        month={activeMonth}
+        setMonth={month => setActiveMonth(activeMonth.month(month))}
+        className={style.calendar}
+        contextMenuItems={DropdownMenuItems}
+        activeDays={activeItemsDate}
+      />
+      <div className="mt-4">
+        <List<Item>
+          items={shownItems}
+          type="note"
+          ItemComponent={NoteListItem}
+          connection={DEFAULT_NOTE_CONNECTION}
+          onClickEdit={handleEdit}
+          showArchived={showArchived}
         />
-        <div className="mt-4">
-          <List<Item>
-            items={shownItems}
-            type="note"
-            ItemComponent={NoteListItem}
-            MutateComponent={NoteEditor}
-            connection={DEFAULT_NOTE_CONNECTION}
-            showArchived={showArchived}
-          />
-        </div>
-        <DialogContent>
-          <NoteEditor onComplete={onCloseEditor} onCancel={onCloseEditor} />
-        </DialogContent>
-      </DialogRoot>
+      </div>
     </OverviewSimpleWrapper>
   )
 }
 
 function DropdownMenuItems(props: BaseContextProps) {
+  const router = useRouter()
+
+  function onAdd(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    router.push("edit")
+  }
+
   return (
     <React.Fragment>
       <ContextMenuItem interactive className="flex gap-2">
-        <DialogTrigger
-          onClick={event => event.stopPropagation()}
-          className="flex gap-2 w-full items-center">
+        <div onClick={onAdd} className="flex gap-2 w-full items-center">
           <PlusIcon
             color="var(--icon-color)"
             width={20}
@@ -125,7 +128,7 @@ function DropdownMenuItems(props: BaseContextProps) {
             className="icon-20"
           />
           <p>Add note</p>
-        </DialogTrigger>
+        </div>
       </ContextMenuItem>
     </React.Fragment>
   )
