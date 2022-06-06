@@ -23,36 +23,26 @@ export default function EditorFormWrapper(props: Props): JSX.Element {
 
   return (
     <Suspense fallback={null}>
-      <ScrollAreaRoot style={{ maxHeight: 720 }}>
-        <ScrollAreaViewport style={{ maxHeight: "inherit" }}>
-          <form
-            className={cx("py-2 w-80", className)}
-            onSubmit={formikProps.handleSubmit}>
-            {props.children}
-            {error.length > 0 && (
-              <p className="error">Unable to create object.</p>
-            )}
-            <div className="flex gap-2">
-              <button
-                onClick={props.onCancel}
-                type="button"
-                className="btn btn-secondary form-btn rounded w-full mb-2">
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary form-btn rounded w-full mb-2"
-                disabled={formikProps.isSubmitting || loading}>
-                {type === "edit" ? "Edit" : "Add"}
-              </button>
-            </div>
-          </form>
-        </ScrollAreaViewport>
-        <ScrollAreaScrollbar orientation="vertical">
-          <ScrollAreaThumb />
-        </ScrollAreaScrollbar>
-        <ScrollAreaCorner />
-      </ScrollAreaRoot>
+      <form
+        className={cx(className)}
+        onSubmit={formikProps.handleSubmit}>
+        {props.children}
+        {error.length > 0 && <p className="error">Unable to create object.</p>}
+        <div className="flex gap-2">
+          <button
+            onClick={props.onCancel}
+            type="button"
+            className="btn btn-secondary form-btn rounded w-full mb-2">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="btn btn-primary form-btn rounded w-full mb-2"
+            disabled={formikProps.isSubmitting || loading}>
+            {type === "edit" ? "Edit" : "Add"}
+          </button>
+        </div>
+      </form>
     </Suspense>
   )
 }

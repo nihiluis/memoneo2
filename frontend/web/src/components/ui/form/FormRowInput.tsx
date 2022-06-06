@@ -2,39 +2,22 @@ import React from "react"
 import { FormikProps } from "formik"
 import { cx } from "../../../lib/reexports"
 import FormRowWrapper from "./FormRowWrapper"
+import FormInput from "./FormInput"
 
 interface Props<T> extends FormikProps<T> {
   label: string
   type: string
   name: string
+  className?: string
   innerClassName?: string
-  style?: React.StyleHTMLAttributes<{}>
+  style?: React.CSSProperties
 }
 
 export default function FormRowInput<T>(props: Props<T>) {
-  const {
-    label,
-    type,
-    name,
-    handleChange,
-    handleBlur,
-    values,
-    errors,
-    touched,
-    style,
-    innerClassName = "",
-  } = props
 
   return (
-    <FormRowWrapper {...props}>
-      <input
-        className={cx("form-input", innerClassName)}
-        type={type}
-        name={name}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        value={values[name]}
-      />
+    <FormRowWrapper {...props} >
+      <FormInput {...props} />
     </FormRowWrapper>
   )
 }

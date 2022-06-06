@@ -37,4 +37,5 @@ func main() {
 	logger.Zap.Infow("HTTP server starting on", zap.String("port", httpConfig.Port))
 
 	server.Start()
+	logger.Zap.Info("Shutting down")
 }

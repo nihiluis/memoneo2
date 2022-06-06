@@ -7,6 +7,7 @@ interface Props extends FormikProps<any> {
   type: string
   name: string
   label: string
+  className?: string
   innerClassName?: string
   style?: React.CSSProperties
 }
@@ -16,7 +17,8 @@ export default function EditorFormRowText(props: Props): JSX.Element {
     type,
     name,
     label,
-    innerClassName: className,
+    className,
+    innerClassName,
     style,
     ...formikProps
   } = props
@@ -24,7 +26,8 @@ export default function EditorFormRowText(props: Props): JSX.Element {
   return (
     <FormRowInput
       style={style}
-      innerClassName={cx("bg-gray-50 border border-gray-200", className)}
+      className={className}
+      innerClassName={cx("bg-gray-50 border border-gray-200", innerClassName)}
       {...formikProps}
       type={type}
       name={name}

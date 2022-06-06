@@ -36,7 +36,7 @@ function IndexInner() {
       setShowSidebarRight={setShowSidebarRight}
       sidebarLeftComponent={<LeftSidebar />}
       sidebarRightComponent={<RightSidebar />}>
-      <div className="flex gap-10">
+      <div className="flex gap-x-10 gap-y-2 flex-wrap md:flex-nowrap">
         <div className="flex">
           <NoteCalendarOverview />
         </div>
