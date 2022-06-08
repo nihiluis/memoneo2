@@ -1,10 +1,8 @@
-import React from "react"
+import React, { useMemo } from "react"
 import { FormikProps } from "formik"
-import { Controlled as CodeMirror } from "react-codemirror2"
-if (typeof window !== "undefined") {
-  require("codemirror/mode/markdown/markdown")
-}
-import { cx } from "../../../lib/reexports"
+import CodeMirror from "@uiw/react-codemirror"
+import { basicSetup, EditorView } from "@codemirror/basic-setup"
+import { markdown, markdownLanguage } from "@codemirror/lang-markdown"
 import FormRowWrapper from "./FormRowWrapper"
 
 interface Props<T> extends FormikProps<T> {
@@ -27,16 +25,24 @@ export default function FormRowMarkdown<T>(props: Props<T>) {
     style,
   } = props
 
+  const extensions = useMemo(
+    () => [
+      basicSetup,
+      markdown({ base: markdownLanguage }),
+      EditorView.lineWrapping
+    ],
+    []
+  )
+
   return (
     <FormRowWrapper {...props} style={style}>
       <CodeMirror
-        className={cx("p-2 rounded w-full", innerClassName)}
+        //className={cx("p-2 rounded", innerClassName)}
         value={values[name]}
-        options={{
-          mode: "markdown",
-        }}
-        onBeforeChange={(editor, data, value) => setFieldValue(name, value)}
-        onBlur={() => setFieldTouched(name, true)}
+        height="auto"
+        onChange={value => setFieldValue(name, value)}
+        onBlur={() => setFieldTouched(name)}
+        extensions={extensions}
       />
     </FormRowWrapper>
   )

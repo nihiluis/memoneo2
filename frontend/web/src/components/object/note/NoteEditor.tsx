@@ -4,7 +4,6 @@ import { useFragment, useLazyLoadQuery, useMutation } from "react-relay"
 import * as Yup from "yup"
 import { v4 as uuidv4 } from "uuid"
 import { mutation, query } from "./NoteEditor.gql"
-import { getIdFromNodeId } from "../../../lib/hasura"
 import { PayloadError } from "relay-runtime"
 import { AuthContext } from "../../Auth"
 import { useFilterStore } from "../../../stores/filter"
@@ -12,9 +11,7 @@ import { DEFAULT_NOTE_CONNECTION } from "../../../constants/connections"
 import { getRootConnectionIds } from "../../../relay/getConnection"
 import EditorFormWrapper from "../../mutation/EditorFormWrapper"
 import getMutationConfig from "../../mutation/getMutationConfig"
-import EditorHeader from "../../mutation/EditorHeader"
 import EditorFormRowText from "../../mutation/EditorFormRowText"
-import EditorFormRowSelectButton from "../../mutation/EditorFormRowSelectButton"
 import {
   NoteEditorMutation,
   NoteEditorMutationResponse,
@@ -24,7 +21,6 @@ import EditorSwitch from "../../mutation/EditorSwitch"
 import dayjs from "dayjs"
 import {
   NoteEditorDataQuery,
-  NoteEditorDataQueryResponse,
 } from "./__generated__/NoteEditorDataQuery.graphql"
 import { noteFragment, NoteRef } from "./NoteFragment.gql"
 import { NoteFragment$key } from "./__generated__/NoteFragment.graphql"
@@ -35,9 +31,6 @@ import { decryptText, encryptText } from "../../../lib/key"
 import { useKeyStore } from "../../../stores/key"
 import NoteEditorGoals, { NoteEditorGoalsHandle } from "./NoteEditorGoals"
 import FormRowFlexWrapper from "../../ui/form/FormRowFlexWrapper"
-import { ObjectGeneric } from ".."
-import { SelectButtonItem } from "../../ui/menu/SelectButtonMenu"
-import FormRowInput from "../../ui/form/FormRowInput"
 import FormInput from "../../ui/form/FormInput"
 import { SeparatorHorizontal } from "../../ui/Separator"
 

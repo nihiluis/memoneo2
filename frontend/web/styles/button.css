@@ -95,7 +95,7 @@
   visibility: unset;
   writing-mode: unset;
   text-orientation: unset;
-  color-adjust: unset;
+  print-color-adjust: unset;
   image-rendering: unset;
   image-orientation: unset;
   dominant-baseline: unset;
