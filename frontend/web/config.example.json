@@ -1,0 +1,15 @@
+{
+  "basePath": {
+    "dev": "/",
+    "prod": "/web"
+  },
+  "productName": "Memoneo",
+  "authApiUrl": {
+    "dev": "http://localhost:8089",
+    "prod": "https://auth.memoneo2.yourdomain.com"
+  },
+  "masterApiUrl": {
+    "dev": "http://localhost:8094",
+    "prod": "https://master.memoneo2.yourdomain.com"
+  }
+}

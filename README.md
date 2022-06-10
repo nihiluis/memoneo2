@@ -1,4 +1,4 @@
-*Note:* The app is only maintained for my personal use and thus not well-tested, documented etc.
+*Note:* The app is only maintained for my personal use and thus hardly tested, documented etc.
 
 # Concept
 Memoneo provides a small cli and web frontend to manage your markdown notes. Notes can be synchronized to your local machine and written to with your favorite text editor.

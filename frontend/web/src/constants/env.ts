@@ -1,14 +1,18 @@
+import config from "../../config.json"
+
 export const DEV = process.env.NODE_ENV !== "production"
 
 export const IS_SERVER = typeof window === "undefined"
 
-export const BASE_PATH = DEV ? "/" : "/web"
+export const BASE_PATH = DEV ? config.basePath.dev : config.basePath.prod
 
-export const PRODUCT_NAME = "Memoneo"
+export const PRODUCT_NAME = config.productName
 export const SITE_TITLE = PRODUCT_NAME
 
-export const AUTH_API_URL = DEV ? "http://localhost:8089" : "https://auth.memoneo2.nihiluis.com"
-export const MASTER_API_URL = DEV ? "http://localhost:8094" : "https://master.memoneo2.nihiluis.com"
+export const AUTH_API_URL = DEV ? config.authApiUrl.dev : config.authApiUrl.prod
+export const MASTER_API_URL = DEV
+  ? config.masterApiUrl.dev
+  : config.masterApiUrl.prod
 
 export const ENDPOINT_AUTH_URL = `${AUTH_API_URL}/auth`
 export const ENDPOINT_LOGIN_URL = `${AUTH_API_URL}/login`

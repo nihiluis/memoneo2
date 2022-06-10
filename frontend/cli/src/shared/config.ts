@@ -39,9 +39,22 @@ export async function loadConfig(): Promise<MemoneoConfig> {
 
     return config
   } else {
-    const defaultConfig: MemoneoConfig = {
+    const defaultConfig: MemoneoConfig & any = {
       baseDirectory: "_testdata",
       defaultDirectory: "_unassigned",
+      basePath: {
+        dev: "/",
+        prod: "/web",
+      },
+      productName: "Memoneo",
+      authApiUrl: {
+        dev: "http://localhost:8089",
+        prod: "https://auth.memoneo2.yourdomain.com",
+      },
+      masterApiUrl: {
+        dev: "http://localhost:8094",
+        prod: "https://master.memoneo2.yourdomain.com",
+      },
     }
     await fs.writeFile("./config.json", JSON.stringify(defaultConfig), {
       encoding: "utf-8",
