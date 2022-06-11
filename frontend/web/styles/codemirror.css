@@ -1,3 +1,18 @@
+.cm-scroller {
+	@apply rounded-sm;
+}
+
+.cm-content {
+}
+
+.cm-line {
+	@apply font-body;
+}
+
+.cm-editor {
+	outline: none;
+}
+
 /* BASICS */
 
 .CodeMirror {
