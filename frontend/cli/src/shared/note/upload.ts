@@ -22,6 +22,7 @@ interface UploadNewNotesConfig {
   cache: MemoneoFileCache
   command: Command
   gqlClient: Client
+  existingNotes: Note[]
 }
 
 export async function uploadNewNotes({
@@ -33,15 +34,20 @@ export async function uploadNewNotes({
   internalConfig,
   cache,
   command,
+  existingNotes
 }: UploadNewNotesConfig) {
   const newNotes: Partial<Note>[] = []
-  const newMdFiles = mdFiles.filter(mdFile => !mdFile.metadata.hasOwnProperty("id"))
+  const newMdFiles = mdFiles.filter(
+    mdFile => !mdFile.metadata.hasOwnProperty("id")
+  )
 
   const progress = cli.ux.progress({
-    format: 'Encrypting... | {bar} | {value}/{total} notes',
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
+    format: "Encrypting... | {bar} | {value}/{total} notes",
+    barCompleteChar: "\u2588",
+    barIncompleteChar: "\u2591",
   })
+
+  const newNoteUniqueConstraintMap: Record<string, Partial<Note>> = {}
 
   progress.start(newMdFiles.length, 0)
   for (let mdFile of newMdFiles) {
@@ -54,24 +60,51 @@ export async function uploadNewNotes({
     const uuid = generateUuid()
     mdFile.willBeCreated = uuid
 
-    newNotes.push({
+    const title = mdFile.fileName
+    const date = mdFile.modifiedTime.toISOString()
+
+    const note = {
       id: uuid,
       body: encodeBase64String(encryptedText.ctStr),
-      title: mdFile.fileName,
-      date: mdFile.modifiedTime.toISOString(),
+      title,
+      date,
       archived: false,
       version: 1,
       user_id: internalConfig.userId,
-    })
+    }
+    newNotes.push(note)
+
+    // unique constraints are disabled. I don't think I will need this code
+    // const uniqueConstraint = `${date}:${title}`
+
+    // if (newNoteUniqueConstraintMap.hasOwnProperty(uniqueConstraint)) {
+    //   throw new Error(
+    //     `Notes must have a unique title and date combination: ${uniqueConstraint} already exists locally`
+    //   )
+    // }
+
+    // newNoteUniqueConstraintMap[uniqueConstraint] = note
 
     progress.increment()
   }
   progress.stop()
 
+  // for (let existingNote of existingNotes) {
+  //   const uniqueConstraint = `${existingNote.date}:${existingNote.title}`
+
+  //   if (newNoteUniqueConstraintMap.hasOwnProperty(uniqueConstraint)) {
+  //     throw new Error(
+  //       `Notes must have a unique title and date combination: ${uniqueConstraint} already exists remotely`
+  //     )
+  //   }
+  // }
+
   if (newNotes.length === 0) {
     command.log("No new notes to upload found.")
     return
   }
+
+  console.log(JSON.stringify(newNotes.map(n => n.title)))
 
   cli.ux.action.start("Uploading new notes")
 
@@ -92,17 +125,14 @@ export async function uploadNewNotes({
   const noteFileData: NoteFileData[] = []
 
   const progress2 = cli.ux.progress({
-    format: 'Updating metadata... | {bar} | {value}/{total} notes',
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
+    format: "Updating metadata... | {bar} | {value}/{total} notes",
+    barCompleteChar: "\u2588",
+    barIncompleteChar: "\u2591",
   })
 
   progress2.start(insertedNotes.length, 0)
   for (let note of insertedNotes) {
-    const mdFile = mdFiles.find(
-      mdFile =>
-        mdFile.willBeCreated === note.id
-    )
+    const mdFile = mdFiles.find(mdFile => mdFile.willBeCreated === note.id)
 
     // dayjs(mdFile.time).format("YYYY-MM-DD") === note.date &&
 

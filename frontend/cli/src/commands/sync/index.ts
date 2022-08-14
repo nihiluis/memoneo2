@@ -28,14 +28,8 @@ export default class Sync extends Command {
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Sync)
 
-    const {
-      config,
-      auth,
-      key,
-      internalConfig,
-      cache,
-      gqlClient,
-    } = await loadPrerequisites()
+    const { config, auth, key, internalConfig, cache, gqlClient } =
+      await loadPrerequisites()
 
     const targetDirectory: string = args["dir"] || config.baseDirectory
     const targetDirectoryStat = await fs.stat(targetDirectory)
@@ -65,7 +59,7 @@ export default class Sync extends Command {
     const notes = await downloadNotes(downloadConfig)
     await writeNewNotes(notes, downloadConfig)
 
-    await uploadNewNotes({ mdFiles, ...downloadConfig })
+    await uploadNewNotes({ existingNotes: notes, mdFiles, ...downloadConfig })
 
     await syncNotes({ notes, mdFiles, ...downloadConfig })
 

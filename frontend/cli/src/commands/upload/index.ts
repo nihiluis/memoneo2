@@ -60,6 +60,7 @@ export default class Download extends Command {
       internalConfig,
       cache,
       command: this,
+      existingNotes: []
     })
 
     await saveFileCache(cache)

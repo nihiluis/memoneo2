@@ -62,7 +62,7 @@
   "main": "dist/index.js",
   "oclif": {
     "bin": "memoneo",
-    "commands": "./dist/commands",
+    "commands": "./dist/src/commands",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-plugins"
