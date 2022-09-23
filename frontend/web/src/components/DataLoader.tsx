@@ -56,7 +56,7 @@ export default function DataLoader(props: PropsWithChildren<{}>): JSX.Element {
     setActivityQueryRef,
   }
 
-  console.log(contextData)
+  // console.log(contextData)
 
   return (
     <DataLoaderContext.Provider value={contextData}>

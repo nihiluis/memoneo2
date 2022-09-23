@@ -178,7 +178,7 @@ export async function testEncryption(password: string = "swaggyswagswag") {
     textIvStr,
     decryptedProtectedKey
   )
-  console.log("Decrypted plaintext " + plaintext)
+  // console.log("Decrypted plaintext " + plaintext)
 }
 
 interface CreateNewKeyResult {

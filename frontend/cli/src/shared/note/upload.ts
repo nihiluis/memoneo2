@@ -104,7 +104,7 @@ export async function uploadNewNotes({
     return
   }
 
-  console.log(JSON.stringify(newNotes.map(n => n.title)))
+  // console.log(JSON.stringify(newNotes.map(n => n.title)))
 
   cli.ux.action.start("Uploading new notes")
 

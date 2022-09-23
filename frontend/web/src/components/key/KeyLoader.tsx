@@ -48,7 +48,7 @@ export default function KeyLoader(props: PropsWithChildren<Props>) {
           setKeyData({ key, salt, password: "" })
         } else {
           // decrypt key to use for encryption
-          console.log("decrypting existing key")
+          // console.log("decrypting existing key")
 
           const key = await decryptProtectedKey(password, protectedKey, salt)
           setKeyData({ key, salt, password: "" })

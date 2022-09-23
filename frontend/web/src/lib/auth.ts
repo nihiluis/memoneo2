@@ -29,7 +29,7 @@ export async function checkAuth(
     //headers["Authorization"] = `Bearer ${existingToken}`
   }
 
-  console.log("checking auth")
+  // console.log("checking auth")
 
   const [res, error] = await protect(
     axios.get(ENDPOINT_AUTH_URL, { headers, withCredentials: true })
@@ -49,7 +49,7 @@ export async function checkAuth(
   const userId: string = res.data.userId
   const enckey: Enckey = res.data.enckey
 
-  console.log("auth success")
+  // console.log("auth success")
   return { success: true, token, enckey, userId, error: "" }
 }
 

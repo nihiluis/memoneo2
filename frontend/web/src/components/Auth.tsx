@@ -49,7 +49,7 @@ export default function Auth(props: PropsWithChildren<Props>) {
     cancelled.current = false
     const fetchData = async () => {
       if (!auth.authenticated) {
-        console.log(`doing initial auth with token ${initialToken}`)
+        // console.log(`doing initial auth with token ${initialToken}`)
 
         setAuthLoading(true)
 
@@ -64,12 +64,12 @@ export default function Auth(props: PropsWithChildren<Props>) {
           })
         }
 
-        console.log("cancelled.current=" + cancelled.current)
+        // console.log("cancelled.current=" + cancelled.current)
         if (!cancelled.current) {
           setAuthLoading(false)
           setSessionToken(token)
 
-          console.log("settingauth")
+          // console.log("settingauth")
           setAuth({ authenticated: success, token, userId, error })
         }
       } else if (authLoading) {
@@ -82,7 +82,7 @@ export default function Auth(props: PropsWithChildren<Props>) {
     setInitialized(true)
 
     return () => {
-      console.log("unmounting setting cancelled")
+      // console.log("unmounting setting cancelled")
       cancelled.current = true
     }
 
@@ -94,12 +94,12 @@ export default function Auth(props: PropsWithChildren<Props>) {
       router.push("/login")
     }
 
-    console.log("checking redirect.. " + auth.authenticated)
+    // console.log("checking redirect.. " + auth.authenticated)
     if (
       auth.authenticated &&
       (router.pathname === "/login" || router.pathname === "/register")
     ) {
-      console.log("redirecting")
+      // console.log("redirecting")
       router.push("/")
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
