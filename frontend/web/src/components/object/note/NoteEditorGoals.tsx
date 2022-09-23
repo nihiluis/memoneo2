@@ -200,4 +200,7 @@ const NoteEditorGoals = forwardRef<NoteEditorGoalsHandle, Props>(
     )
   }
 )
+
+NoteEditorGoals.displayName = "NoteEditorGoals"
+
 export default NoteEditorGoals

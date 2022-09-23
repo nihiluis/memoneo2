@@ -52,12 +52,10 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
 
   const { item, setLoading, setErrors, openDialog, setOpenDialog } = props
 
-  const [commitDelete] = useMutation<LeftSidebarItemMenuDeleteNoteMutation>(
-    deleteNoteMutation
-  )
-  const [commitArchive] = useMutation<LeftSidebarItemMenuArchiveAllMutation>(
-    archiveAllMutation
-  )
+  const [commitDelete] =
+    useMutation<LeftSidebarItemMenuDeleteNoteMutation>(deleteNoteMutation)
+  const [commitArchive] =
+    useMutation<LeftSidebarItemMenuArchiveAllMutation>(archiveAllMutation)
 
   const defaultNoteFilters = useFilterStore(state =>
     state.getFilters(DEFAULT_NOTE_CONNECTION)
@@ -73,9 +71,8 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
       ],
     }
 
-    const mutationConfig = getMutationConfig<LeftSidebarItemMenuDeleteNoteMutation>(
-      variables,
-      {
+    const mutationConfig =
+      getMutationConfig<LeftSidebarItemMenuDeleteNoteMutation>(variables, {
         setErrors: value => {
           if (!componentMounted.current) return
 
@@ -94,8 +91,7 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
             item.id
           )
         },
-      }
-    )
+      })
 
     commitDelete(mutationConfig)
   }, [item.id, setLoading, setErrors, defaultNoteFilters, commitDelete])
@@ -111,9 +107,8 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
       ],
     }
 
-    const mutationConfig = getMutationConfig<LeftSidebarItemMenuArchiveAllMutation>(
-      variables,
-      {
+    const mutationConfig =
+      getMutationConfig<LeftSidebarItemMenuArchiveAllMutation>(variables, {
         setErrors: value => {
           if (!componentMounted.current) return
 
@@ -134,8 +129,7 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
 
           record.setValue(variables.archived, "archived")
         },
-      }
-    )
+      })
 
     commitArchive(mutationConfig)
   }, [
@@ -160,7 +154,6 @@ function LeftSidebarItemMenuNoteInner(props: Props): JSX.Element {
         </DropdownMenuItem>
         <DialogContent>
           <NoteEditor
-            item={item as any}
             onComplete={() => setOpenDialog(false)}
             onCancel={() => setOpenDialog(false)}
           />

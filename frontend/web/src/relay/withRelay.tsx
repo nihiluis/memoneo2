@@ -6,7 +6,8 @@ const { Suspense } = React
 interface ComposedComponentProps {}
 
 function withRelay<T extends ComposedComponentProps>(
-  ComposedComponent: React.ComponentType<T>
+  // dirty fix
+  ComposedComponent: any
 ) {
   const WithRelay = (props: T) => {
     return (

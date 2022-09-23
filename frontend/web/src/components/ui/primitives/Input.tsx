@@ -10,7 +10,7 @@ interface Props extends FormikProps<{}> {
   applyDefaultClass?: boolean
 }
 
-export default function FormInput(props: Props) {
+export default function Input(props: Props) {
   const {
     type,
     name,

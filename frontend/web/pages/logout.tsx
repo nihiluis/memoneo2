@@ -38,6 +38,7 @@ function LogoutInner(): JSX.Element {
     }
 
     fetch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return <p>Logging out...</p>

@@ -19,9 +19,7 @@ import {
 } from "./__generated__/NoteEditorMutation.graphql"
 import EditorSwitch from "../../mutation/EditorSwitch"
 import dayjs from "dayjs"
-import {
-  NoteEditorDataQuery,
-} from "./__generated__/NoteEditorDataQuery.graphql"
+import { NoteEditorDataQuery } from "./__generated__/NoteEditorDataQuery.graphql"
 import { noteFragment, NoteRef } from "./NoteFragment.gql"
 import { NoteFragment$key } from "./__generated__/NoteFragment.graphql"
 import { nullUuid } from "../../../constants/other"
@@ -31,7 +29,7 @@ import { decryptText, encryptText } from "../../../lib/key"
 import { useKeyStore } from "../../../stores/key"
 import NoteEditorGoals, { NoteEditorGoalsHandle } from "./NoteEditorGoals"
 import FormRowFlexWrapper from "../../ui/form/FormRowFlexWrapper"
-import FormInput from "../../ui/form/FormInput"
+import Input from "../../ui/primitives/Input"
 import { SeparatorHorizontal } from "../../ui/Separator"
 
 export interface FormValues {
@@ -211,7 +209,7 @@ function NoteEditorInner(props: Props & InnerProps): JSX.Element {
                 onCancel={onCancel}
                 type={operationType}
                 loading={loading}>
-                <FormInput
+                <Input
                   {...formikProps}
                   type="text"
                   name="title"
@@ -265,7 +263,7 @@ function DecryptedBodyUpdater(
 
   useEffect(() => {
     setFieldValue(fieldName, decryptedBody)
-  }, [decryptedBody])
+  }, [decryptedBody, fieldName, setFieldValue])
 
   return null
 }

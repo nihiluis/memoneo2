@@ -57,7 +57,7 @@ export default function KeyLoader(props: PropsWithChildren<Props>) {
     }
 
     loadKey()
-  }, [password, salt, protectedKey, setKeyData])
+  }, [password, salt, protectedKey, key, setKeyData])
 
   function onSubmitPassword(values: FormValues) {
     // password should be validated. TODO
