@@ -1,7 +1,8 @@
 # Commands
-*init* - initialize Memoneo to the current directory
+*init*     - initialize Memoneo to the current directory
 *download* - downloads notes 
-*upload* - uploads all notes, which have changes, to the Memoneo servers
+*upload*   - uploads all notes, which have changes, to the Memoneo servers
+*sync*     - download and upload notes 
 
 # Libs
 - urql?
