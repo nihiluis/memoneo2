@@ -1,4 +1,4 @@
-import { Command } from "@oclif/core"
+import { Args, Command } from "@oclif/core"
 import { saveFileCache } from "../../shared/fileCache"
 import * as fs from "fs/promises"
 import { getAllMarkdownFiles } from "../../lib/files"
@@ -6,8 +6,7 @@ import { uploadNewNotes } from "../../shared/note/upload"
 import loadPrerequisites from "../../shared/loadPrerequisites"
 import { downloadNotes, writeNewNotes } from "../../shared/note/download"
 import { syncNotes } from "../../shared/note/sync"
-import { dirxml } from "console"
-import { cli } from "../../lib/reexports"
+import { cliUx } from "../../lib/reexports"
 
 export default class Sync extends Command {
   static description = "Download notes"
@@ -16,20 +15,25 @@ export default class Sync extends Command {
 
   static flags = {}
 
-  static args = [
-    {
-      name: "dir",
+  static args = {
+    dir: Args.string({
       description:
         "The target directory that is recursively searched for md files",
       required: false,
-    },
-  ]
+    }),
+  }
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Sync)
 
-    const { config, auth, key, internalConfig, cache, gqlClient } =
-      await loadPrerequisites()
+    const {
+      config,
+      auth,
+      key,
+      internalConfig,
+      cache,
+      gqlClient,
+    } = await loadPrerequisites()
 
     const targetDirectory: string = args["dir"] || config.baseDirectory
     const targetDirectoryStat = await fs.stat(targetDirectory)
@@ -39,12 +43,12 @@ export default class Sync extends Command {
       )
     }
 
-    cli.ux.action.start(`Loading markdown files from ${targetDirectory}`)
+    cliUx.ux.action.start(`Loading markdown files from ${targetDirectory}`)
     const mdFiles = await getAllMarkdownFiles(
       config.baseDirectory,
       targetDirectory
     )
-    cli.ux.action.stop()
+    cliUx.ux.action.stop()
 
     const downloadConfig = {
       auth,

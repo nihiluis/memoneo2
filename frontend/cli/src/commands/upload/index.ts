@@ -1,4 +1,4 @@
-import { Command } from "@oclif/core"
+import { Args, Command } from "@oclif/core"
 import protect from "await-protect"
 import { reloadOrCreateFileCache, saveFileCache } from "../../shared/fileCache"
 import { loadConfig, loadInternalConfig } from "../../shared/config"
@@ -16,14 +16,13 @@ export default class Download extends Command {
 
   static flags = {}
 
-  static args = [
-    {
-      name: "dir",
+  static args = {
+      dir: Args.string({
       description:
         "The target directory that is recursively searched for md files",
       required: false,
-    },
-  ]
+    })
+  }
 
   async run(): Promise<void> {
     const { args, flags } = await this.parse(Download)

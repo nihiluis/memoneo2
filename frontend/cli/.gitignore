@@ -7,7 +7,6 @@
 /tmp
 node_modules
 oclif.manifest.json
-bin/
 .memoneo/
 config.json
 _testdata/

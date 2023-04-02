@@ -26,7 +26,7 @@ export default class Init extends Command {
     }),
   }
 
-  static args = []
+  static args = {}
 
   login = performLogin.bind(this)
 

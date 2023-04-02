@@ -24,7 +24,7 @@ export default class Download extends Command {
 
   static flags = {}
 
-  static args = []
+  static args = {}
 
   validateAuth = validateAuth.bind(this)
 

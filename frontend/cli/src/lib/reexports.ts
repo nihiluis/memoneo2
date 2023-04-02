@@ -3,6 +3,6 @@ export const crypto: Crypto = webcrypto
 
 import { v4 as generateUuid } from "uuid"
 
-import { CliUx as cli } from "@oclif/core"
+import { ux as cliUx } from "@oclif/core"
 
-export { cli, generateUuid }
+export { cliUx, generateUuid }

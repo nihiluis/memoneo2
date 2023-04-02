@@ -1,68 +1,50 @@
 {
-  "name": "memoneo-cli",
-  "description": "none",
+  "name": "cliv2",
   "version": "0.0.0",
-  "author": "P",
+  "description": "oclif example Hello World CLI",
+  "author": "Alex Smith @nihiluis",
   "bin": {
-    "memoneo": "./bin/run"
+    "cli": "./bin/run"
   },
-  "bugs": "https://github.com/cli/hello-world/issues",
-  "dependencies": {
-    "@oclif/core": "^1",
-    "@oclif/plugin-help": "^5",
-    "@oclif/plugin-plugins": "^2.0.1",
-    "@urql/core": "^2.3.6",
-    "ansi-colors": "^4.1.1",
-    "await-protect": "^1.0.14",
-    "axios": "^0.24.0",
-    "cli-progress": "^3.10.0",
-    "dayjs": "^1.10.7",
-    "detect-newline": "3.1.0",
-    "graphql": "^16.2.0",
-    "js-yaml": "^4.1.0",
-    "node-fetch": "2.6.1",
-    "uuid": "^8.3.2"
-  },
-  "devDependencies": {
-    "@oclif/test": "^2",
-    "@types/chai": "^4",
-    "@types/cli-progress": "^3.9.2",
-    "@types/js-yaml": "^4.0.5",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "^16.9.4",
-    "@types/node-fetch": "^2.5.12",
-    "@types/uuid": "^8.3.4",
-    "chai": "^4",
-    "eslint": "^7.32.0",
-    "eslint-config-oclif": "^4",
-    "eslint-config-oclif-typescript": "^1.0.2",
-    "globby": "^11",
-    "mocha": "^9",
-    "oclif": "^2.0.0-main.10",
-    "shx": "^0.3.3",
-    "ts-node": "^10.2.1",
-    "tslib": "^2.3.1",
-    "typescript": "^4.4.3"
-  },
-  "dirname": "oex",
-  "engines": {
-    "node": ">=12.0.0"
-  },
+  "homepage": "https://github.com/nihiluis/cliv2",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "repository": "nihiluis/cliv2",
   "files": [
     "/bin",
     "/dist",
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/cli/hello-world",
-  "keywords": [
-    "oclif"
-  ],
-  "license": "MIT",
-  "main": "dist/index.js",
+  "dependencies": {
+    "@oclif/core": "^2",
+    "@oclif/plugin-help": "^5",
+    "@oclif/plugin-plugins": "^2.4.3",
+    "@urql/core": "^4.0.2",
+    "ansi-colors": "^4.1.3",
+    "await-protect": "^1.0.15",
+    "axios": "^1.3.4",
+    "dayjs": "^1.11.7",
+    "detect-newline": "v3",
+    "graphql": "^16.6.0",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "v2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.5",
+    "@types/node-fetch": "^2.6.3",
+    "@types/uuid": "^9.0.1",
+    "oclif": "^3",
+    "shx": "^0.3.3",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.5.0",
+    "typescript": "^4.9.5"
+  },
   "oclif": {
-    "bin": "memoneo",
-    "commands": "./dist/src/commands",
+    "bin": "cli",
+    "dirname": "cli",
+    "commands": "./dist/commands",
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-plugins"
@@ -74,7 +56,6 @@
       }
     }
   },
-  "repository": "cli/hello-world",
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
     "lint": "eslint . --ext .ts --config .eslintrc",
@@ -84,5 +65,12 @@
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif readme && git add README.md"
   },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "bugs": "https://github.com/nihiluis/cliv2/issues",
+  "keywords": [
+    "oclif"
+  ],
   "types": "dist/index.d.ts"
 }

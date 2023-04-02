@@ -6,7 +6,7 @@ import { AuthResult } from "../../lib/auth"
 import { MarkdownFileInfo, md5HashText } from "../../lib/files"
 import { createGqlClient } from "../../lib/gql"
 import { encryptText } from "../../lib/key"
-import { cli, generateUuid } from "../../lib/reexports"
+import { cliUx, generateUuid } from "../../lib/reexports"
 import { decodeBase64String, encodeBase64String } from "../base64"
 import { MemoneoConfig, MemoneoInternalConfig } from "../config"
 import { MemoneoFileCache } from "../fileCache"
@@ -41,7 +41,7 @@ export async function uploadNewNotes({
     mdFile => !mdFile.metadata.hasOwnProperty("id")
   )
 
-  const progress = cli.ux.progress({
+  const progress = cliUx.ux.progress({
     format: "Encrypting... | {bar} | {value}/{total} notes",
     barCompleteChar: "\u2588",
     barIncompleteChar: "\u2591",
@@ -106,7 +106,7 @@ export async function uploadNewNotes({
 
   // console.log(JSON.stringify(newNotes.map(n => n.title)))
 
-  cli.ux.action.start("Uploading new notes")
+  cliUx.ux.action.start("Uploading new notes")
 
   const { data, error } = await gqlClient
     .mutation(InsertNoteMutation, { inputs: newNotes })
@@ -119,12 +119,12 @@ export async function uploadNewNotes({
     throw new Error("data not found")
   }
 
-  cli.ux.action.stop()
+  cliUx.ux.action.stop()
 
   const insertedNotes: Note[] = data.insert_note.returning
   const noteFileData: NoteFileData[] = []
 
-  const progress2 = cli.ux.progress({
+  const progress2 = cliUx.ux.progress({
     format: "Updating metadata... | {bar} | {value}/{total} notes",
     barCompleteChar: "\u2588",
     barIncompleteChar: "\u2591",

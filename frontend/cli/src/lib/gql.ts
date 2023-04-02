@@ -1,4 +1,4 @@
-import { createClient, Client } from "@urql/core"
+import { createClient, Client, cacheExchange, fetchExchange } from "@urql/core"
 import { ENDPOINT_GQL_URL } from "../constants/env"
 import fetch from "node-fetch"
 import { MemoneoInternalConfig } from "../shared/config"
@@ -18,5 +18,6 @@ export function createGqlClient(
         },
       }
     },
+    exchanges: [cacheExchange, fetchExchange],
   })
 }

@@ -4,7 +4,7 @@ import { Note } from "."
 import { AuthResult } from "../../lib/auth"
 import { createGqlClient } from "../../lib/gql"
 import { decryptText } from "../../lib/key"
-import { cli } from "../../lib/reexports"
+import { cliUx } from "../../lib/reexports"
 import { decodeBase64String } from "../base64"
 import { MemoneoConfig, MemoneoInternalConfig } from "../config"
 import { MemoneoFileCache } from "../fileCache"
@@ -30,9 +30,9 @@ export async function downloadNotes({
   gqlClient,
   command,
 }: DownloadNotesConfig): Promise<Note[]> {
-  cli.ux.action.start("Downloading notes")
+  cliUx.ux.action.start("Downloading notes")
 
-  const { data, error } = await gqlClient.query(DownloadQuery).toPromise()
+  const { data, error } = await gqlClient.query(DownloadQuery, {}).toPromise()
   if (error) {
     command.error(error)
   }
@@ -41,7 +41,7 @@ export async function downloadNotes({
     command.error("Unable to retrieve data from the GQL API")
   }
 
-  cli.ux.action.stop()
+  cliUx.ux.action.stop()
 
   const notes: Note[] = data.note
 
@@ -52,7 +52,7 @@ export async function decryptNotes(
   notes: Note[],
   { auth, key }: DownloadNotesConfig
 ): Promise<Note[]> {
-  const progress = cli.ux.progress({
+  const progress = cliUx.ux.progress({
     format: 'Decrypting... | {bar} | {value}/{total} notes',
     barCompleteChar: '\u2588',
     barIncompleteChar: '\u2591',
@@ -91,7 +91,7 @@ export async function writeNewNotes(
   await decryptNotes(newNotes, downloadConfig)
 
 
-  const progress = cli.ux.progress({
+  const progress = cliUx.ux.progress({
     format: 'Writing new notes... | {bar} | {value}/{total} notes',
     barCompleteChar: '\u2588',
     barIncompleteChar: '\u2591',

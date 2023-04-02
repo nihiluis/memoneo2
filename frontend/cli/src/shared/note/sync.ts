@@ -7,7 +7,7 @@ import { AuthResult } from "../../lib/auth"
 import { MarkdownFileInfo, md5HashText } from "../../lib/files"
 import { createGqlClient } from "../../lib/gql"
 import { encryptText } from "../../lib/key"
-import { cli } from "../../lib/reexports"
+import { cliUx } from "../../lib/reexports"
 import { decodeBase64String, encodeBase64String } from "../base64"
 import { MemoneoConfig, MemoneoInternalConfig } from "../config"
 import { MemoneoFileCache } from "../fileCache"
@@ -100,7 +100,7 @@ export async function syncNotes({
   const outdatedLocalNotes = mdFileData.filter(data => data.hasNewMd5Hash || data.isMdFileNew || data.newFileNameOrPath)
   const updatedLocalNotes = mdFileData.filter(({ note, mdFile }) => note.file && note.version > mdFile.metadata.version)
 
-  const progress = cli.ux.progress({
+  const progress = cliUx.ux.progress({
     format: 'Update outdated remote notes... | {bar} | {value}/{total} notes',
     barCompleteChar: '\u2588',
     barIncompleteChar: '\u2591',
@@ -160,7 +160,7 @@ export async function syncNotes({
   }
   progress.stop()
 
-  const progress2 = cli.ux.progress({
+  const progress2 = cliUx.ux.progress({
     format: 'Update outdated local notes... | {bar} | {value}/{total} notes',
     barCompleteChar: '\u2588',
     barIncompleteChar: '\u2591',
