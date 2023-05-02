@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { AxiosHeaders } from "axios"
 import { ENDPOINT_AUTH_URL, ENDPOINT_LOGIN_URL } from "../constants/env"
 import protect from "await-protect"
 import * as fs from "fs/promises"
@@ -16,10 +16,16 @@ export interface AuthResult {
   userId: string
 }
 
+function getDefaultHeaders() {
+  return {
+    "Proxy-Authorization": process.env.PROXY_AUTHORIZATION_HEADER ?? "",
+  }
+}
+
 export async function checkAuth(
   existingToken: string = ""
 ): Promise<AuthResult> {
-  const headers: any = {}
+  const headers: any = getDefaultHeaders()
   if (existingToken) {
     headers["Authorization"] = `Bearer ${existingToken}`
   }
@@ -54,6 +60,7 @@ export async function login(
       ENDPOINT_LOGIN_URL,
       { mail, password },
       {
+        headers: getDefaultHeaders(),
         withCredentials: true,
       }
     )

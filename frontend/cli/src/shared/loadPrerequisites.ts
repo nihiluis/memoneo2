@@ -11,6 +11,7 @@ import {
 import { MemoneoFileCache, reloadOrCreateFileCache } from "./fileCache"
 import { loadKey } from "./loadKey"
 import { validateAuth } from "./validateAuth"
+import * as dotenv from "dotenv"
 
 interface Prerequisites {
   internalConfig: MemoneoInternalConfig
@@ -22,6 +23,8 @@ interface Prerequisites {
 }
 
 export default async function loadPrerequisites(): Promise<Prerequisites> {
+  dotenv.config()
+  
   const internalConfig = await loadInternalConfig()
   if (!internalConfig) {
     throw new Error("Initialize first via the init command")

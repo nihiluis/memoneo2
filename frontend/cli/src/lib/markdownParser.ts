@@ -3,7 +3,7 @@
  * taken from https://github.com/ilterra/markdown-yaml-metadata-parser
  */
 
-import detectNewline from "detect-newline"
+import * as detectNewline from "detect-newline"
 import * as yaml from "js-yaml"
 
 interface ParseResult {

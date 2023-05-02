@@ -15,6 +15,7 @@ export function createGqlClient(
         headers: {
           authorization: token ? `Bearer ${token}` : "",
           "X-Hasura-User-Id": config.userId,
+          "Proxy-Authorization": process.env.PROXY_AUTHORIZATION_HEADER ?? "",
         },
       }
     },

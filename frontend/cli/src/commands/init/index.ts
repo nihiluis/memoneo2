@@ -7,6 +7,7 @@ import { decodeBase64String, encodeBase64String } from "../../shared/base64"
 import { reloadOrCreateFileCache } from "../../shared/fileCache"
 import { loadConfig, MemoneoInternalConfig } from "../../shared/config"
 import { performLogin } from "../../shared/login"
+import * as dotenv from "dotenv"
 
 export default class Init extends Command {
   static description = "Init Memoneo"
@@ -31,6 +32,8 @@ export default class Init extends Command {
   login = performLogin.bind(this)
 
   async run(): Promise<void> {
+    dotenv.config()
+
     const { flags } = await this.parse(Init)
 
     await fs.mkdir("./.memoneo", { recursive: true })
