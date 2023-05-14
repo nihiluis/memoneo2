@@ -10,7 +10,7 @@ import (
 
 	"github.com/gofrs/uuid"
 
-	"github.com/Nerzal/gocloak/v7"
+	"github.com/Nerzal/gocloak/v13"
 	"github.com/memoneo/auth/internal/services/auth"
 	"github.com/memoneo/core/lib/datastore"
 	"github.com/memoneo/core/lib/logger"
@@ -19,7 +19,7 @@ import (
 // Keycloak implements the Auth interface.
 type Keycloak struct {
 	datastore        *datastore.Datastore
-	client           gocloak.GoCloak
+	client           *gocloak.GoCloak
 	config           *Config
 	token            *gocloak.JWT
 	tokenLastUpdated time.Time
@@ -94,7 +94,7 @@ func (k *Keycloak) PublicKey() interface{} {
 	return k.publicKey
 }
 
-func getToken(ctx context.Context, config *Config, client gocloak.GoCloak) (*gocloak.JWT, error) {
+func getToken(ctx context.Context, config *Config, client *gocloak.GoCloak) (*gocloak.JWT, error) {
 	token, err := client.LoginAdmin(ctx, config.AdminUserName, config.AdminPassword, "master")
 
 	return token, err
@@ -248,7 +248,7 @@ func (k *Keycloak) CheckToken(token string) error {
 
 	ctx := context.Background()
 
-	tokenValidation, _, err := k.client.DecodeAccessToken(ctx, token, k.config.RealmName, "")
+	tokenValidation, _, err := k.client.DecodeAccessToken(ctx, token, k.config.RealmName)
 	if err != nil {
 		return err
 	}

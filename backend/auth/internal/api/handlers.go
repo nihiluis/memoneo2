@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/go-playground/validator"
 	"github.com/gofrs/uuid"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/memoneo/auth/internal/services/auth"

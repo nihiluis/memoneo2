@@ -1,7 +1,7 @@
 package keycloak
 
 import (
-	"github.com/Nerzal/gocloak/v7"
+	"github.com/Nerzal/gocloak/v13"
 	"github.com/gofrs/uuid"
 	"github.com/memoneo/auth/internal/services/auth"
 )

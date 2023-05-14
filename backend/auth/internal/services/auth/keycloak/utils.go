@@ -7,7 +7,7 @@ import (
 	"encoding/binary"
 	"math/big"
 
-	"github.com/Nerzal/gocloak/v7"
+	"github.com/Nerzal/gocloak/v13"
 	"github.com/pkg/errors"
 )
 

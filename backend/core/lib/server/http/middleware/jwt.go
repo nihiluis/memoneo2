@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go/v4"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
 )
@@ -196,11 +196,13 @@ func JWTWithConfig(config JWTConfig) echo.MiddlewareFunc {
 			var token *jwt.Token
 			// Issue #647, #656
 			if _, ok := config.Claims.(jwt.MapClaims); ok {
-				token, err = jwt.Parse(auth, config.keyFunc, jwt.WithoutAudienceValidation())
+				// token, err = jwt.Parse(auth, config.keyFunc, jwt.WithoutAudienceValidation())
+				token, err = jwt.Parse(auth, config.keyFunc)
 			} else {
 				t := reflect.ValueOf(config.Claims).Type().Elem()
 				claims := reflect.New(t).Interface().(jwt.Claims)
-				token, err = jwt.ParseWithClaims(auth, claims, config.keyFunc, jwt.WithoutAudienceValidation())
+				// token, err = jwt.ParseWithClaims(auth, claims, config.keyFunc, jwt.WithoutAudienceValidation())
+				token, err = jwt.ParseWithClaims(auth, claims, config.keyFunc)
 			}
 			if err == nil && token.Valid {
 				// Store user information from token into context.
