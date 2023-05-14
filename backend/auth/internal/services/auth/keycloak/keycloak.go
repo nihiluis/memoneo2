@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"errors"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -53,27 +54,31 @@ func NewService(logger *logger.Logger, datastore *datastore.Datastore, config *C
 	}
 
 	client := gocloak.NewClient(keycloakURL)
+	proxyAuthHeader := os.Getenv("PROXY_AUTHORIZATION_HEADER")
+	if proxyAuthHeader != "" {
+		client.RestyClient().SetHeader("Proxy-Authorization", proxyAuthHeader)
+	}
 
 	ctx := context.Background()
 	initialToken, err := getToken(ctx, config, client)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	certResult, err := client.GetCerts(ctx, config.RealmName)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	if certResult.Keys == nil || len(*certResult.Keys) == 0 {
-		panic("there is no keys to decode the token")
+		return nil, fmt.Errorf("there is no keys to decode the token")
 	}
 	key := findUsedKey(config.Kid, *certResult.Keys)
 	if key == nil {
-		panic("keycloak publicKey may not be nil")
+		return nil, fmt.Errorf("keycloak publicKey may not be nil")
 	}
 	rsaPublicKey, err := decodePublicKey(key.E, key.N)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	w := &Keycloak{

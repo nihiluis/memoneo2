@@ -31,33 +31,33 @@ func main() {
 
 	datastore, err := datastore.NewService(pgConfig)
 	if err != nil {
-		panic(err)
+		logger.Zap.Panicw("Unable to load postgres data", zap.Error(err))
 	}
 	defer datastore.DB.Close()
 
 	keycloak, err := keycloak.NewService(logger, datastore, keycloakConfig)
 	if err != nil {
-		panic(err)
+		logger.Zap.Panicw("Unable to load keycloak service", zap.Error(err))
 	}
 
 	enckeys, err := enckeys.NewService(logger, datastore)
 	if err != nil {
-		panic(err)
+		logger.Zap.Panicw("Unable to load enckeys service", zap.Error(err))
 	}
 
 	users, err := users.NewService(logger, datastore, keycloak)
 	if err != nil {
-		panic(err)
+		logger.Zap.Panicw("Unable to load users service", zap.Error(err))
 	}
 
 	server, err := http.NewEchoService(logger, httpConfig)
 	if err != nil {
-		panic(err)
+		logger.Zap.Panicw("Unable to load http server", zap.Error(err))
 	}
 
 	api, err := api.NewService(logger, keycloak, apiConfig, authConfig, users, enckeys)
 	if err != nil {
-		panic(err)
+		logger.Zap.Panicw("Unable to load api service", zap.Error(err))
 	}
 	api.AddHandlers(server)
 
