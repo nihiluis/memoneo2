@@ -157,7 +157,9 @@ input activity_bool_exp {
 unique or primary key constraints on table "activity"
 """
 enum activity_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "id"
+  """
   activity_pkey
 }
 
@@ -194,7 +196,7 @@ type activity_mutation_response {
 }
 
 """
-on conflict condition type for table "activity"
+on_conflict condition type for table "activity"
 """
 input activity_on_conflict {
   constraint: activity_constraint!
@@ -291,6 +293,15 @@ enum activity_update_column {
   user_id
 }
 
+input activity_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: activity_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: activity_set_input
+  where: activity_bool_exp!
+}
+
 scalar date
 
 """
@@ -348,7 +359,9 @@ input enckey_bool_exp {
 unique or primary key constraints on table "enckey"
 """
 enum enckey_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "id"
+  """
   keypair_pkey
 }
 
@@ -374,7 +387,7 @@ type enckey_mutation_response {
 }
 
 """
-on conflict condition type for table "enckey"
+on_conflict condition type for table "enckey"
 """
 input enckey_on_conflict {
   constraint: enckey_constraint!
@@ -439,6 +452,12 @@ enum enckey_update_column {
   salt
 }
 
+input enckey_updates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: enckey_set_input
+  where: enckey_bool_exp!
+}
+
 """
 columns and relationships of "file_data"
 """
@@ -486,7 +505,9 @@ input file_data_bool_exp {
 unique or primary key constraints on table "file_data"
 """
 enum file_data_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "note_id"
+  """
   file_data_pkey
 }
 
@@ -519,12 +540,12 @@ input type for inserting object relation for remote table "file_data"
 input file_data_obj_rel_insert_input {
   data: file_data_insert_input!
 
-  """on conflict condition"""
+  """upsert condition"""
   on_conflict: file_data_on_conflict
 }
 
 """
-on conflict condition type for table "file_data"
+on_conflict condition type for table "file_data"
 """
 input file_data_on_conflict {
   constraint: file_data_constraint!
@@ -596,6 +617,12 @@ enum file_data_update_column {
 
   """column name"""
   updated_at
+}
+
+input file_data_updates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: file_data_set_input
+  where: file_data_bool_exp!
 }
 
 """
@@ -675,7 +702,7 @@ input type for inserting array relation for remote table "goal"
 input goal_arr_rel_insert_input {
   data: [goal_insert_input!]!
 
-  """on conflict condition"""
+  """upsert condition"""
   on_conflict: goal_on_conflict
 }
 
@@ -716,7 +743,9 @@ input goal_bool_exp {
 unique or primary key constraints on table "goal"
 """
 enum goal_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "id"
+  """
   goal_pkey
 }
 
@@ -813,12 +842,12 @@ input type for inserting object relation for remote table "goal"
 input goal_obj_rel_insert_input {
   data: goal_insert_input!
 
-  """on conflict condition"""
+  """upsert condition"""
   on_conflict: goal_on_conflict
 }
 
 """
-on conflict condition type for table "goal"
+on_conflict condition type for table "goal"
 """
 input goal_on_conflict {
   constraint: goal_constraint!
@@ -985,6 +1014,15 @@ enum goal_update_column {
 
   """column name"""
   user_id
+}
+
+input goal_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: goal_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: goal_set_input
+  where: goal_bool_exp!
 }
 
 """aggregate var_pop on columns"""
@@ -1237,10 +1275,14 @@ input memouser_bool_exp {
 unique or primary key constraints on table "memouser"
 """
 enum memouser_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "auth_id"
+  """
   memouser_auth_id_key
 
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "id"
+  """
   user_pkey
 }
 
@@ -1283,12 +1325,12 @@ input type for inserting object relation for remote table "memouser"
 input memouser_obj_rel_insert_input {
   data: memouser_insert_input!
 
-  """on conflict condition"""
+  """upsert condition"""
   on_conflict: memouser_on_conflict
 }
 
 """
-on conflict condition type for table "memouser"
+on_conflict condition type for table "memouser"
 """
 input memouser_on_conflict {
   constraint: memouser_constraint!
@@ -1363,6 +1405,15 @@ enum memouser_update_column {
 
   """column name"""
   level
+}
+
+input memouser_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: memouser_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: memouser_set_input
+  where: memouser_bool_exp!
 }
 
 """mutation root"""
@@ -1491,7 +1542,7 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [activity_insert_input!]!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: activity_on_conflict
   ): activity_mutation_response
 
@@ -1502,7 +1553,7 @@ type mutation_root {
     """the row to be inserted"""
     object: activity_insert_input!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: activity_on_conflict
   ): activity
 
@@ -1513,7 +1564,7 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [enckey_insert_input!]!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: enckey_on_conflict
   ): enckey_mutation_response
 
@@ -1524,7 +1575,7 @@ type mutation_root {
     """the row to be inserted"""
     object: enckey_insert_input!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: enckey_on_conflict
   ): enckey
 
@@ -1535,7 +1586,7 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [file_data_insert_input!]!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: file_data_on_conflict
   ): file_data_mutation_response
 
@@ -1546,7 +1597,7 @@ type mutation_root {
     """the row to be inserted"""
     object: file_data_insert_input!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: file_data_on_conflict
   ): file_data
 
@@ -1557,7 +1608,7 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [goal_insert_input!]!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: goal_on_conflict
   ): goal_mutation_response
 
@@ -1568,7 +1619,7 @@ type mutation_root {
     """the row to be inserted"""
     object: goal_insert_input!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: goal_on_conflict
   ): goal
 
@@ -1579,7 +1630,7 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [memouser_insert_input!]!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: memouser_on_conflict
   ): memouser_mutation_response
 
@@ -1590,7 +1641,7 @@ type mutation_root {
     """the row to be inserted"""
     object: memouser_insert_input!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: memouser_on_conflict
   ): memouser
 
@@ -1601,7 +1652,7 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [note_insert_input!]!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: note_on_conflict
   ): note_mutation_response
 
@@ -1612,7 +1663,7 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [note_goal_insert_input!]!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: note_goal_on_conflict
   ): note_goal_mutation_response
 
@@ -1623,7 +1674,7 @@ type mutation_root {
     """the row to be inserted"""
     object: note_goal_insert_input!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: note_goal_on_conflict
   ): note_goal
 
@@ -1634,7 +1685,7 @@ type mutation_root {
     """the row to be inserted"""
     object: note_insert_input!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: note_on_conflict
   ): note
 
@@ -1645,7 +1696,7 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [status_simple_insert_input!]!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: status_simple_on_conflict
   ): status_simple_mutation_response
 
@@ -1656,7 +1707,7 @@ type mutation_root {
     """the row to be inserted"""
     object: status_simple_insert_input!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: status_simple_on_conflict
   ): status_simple
 
@@ -1667,7 +1718,7 @@ type mutation_root {
     """the rows to be inserted"""
     objects: [todo_insert_input!]!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: todo_on_conflict
   ): todo_mutation_response
 
@@ -1678,7 +1729,7 @@ type mutation_root {
     """the row to be inserted"""
     object: todo_insert_input!
 
-    """on conflict condition"""
+    """upsert condition"""
     on_conflict: todo_on_conflict
   ): todo
 
@@ -1709,6 +1760,14 @@ type mutation_root {
   ): activity
 
   """
+  update multiples rows of table: "activity"
+  """
+  update_activity_many(
+    """updates to execute, in order"""
+    updates: [activity_updates!]!
+  ): [activity_mutation_response]
+
+  """
   update data of the table: "enckey"
   """
   update_enckey(
@@ -1729,6 +1788,14 @@ type mutation_root {
   ): enckey
 
   """
+  update multiples rows of table: "enckey"
+  """
+  update_enckey_many(
+    """updates to execute, in order"""
+    updates: [enckey_updates!]!
+  ): [enckey_mutation_response]
+
+  """
   update data of the table: "file_data"
   """
   update_file_data(
@@ -1747,6 +1814,14 @@ type mutation_root {
     _set: file_data_set_input
     pk_columns: file_data_pk_columns_input!
   ): file_data
+
+  """
+  update multiples rows of table: "file_data"
+  """
+  update_file_data_many(
+    """updates to execute, in order"""
+    updates: [file_data_updates!]!
+  ): [file_data_mutation_response]
 
   """
   update data of the table: "goal"
@@ -1775,6 +1850,14 @@ type mutation_root {
   ): goal
 
   """
+  update multiples rows of table: "goal"
+  """
+  update_goal_many(
+    """updates to execute, in order"""
+    updates: [goal_updates!]!
+  ): [goal_mutation_response]
+
+  """
   update data of the table: "memouser"
   """
   update_memouser(
@@ -1799,6 +1882,14 @@ type mutation_root {
     _set: memouser_set_input
     pk_columns: memouser_pk_columns_input!
   ): memouser
+
+  """
+  update multiples rows of table: "memouser"
+  """
+  update_memouser_many(
+    """updates to execute, in order"""
+    updates: [memouser_updates!]!
+  ): [memouser_mutation_response]
 
   """
   update data of the table: "note"
@@ -1847,6 +1938,22 @@ type mutation_root {
   ): note_goal
 
   """
+  update multiples rows of table: "note_goal"
+  """
+  update_note_goal_many(
+    """updates to execute, in order"""
+    updates: [note_goal_updates!]!
+  ): [note_goal_mutation_response]
+
+  """
+  update multiples rows of table: "note"
+  """
+  update_note_many(
+    """updates to execute, in order"""
+    updates: [note_updates!]!
+  ): [note_mutation_response]
+
+  """
   update data of the table: "status_simple"
   """
   update_status_simple(
@@ -1865,6 +1972,14 @@ type mutation_root {
     _set: status_simple_set_input
     pk_columns: status_simple_pk_columns_input!
   ): status_simple
+
+  """
+  update multiples rows of table: "status_simple"
+  """
+  update_status_simple_many(
+    """updates to execute, in order"""
+    updates: [status_simple_updates!]!
+  ): [status_simple_mutation_response]
 
   """
   update data of the table: "todo"
@@ -1891,6 +2006,14 @@ type mutation_root {
     _set: todo_set_input
     pk_columns: todo_pk_columns_input!
   ): todo
+
+  """
+  update multiples rows of table: "todo"
+  """
+  update_todo_many(
+    """updates to execute, in order"""
+    updates: [todo_updates!]!
+  ): [todo_mutation_response]
 }
 
 """
@@ -2062,7 +2185,7 @@ input type for inserting array relation for remote table "note"
 input note_arr_rel_insert_input {
   data: [note_insert_input!]!
 
-  """on conflict condition"""
+  """upsert condition"""
   on_conflict: note_on_conflict
 }
 
@@ -2104,10 +2227,9 @@ input note_bool_exp {
 unique or primary key constraints on table "note"
 """
 enum note_constraint {
-  """unique or primary key constraint"""
-  note_date_title_key
-
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "id"
+  """
   note_pkey
 }
 
@@ -2170,7 +2292,7 @@ input type for inserting array relation for remote table "note_goal"
 input note_goal_arr_rel_insert_input {
   data: [note_goal_insert_input!]!
 
-  """on conflict condition"""
+  """upsert condition"""
   on_conflict: note_goal_on_conflict
 }
 
@@ -2192,10 +2314,14 @@ input note_goal_bool_exp {
 unique or primary key constraints on table "note_goal"
 """
 enum note_goal_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "id"
+  """
   note_activity_pkey
 
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "note_id", "goal_id"
+  """
   note_goal_note_id_goal_id_key
 }
 
@@ -2254,7 +2380,7 @@ type note_goal_mutation_response {
 }
 
 """
-on conflict condition type for table "note_goal"
+on_conflict condition type for table "note_goal"
 """
 input note_goal_on_conflict {
   constraint: note_goal_constraint!
@@ -2311,6 +2437,12 @@ enum note_goal_update_column {
 
   """column name"""
   note_id
+}
+
+input note_goal_updates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: note_goal_set_input
+  where: note_goal_bool_exp!
 }
 
 """
@@ -2735,12 +2867,12 @@ input type for inserting object relation for remote table "note"
 input note_obj_rel_insert_input {
   data: note_insert_input!
 
-  """on conflict condition"""
+  """upsert condition"""
   on_conflict: note_on_conflict
 }
 
 """
-on conflict condition type for table "note"
+on_conflict condition type for table "note"
 """
 input note_on_conflict {
   constraint: note_constraint!
@@ -2902,6 +3034,15 @@ enum note_update_column {
 
   """column name"""
   version
+}
+
+input note_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: note_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: note_set_input
+  where: note_bool_exp!
 }
 
 """aggregate var_pop on columns"""
@@ -3171,7 +3312,9 @@ input status_simple_bool_exp {
 unique or primary key constraints on table "status_simple"
 """
 enum status_simple_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "value"
+  """
   goal_status_pkey
 }
 
@@ -3211,7 +3354,7 @@ type status_simple_mutation_response {
 }
 
 """
-on conflict condition type for table "status_simple"
+on_conflict condition type for table "status_simple"
 """
 input status_simple_on_conflict {
   constraint: status_simple_constraint!
@@ -3250,6 +3393,12 @@ update columns of table "status_simple"
 enum status_simple_update_column {
   """column name"""
   value
+}
+
+input status_simple_updates {
+  """sets the columns of the filtered rows to the given values"""
+  _set: status_simple_set_input
+  where: status_simple_bool_exp!
 }
 
 type subscription_root {
@@ -3518,7 +3667,7 @@ input type for inserting array relation for remote table "todo"
 input todo_arr_rel_insert_input {
   data: [todo_insert_input!]!
 
-  """on conflict condition"""
+  """upsert condition"""
   on_conflict: todo_on_conflict
 }
 
@@ -3554,7 +3703,9 @@ input todo_bool_exp {
 unique or primary key constraints on table "todo"
 """
 enum todo_constraint {
-  """unique or primary key constraint"""
+  """
+  unique or primary key constraint on columns "id"
+  """
   todo_pkey
 }
 
@@ -3634,7 +3785,7 @@ type todo_mutation_response {
 }
 
 """
-on conflict condition type for table "todo"
+on_conflict condition type for table "todo"
 """
 input todo_on_conflict {
   constraint: todo_constraint!
@@ -3769,6 +3920,15 @@ enum todo_update_column {
 
   """column name"""
   user_id
+}
+
+input todo_updates {
+  """increments the numeric columns with given value of the filtered values"""
+  _inc: todo_inc_input
+
+  """sets the columns of the filtered rows to the given values"""
+  _set: todo_set_input
+  where: todo_bool_exp!
 }
 
 """aggregate var_pop on columns"""

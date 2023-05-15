@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { AxiosError, AxiosResponse } from "axios"
 import {
   ENDPOINT_AUTH_URL,
   ENDPOINT_LOGIN_URL,
@@ -20,10 +20,22 @@ interface AuthResult {
   userId: string
 }
 
+function getHeaders() {
+  const headers: any = {}
+
+  if (process.env.NEXT_PUBLIC_PROXY_AUTHORIZATION_HEADER) {
+    headers["Authelia-Authorization"] =
+      process.env.NEXT_PUBLIC_PROXY_AUTHORIZATION_HEADER
+  }
+
+  return headers
+}
+
 export async function checkAuth(
   existingToken: string = ""
 ): Promise<AuthResult> {
-  const headers: any = {}
+  const headers = getHeaders()
+
   if (existingToken) {
     //this seems to break Chrome, but not firefox.
     //headers["Authorization"] = `Bearer ${existingToken}`
@@ -31,9 +43,13 @@ export async function checkAuth(
 
   // console.log("checking auth")
 
-  const [res, error] = await protect(
+  const [res, error] = await protect<AxiosResponse, AxiosError>(
     axios.get(ENDPOINT_AUTH_URL, { headers, withCredentials: true })
   )
+
+  // const [res, error] = await protect(
+  //   axios.get(ENDPOINT_AUTH_URL, { headers, withCredentials: true })
+  // )
 
   if (error || !res.data.hasOwnProperty("token")) {
     return {
@@ -41,7 +57,7 @@ export async function checkAuth(
       token: "",
       enckey: null,
       userId: "",
-      error: error.message,
+      error: error?.response?.data.message ?? error?.message ?? "token not found",
     }
   }
 
@@ -57,29 +73,34 @@ export async function login(
   mail: string,
   password: string
 ): Promise<AuthResult> {
+  const headers = getHeaders()
+
   const [res, error] = await protect(
     axios.post(
       ENDPOINT_LOGIN_URL,
       { mail, password },
       {
+        headers,
         withCredentials: true,
       }
     )
   )
 
-  if (error || !res.data.hasOwnProperty("token")) {
+  const body = res?.data
+
+  if (error || !body.hasOwnProperty("token")) {
     return {
       success: false,
       token: "",
       userId: "",
       enckey: undefined,
-      error: error.message,
+      error: body?.message ?? error?.message ?? "Token not found.",
     }
   }
 
-  const token: string = res.data.token
-  const userId: string = res.data.userId
-  const enckey: Enckey = res.data.enckey
+  const token: string = body.token
+  const userId: string = body.userId
+  const enckey: Enckey = body.enckey
 
   return { success: true, token, userId, enckey, error: "" }
 }
@@ -88,6 +109,8 @@ export async function register(
   mail: string,
   password: string
 ): Promise<AuthResult> {
+  const headers = getHeaders()
+
   const [res, error] = await protect(
     axios.post(
       ENDPOINT_REGISTER_URL,
@@ -96,6 +119,7 @@ export async function register(
         password,
       },
       {
+        headers,
         withCredentials: true,
       }
     )
@@ -106,7 +130,7 @@ export async function register(
       success: false,
       token: "",
       userId: "",
-      error: error?.message ?? "Token not provided.",
+      error: res?.data.message ?? error?.message ?? "Token not found.",
     }
   }
 
@@ -121,8 +145,11 @@ const SESSION_TOKEN_KEY = "token"
 export async function logout() {
   setSessionToken("")
 
+  const headers = getHeaders()
+
   await protect(
     axios.get(ENDPOINT_LOGOUT_URL, {
+      headers,
       withCredentials: true,
     })
   )
