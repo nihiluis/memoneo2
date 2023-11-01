@@ -7,5 +7,6 @@
   "jsxBracketSameLine": true,
   "arrowParens": "avoid",
   "requirePragma": false,
-  "proseWrap": "preserve"
+  "proseWrap": "preserve",
+  "tabWidth": 4
 }
