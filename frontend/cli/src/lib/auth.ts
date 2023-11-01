@@ -10,7 +10,8 @@ export type Enckey = {
 
 export interface AuthResult {
   success: boolean
-  error: string
+  errorMessage: string
+  error?: Error
   enckey?: Enckey
   token: string
   userId: string
@@ -40,7 +41,8 @@ export async function checkAuth(
       token: "",
       enckey: undefined,
       userId: "",
-      error: error?.message ?? "",
+      errorMessage: error?.message ?? "",
+      error,
     }
   }
 
@@ -48,7 +50,7 @@ export async function checkAuth(
   const userId: string = res.data.userId
   const enckey: Enckey = res.data.enckey
 
-  return { success: true, token, enckey, userId, error: "" }
+  return { success: true, token, enckey, userId, errorMessage: "" }
 }
 
 export async function login(
@@ -72,7 +74,8 @@ export async function login(
       token: "",
       userId: "",
       enckey: undefined,
-      error: error?.message ?? "",
+      errorMessage: error?.message ?? "",
+      error,
     }
   }
 
@@ -80,5 +83,5 @@ export async function login(
   const userId: string = res.data.userId
   const enckey: Enckey = res.data.enckey
 
-  return { success: true, token, userId, enckey, error: "" }
+  return { success: true, token, userId, enckey, errorMessage: "" }
 }

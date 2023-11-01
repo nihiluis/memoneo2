@@ -14,11 +14,11 @@ export async function performLogin(
   password =
     password || (await cliUx.prompt("What is your password?", { type: "hide" }))
 
-  cliUx.action.start("Authenticating")
+  cliUx.action.start("Authenticating mail=" + mail)
   const authResult = await login(mail, password)
-  const { error: loginError, enckey, token } = authResult
-  if (loginError) {
-    throw new Error(`Unable to auth using given mail and password due to: ${loginError}.`)
+  const { errorMessage, error, enckey, token, success } = authResult
+  if (error || !success) {
+    throw new Error(`Unable to auth using given mail and password due to: ${errorMessage ?? "no error given"}.`)
   }
   if (!enckey) {
     throw new Error("Your encryption key must be set up before using the CLI.")

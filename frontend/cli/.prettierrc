@@ -8,5 +8,5 @@
   "arrowParens": "avoid",
   "requirePragma": false,
   "proseWrap": "preserve",
-  "tabWidth": 4
+  "tabWidth": 2
 }
