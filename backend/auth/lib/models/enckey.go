@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 )
 
 // Enckey holds the encrypted private and the public key which are used to encrypt parts of the data.

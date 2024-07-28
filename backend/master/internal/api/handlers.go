@@ -4,13 +4,13 @@ import (
 	"net/http"
 
 	"github.com/dghubble/sling"
-	"github.com/go-playground/validator"
-	"github.com/gofrs/uuid"
+	"github.com/go-playground/validator/v10"
+	"github.com/gofrs/uuid/v5"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
-	"github.com/memoneo/core/lib/logger"
-	memohttp "github.com/memoneo/core/lib/server/http"
-	userMiddleware "github.com/memoneo/core/lib/server/http/middleware"
+	"github.com/nihiluis/memoneo2/core/lib/logger"
+	memohttp "github.com/nihiluis/memoneo2/core/lib/server/http"
+	userMiddleware "github.com/nihiluis/memoneo2/core/lib/server/http/middleware"
 )
 
 var validate *validator.Validate

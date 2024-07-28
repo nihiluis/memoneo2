@@ -9,12 +9,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 
 	"github.com/Nerzal/gocloak/v13"
-	"github.com/memoneo/auth/internal/services/auth"
-	"github.com/memoneo/core/lib/datastore"
-	"github.com/memoneo/core/lib/logger"
+	"github.com/nihiluis/memoneo2/auth/internal/services/auth"
+	"github.com/nihiluis/memoneo2/core/lib/datastore"
+	"github.com/nihiluis/memoneo2/core/lib/logger"
 )
 
 // Keycloak implements the Auth interface.

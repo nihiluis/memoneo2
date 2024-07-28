@@ -1,9 +1,9 @@
 package enckeys
 
 import (
-	uuid "github.com/gofrs/uuid"
-	"github.com/memoneo/auth/lib/models"
-	"github.com/memoneo/core/lib/datastore"
+	uuid "github.com/gofrs/uuid/v5"
+	"github.com/nihiluis/memoneo2/auth/lib/models"
+	"github.com/nihiluis/memoneo2/core/lib/datastore"
 )
 
 // EnckeyRepository enables CRUD ops on the db for the Keypair objects.

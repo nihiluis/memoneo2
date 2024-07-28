@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/dghubble/sling"
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 	"github.com/labstack/echo/v4"
-	"github.com/memoneo/core/lib/models"
+	"github.com/nihiluis/memoneo2/core/lib/models"
 )
 
 type UserAuthConfig struct {

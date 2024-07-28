@@ -1,6 +1,6 @@
 package auth
 
-import "github.com/gofrs/uuid"
+import "github.com/gofrs/uuid/v5"
 
 // Auth struct holds all the dependencies required for the auth package. And exposes all services
 // provided by this package as its methods.

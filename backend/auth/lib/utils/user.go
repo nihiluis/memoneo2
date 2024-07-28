@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"github.com/memoneo/auth/internal/services/auth"
-	authmodels "github.com/memoneo/auth/lib/models"
-	"github.com/memoneo/core/lib/models"
+	"github.com/nihiluis/memoneo2/auth/internal/services/auth"
+	authmodels "github.com/nihiluis/memoneo2/auth/lib/models"
+	"github.com/nihiluis/memoneo2/core/lib/models"
 )
 
 // MergeUser merges all fields of an auth.User and a models.User struct to an authmodels.FullUser one.

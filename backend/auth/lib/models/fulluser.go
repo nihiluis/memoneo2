@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/gofrs/uuid"
-	"github.com/memoneo/core/lib/models"
+	"github.com/gofrs/uuid/v5"
+	"github.com/nihiluis/memoneo2/core/lib/models"
 )
 
 // FullUser represents an authenticated user of the apps.

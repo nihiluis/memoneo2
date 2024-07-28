@@ -3,9 +3,9 @@ package configs
 import (
 	"time"
 
-	"github.com/memoneo/auth/internal/services/auth/keycloak"
-	"github.com/memoneo/core/lib/datastore"
-	"github.com/memoneo/core/lib/server/http"
+	"github.com/nihiluis/memoneo2/auth/internal/services/auth/keycloak"
+	"github.com/nihiluis/memoneo2/core/lib/datastore"
+	"github.com/nihiluis/memoneo2/core/lib/server/http"
 )
 
 // TestConfigs struct handles all dependencies required for handling configurations

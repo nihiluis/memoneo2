@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/memoneo/core/lib/logger"
+	"github.com/nihiluis/memoneo2/core/lib/logger"
 	"go.uber.org/zap"
 )
 

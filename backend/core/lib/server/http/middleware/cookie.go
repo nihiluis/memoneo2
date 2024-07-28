@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/memoneo/core/lib/logger"
+	"github.com/nihiluis/memoneo2/core/lib/logger"
 )
 
 func UserCookieAuth(logger *logger.Logger) echo.MiddlewareFunc {

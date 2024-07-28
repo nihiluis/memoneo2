@@ -1,9 +1,9 @@
 package users
 
 import (
-	uuid "github.com/gofrs/uuid"
-	"github.com/memoneo/core/lib/datastore"
-	"github.com/memoneo/core/lib/models"
+	uuid "github.com/gofrs/uuid/v5"
+	"github.com/nihiluis/memoneo2/core/lib/datastore"
+	"github.com/nihiluis/memoneo2/core/lib/models"
 )
 
 // UserRepository enables CRUD ops on the db for the User objects.

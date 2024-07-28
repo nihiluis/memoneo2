@@ -3,7 +3,7 @@ package configs
 import (
 	"time"
 
-	"github.com/memoneo/core/lib/datastore"
+	"github.com/nihiluis/memoneo2/core/lib/datastore"
 )
 
 // TestConfigs struct handles all dependencies required for handling configurations

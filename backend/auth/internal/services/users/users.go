@@ -1,11 +1,11 @@
 package users
 
 import (
-	uuid "github.com/gofrs/uuid"
-	"github.com/memoneo/auth/internal/services/auth"
-	"github.com/memoneo/core/lib/datastore"
-	"github.com/memoneo/core/lib/logger"
-	"github.com/memoneo/core/lib/models"
+	uuid "github.com/gofrs/uuid/v5"
+	"github.com/nihiluis/memoneo2/auth/internal/services/auth"
+	"github.com/nihiluis/memoneo2/core/lib/datastore"
+	"github.com/nihiluis/memoneo2/core/lib/logger"
+	"github.com/nihiluis/memoneo2/core/lib/models"
 )
 
 // Users struct holds all the dependencies required for the users package. And exposes all services

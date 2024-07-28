@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 )
 
 // Document represents an object of the IT landscape.

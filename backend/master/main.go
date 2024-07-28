@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/memoneo/core/lib/logger"
-	"github.com/memoneo/core/lib/server/http"
-	"github.com/memoneo/master/internal/api"
-	"github.com/memoneo/master/internal/configs"
+	"github.com/nihiluis/memoneo2/core/lib/logger"
+	"github.com/nihiluis/memoneo2/core/lib/server/http"
+	"github.com/nihiluis/memoneo2/master/internal/api"
+	"github.com/nihiluis/memoneo2/master/internal/configs"
 	"go.uber.org/zap"
 )
 

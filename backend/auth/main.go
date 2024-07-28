@@ -2,32 +2,31 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/memoneo/auth/internal/api"
-	"github.com/memoneo/auth/internal/configs"
-	"github.com/memoneo/auth/internal/services/auth/keycloak"
-	"github.com/memoneo/auth/internal/services/enckeys"
-	"github.com/memoneo/auth/internal/services/users"
-	"github.com/memoneo/core/lib/datastore"
-	"github.com/memoneo/core/lib/logger"
-	"github.com/memoneo/core/lib/server/http"
+	"github.com/nihiluis/memoneo2/auth/internal/api"
+	"github.com/nihiluis/memoneo2/auth/internal/configs"
+	"github.com/nihiluis/memoneo2/auth/internal/services/auth/keycloak"
+	"github.com/nihiluis/memoneo2/auth/internal/services/enckeys"
+	"github.com/nihiluis/memoneo2/auth/internal/services/users"
+	"github.com/nihiluis/memoneo2/core/lib/datastore"
+	"github.com/nihiluis/memoneo2/core/lib/logger"
+	"github.com/nihiluis/memoneo2/core/lib/server/http"
 	"go.uber.org/zap"
 )
 
 func main() {
 	err := godotenv.Load(".env")
-
-	configs, err := configs.NewService()
 	if err != nil {
 		panic(err)
 	}
 
 	logger := logger.NewService()
+	configs := configs.NewService()
 
-	keycloakConfig, err := configs.Keycloak()
-	pgConfig, err := configs.Datastore()
-	authConfig, err := configs.Auth()
-	httpConfig, err := configs.HTTP()
-	apiConfig, err := configs.API()
+	keycloakConfig := configs.Keycloak()
+	pgConfig := configs.Datastore()
+	authConfig := configs.Auth()
+	httpConfig := configs.HTTP()
+	apiConfig := configs.API()
 
 	datastore, err := datastore.NewService(pgConfig)
 	if err != nil {

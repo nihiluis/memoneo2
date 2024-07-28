@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/gofrs/uuid"
+	"github.com/gofrs/uuid/v5"
 )
 
 // User represents a user of the apps.

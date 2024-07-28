@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/memoneo/core/lib/models"
+	"github.com/nihiluis/memoneo2/core/lib/models"
 )
 
 type UserLevelConfig struct {
