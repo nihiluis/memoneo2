@@ -1,9 +1,9 @@
 import * as fs from "fs/promises"
 import * as path from "path"
-import { Note, NoteFileData } from "."
-import { dedent } from "../../lib/dedent"
-import { MarkdownFileInfo } from "../../lib/files"
-import { MemoneoConfig } from "../config"
+import { Note, NoteFileData } from "./index.js"
+import { dedent } from "../../lib/dedent.js"
+import { MarkdownFileInfo } from "../../lib/files.js"
+import { MemoneoConfig } from "../config.js"
 
 export async function deleteMdFile(
   mdFile: MarkdownFileInfo,

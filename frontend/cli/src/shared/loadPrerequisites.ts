@@ -1,16 +1,16 @@
 import { Client } from "@urql/core"
 import protect from "await-protect"
-import { AuthResult } from "../lib/auth"
-import { createGqlClient } from "../lib/gql"
+import { AuthResult } from "../lib/auth.js"
+import { createGqlClient } from "../lib/gql.js"
 import {
   loadConfig,
   loadInternalConfig,
   MemoneoConfig,
   MemoneoInternalConfig,
-} from "./config"
-import { MemoneoFileCache, reloadOrCreateFileCache } from "./fileCache"
-import { loadKey } from "./loadKey"
-import { validateAuth } from "./validateAuth"
+} from "./config.js"
+import { MemoneoFileCache, reloadOrCreateFileCache } from "./fileCache.js"
+import { loadKey } from "./loadKey.js"
+import { validateAuth } from "./validateAuth.js"
 import * as dotenv from "dotenv"
 
 interface Prerequisites {

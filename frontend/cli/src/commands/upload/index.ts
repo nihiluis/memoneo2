@@ -1,13 +1,9 @@
 import { Args, Command } from "@oclif/core"
-import protect from "await-protect"
-import { reloadOrCreateFileCache, saveFileCache } from "../../shared/fileCache"
-import { loadConfig, loadInternalConfig } from "../../shared/config"
-import { loadKey } from "../../shared/loadKey"
-import { validateAuth } from "../../shared/validateAuth"
+import { saveFileCache } from "../../shared/fileCache.js"
 import * as fs from "fs/promises"
-import { getAllMarkdownFiles, MarkdownFileInfo } from "../../lib/files"
-import { uploadNewNotes } from "../../shared/note/upload"
-import loadPrerequisites from "../../shared/loadPrerequisites"
+import { getAllMarkdownFiles } from "../../lib/files.js"
+import { uploadNewNotes } from "../../shared/note/upload.js"
+import loadPrerequisites from "../../shared/loadPrerequisites.js"
 
 export default class Download extends Command {
   static description = "Download notes"

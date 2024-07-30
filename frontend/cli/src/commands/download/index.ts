@@ -1,21 +1,10 @@
-import { Command, Flags } from "@oclif/core"
-import { gql } from "@urql/core"
-import protect from "await-protect"
-import { createGqlClient } from "../../lib/gql"
-import { decryptText } from "../../lib/key"
-import { decodeBase64String } from "../../shared/base64"
+import { Command } from "@oclif/core"
 import {
-  loadFileCache,
-  reloadOrCreateFileCache,
   saveFileCache,
-} from "../../shared/fileCache"
-import { loadConfig, loadInternalConfig } from "../../shared/config"
-import { loadKey } from "../../shared/loadKey"
-import { validateAuth } from "../../shared/validateAuth"
-import * as path from "path"
-import * as fs from "fs/promises"
-import { downloadNotes, writeNewNotes } from "../../shared/note/download"
-import loadPrerequisites from "../../shared/loadPrerequisites"
+} from "../../shared/fileCache.js"
+import { validateAuth } from "../../shared/validateAuth.js"
+import { downloadNotes, writeNewNotes } from "../../shared/note/download.js"
+import loadPrerequisites from "../../shared/loadPrerequisites.js"
 
 export default class Download extends Command {
   static description = "Download notes"

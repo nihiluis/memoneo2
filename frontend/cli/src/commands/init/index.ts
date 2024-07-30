@@ -1,12 +1,12 @@
 import { Command, Flags } from "@oclif/core"
 import protect from "await-protect"
 import * as fs from "fs/promises"
-import { decryptProtectedKey, getBufferForKey } from "../../lib/key"
-import { crypto } from "../../lib/reexports"
-import { decodeBase64String, encodeBase64String } from "../../shared/base64"
-import { reloadOrCreateFileCache } from "../../shared/fileCache"
-import { loadConfig, MemoneoInternalConfig } from "../../shared/config"
-import { performLogin } from "../../shared/login"
+import { decryptProtectedKey } from "../../lib/key.js"
+import { crypto } from "../../lib/reexports.js"
+import { decodeBase64String, encodeBase64String } from "../../shared/base64.js"
+import { reloadOrCreateFileCache } from "../../shared/fileCache.js"
+import { loadConfig, MemoneoInternalConfig } from "../../shared/config.js"
+import { performLogin } from "../../shared/login.js"
 import * as dotenv from "dotenv"
 
 export default class Init extends Command {

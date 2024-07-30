@@ -1,7 +1,4 @@
-import protect from "await-protect"
-import axios from "axios"
-import { crypto } from "./reexports"
-import { ENDPOINT_SAVE_KEY_URL } from "../constants/env"
+import { crypto } from "./reexports.js"
 
 export async function getBufferForKey(key: CryptoKey): Promise<Buffer> {
   return Buffer.from(await crypto.subtle.exportKey("raw", key))

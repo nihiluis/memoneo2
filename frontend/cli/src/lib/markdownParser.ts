@@ -3,8 +3,8 @@
  * taken from https://github.com/ilterra/markdown-yaml-metadata-parser
  */
 
-import * as detectNewline from "detect-newline"
-import * as yaml from "js-yaml"
+import { detectNewline } from "detect-newline"
+import * as yaml from "yaml"
 
 interface ParseResult {
   content: string
@@ -62,10 +62,8 @@ const metadataParser = (text: string): ParseResult => {
     }
   }
 
-  yaml.load
-
   const parseMetadata = () => {
-    const parseResult = result.metadata ? yaml.load(result.metadata) : {}
+    const parseResult = result.metadata ? yaml.parse(result.metadata) : {}
     result = {
       ...result,
       metadata: parseResult,

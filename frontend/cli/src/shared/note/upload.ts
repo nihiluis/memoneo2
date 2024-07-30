@@ -1,17 +1,16 @@
 import { Command } from "@oclif/core"
 import { Client } from "@urql/core"
-import dayjs = require("dayjs")
-import { Note, NoteFileData } from "."
-import { AuthResult } from "../../lib/auth"
-import { MarkdownFileInfo, md5HashText } from "../../lib/files"
-import { createGqlClient } from "../../lib/gql"
-import { encryptText } from "../../lib/key"
-import { cliUx, generateUuid } from "../../lib/reexports"
-import { decodeBase64String, encodeBase64String } from "../base64"
-import { MemoneoConfig, MemoneoInternalConfig } from "../config"
-import { MemoneoFileCache } from "../fileCache"
-import { InsertNoteFileDataMutation, InsertNoteMutation } from "./mutation"
-import { writeNoteToFile } from "./write"
+import { SingleBar } from "cli-progress"
+import { Note, NoteFileData } from "./index.js"
+import { AuthResult } from "../../lib/auth.js"
+import { MarkdownFileInfo, md5HashText } from "../../lib/files.js"
+import { encryptText } from "../../lib/key.js"
+import { cliUx, generateUuid } from "../../lib/reexports.js"
+import { decodeBase64String, encodeBase64String } from "../base64.js"
+import { MemoneoConfig, MemoneoInternalConfig } from "../config.js"
+import { MemoneoFileCache } from "../fileCache.js"
+import { InsertNoteFileDataMutation, InsertNoteMutation } from "./mutation.js"
+import { writeNoteToFile } from "./write.js"
 
 interface UploadNewNotesConfig {
   mdFiles: MarkdownFileInfo[]
@@ -41,13 +40,13 @@ export async function uploadNewNotes({
     mdFile => !mdFile.metadata.hasOwnProperty("id")
   )
 
-  const progress = cliUx.ux.progress({
+  const progress = new SingleBar({
     format: "Encrypting... | {bar} | {value}/{total} notes",
     barCompleteChar: "\u2588",
     barIncompleteChar: "\u2591",
   })
 
-  const newNoteUniqueConstraintMap: Record<string, Partial<Note>> = {}
+  // const newNoteUniqueConstraintMap: Record<string, Partial<Note>> = {}
 
   progress.start(newMdFiles.length, 0)
   for (let mdFile of newMdFiles) {
@@ -106,7 +105,7 @@ export async function uploadNewNotes({
 
   // console.log(JSON.stringify(newNotes.map(n => n.title)))
 
-  cliUx.ux.action.start("Uploading new notes")
+  cliUx.action.start("Uploading new notes")
 
   const { data, error } = await gqlClient
     .mutation(InsertNoteMutation, { inputs: newNotes })
@@ -119,12 +118,12 @@ export async function uploadNewNotes({
     throw new Error("data not found")
   }
 
-  cliUx.ux.action.stop()
+  cliUx.action.stop()
 
   const insertedNotes: Note[] = data.insert_note.returning
   const noteFileData: NoteFileData[] = []
 
-  const progress2 = cliUx.ux.progress({
+  const progress2 = new SingleBar({
     format: "Updating metadata... | {bar} | {value}/{total} notes",
     barCompleteChar: "\u2588",
     barIncompleteChar: "\u2591",

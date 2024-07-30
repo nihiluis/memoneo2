@@ -1,7 +1,5 @@
-import protect from "await-protect"
 import * as fs from "fs/promises"
-import { crypto } from "../lib/reexports"
-import { decodeBase64String } from "./base64"
+import { crypto } from "../lib/reexports.js"
 
 export interface MemoneoFileConfig {
   mail: string

@@ -1,7 +1,6 @@
-import axios, { AxiosHeaders } from "axios"
-import { ENDPOINT_AUTH_URL, ENDPOINT_LOGIN_URL } from "../constants/env"
+import axios from "axios"
+import { ENDPOINT_AUTH_URL, ENDPOINT_LOGIN_URL } from "../constants/env.js"
 import protect from "await-protect"
-import * as fs from "fs/promises"
 
 export type Enckey = {
   key: string

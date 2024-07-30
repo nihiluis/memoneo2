@@ -1,15 +1,15 @@
 import { Command } from "@oclif/core"
-import { Client, gql } from "@urql/core"
-import { Note } from "."
-import { AuthResult } from "../../lib/auth"
-import { createGqlClient } from "../../lib/gql"
-import { decryptText } from "../../lib/key"
-import { cliUx } from "../../lib/reexports"
-import { decodeBase64String } from "../base64"
-import { MemoneoConfig, MemoneoInternalConfig } from "../config"
-import { MemoneoFileCache } from "../fileCache"
-import { DownloadQuery } from "./query"
-import { writeNoteToFile } from "./write"
+import { Client } from "@urql/core"
+import { Note } from "./index.js"
+import { AuthResult } from "../../lib/auth.js"
+import { decryptText } from "../../lib/key.js"
+import { cliUx } from "../../lib/reexports.js"
+import { decodeBase64String } from "../base64.js"
+import { MemoneoConfig, MemoneoInternalConfig } from "../config.js"
+import { MemoneoFileCache } from "../fileCache.js"
+import { DownloadQuery } from "./query.js"
+import { writeNoteToFile } from "./write.js"
+import { SingleBar } from "cli-progress"
 
 interface DownloadNotesConfig {
   auth: AuthResult
@@ -22,15 +22,10 @@ interface DownloadNotesConfig {
 }
 
 export async function downloadNotes({
-  auth,
-  key,
-  config,
-  internalConfig,
-  cache,
   gqlClient,
   command,
 }: DownloadNotesConfig): Promise<Note[]> {
-  cliUx.ux.action.start("Downloading notes")
+  cliUx.action.start("Downloading notes")
 
   const { data, error } = await gqlClient.query(DownloadQuery, {}).toPromise()
   if (error) {
@@ -41,7 +36,7 @@ export async function downloadNotes({
     command.error("Unable to retrieve data from the GQL API")
   }
 
-  cliUx.ux.action.stop()
+  cliUx.action.stop()
 
   const notes: Note[] = data.note
 
@@ -52,10 +47,10 @@ export async function decryptNotes(
   notes: Note[],
   { auth, key }: DownloadNotesConfig
 ): Promise<Note[]> {
-  const progress = cliUx.ux.progress({
-    format: 'Decrypting... | {bar} | {value}/{total} notes',
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
+  const progress = new SingleBar({
+    format: "Decrypting... | {bar} | {value}/{total} notes",
+    barCompleteChar: "\u2588",
+    barIncompleteChar: "\u2591",
   })
 
   progress.start(notes.length, 0)
@@ -90,11 +85,10 @@ export async function writeNewNotes(
 
   await decryptNotes(newNotes, downloadConfig)
 
-
-  const progress = cliUx.ux.progress({
-    format: 'Writing new notes... | {bar} | {value}/{total} notes',
-    barCompleteChar: '\u2588',
-    barIncompleteChar: '\u2591',
+  const progress = new SingleBar({
+    format: "Writing new notes... | {bar} | {value}/{total} notes",
+    barCompleteChar: "\u2588",
+    barIncompleteChar: "\u2591",
   })
 
   progress.start(newNotes.length, 0)

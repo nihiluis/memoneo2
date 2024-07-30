@@ -1,9 +1,9 @@
 import protect from "await-protect"
 
 import * as fs from "fs/promises"
-import { AuthResult, checkAuth } from "../lib/auth"
-import { MemoneoInternalConfig } from "./config"
-import { performLogin } from "./login"
+import { AuthResult, checkAuth } from "../lib/auth.js"
+import { MemoneoInternalConfig } from "./config.js"
+import { performLogin } from "./login.js"
 
 export async function validateAuth(
   config?: MemoneoInternalConfig

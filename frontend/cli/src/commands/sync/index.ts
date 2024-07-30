@@ -1,12 +1,12 @@
 import { Args, Command } from "@oclif/core"
-import { saveFileCache } from "../../shared/fileCache"
+import { saveFileCache } from "../../shared/fileCache.js"
 import * as fs from "fs/promises"
-import { getAllMarkdownFiles } from "../../lib/files"
-import { uploadNewNotes } from "../../shared/note/upload"
-import loadPrerequisites from "../../shared/loadPrerequisites"
-import { downloadNotes, writeNewNotes } from "../../shared/note/download"
-import { syncNotes } from "../../shared/note/sync"
-import { cliUx } from "../../lib/reexports"
+import { getAllMarkdownFiles } from "../../lib/files.js"
+import { uploadNewNotes } from "../../shared/note/upload.js"
+import loadPrerequisites from "../../shared/loadPrerequisites.js"
+import { downloadNotes, writeNewNotes } from "../../shared/note/download.js"
+import { syncNotes } from "../../shared/note/sync.js"
+import { cliUx } from "../../lib/reexports.js"
 
 export default class Sync extends Command {
   static description = "Download notes"
@@ -24,16 +24,10 @@ export default class Sync extends Command {
   }
 
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(Sync)
+    const { args } = await this.parse(Sync)
 
-    const {
-      config,
-      auth,
-      key,
-      internalConfig,
-      cache,
-      gqlClient,
-    } = await loadPrerequisites()
+    const { config, auth, key, internalConfig, cache, gqlClient } =
+      await loadPrerequisites()
 
     const targetDirectory: string = args["dir"] || config.baseDirectory
     const targetDirectoryStat = await fs.stat(targetDirectory)
@@ -43,12 +37,12 @@ export default class Sync extends Command {
       )
     }
 
-    cliUx.ux.action.start(`Loading markdown files from ${targetDirectory}`)
+    cliUx.action.start(`Loading markdown files from ${targetDirectory}`)
     const mdFiles = await getAllMarkdownFiles(
       config.baseDirectory,
       targetDirectory
     )
-    cliUx.ux.action.stop()
+    cliUx.action.stop()
 
     const downloadConfig = {
       auth,
