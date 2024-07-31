@@ -1,5 +1,5 @@
-const webcrypto = require("crypto").webcrypto
-export const crypto: Crypto = webcrypto
+import { webcrypto } from "crypto"
+export const crypto = webcrypto
 
 import { v4 as generateUuid } from "uuid"
 

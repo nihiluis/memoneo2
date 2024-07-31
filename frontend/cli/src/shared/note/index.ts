@@ -15,3 +15,7 @@ export interface NoteFileData {
   path: string
   note_id?: string
 }
+
+export interface NoteId {
+  id: string
+}

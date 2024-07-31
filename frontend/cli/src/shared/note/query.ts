@@ -17,3 +17,11 @@ export const DownloadQuery = gql`
     }
   }
 `
+
+export const NoteIdQuery = gql`
+  query NoteIdQuery {
+    note {
+      id
+    }
+  }
+`

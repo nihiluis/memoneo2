@@ -11,6 +11,7 @@ import { MemoneoConfig, MemoneoInternalConfig } from "../config.js"
 import { MemoneoFileCache } from "../fileCache.js"
 import { InsertNoteFileDataMutation, InsertNoteMutation } from "./mutation.js"
 import { writeNoteToFile } from "./write.js"
+import { isValidFilename } from "./file.js"
 
 interface UploadNewNotesConfig {
   mdFiles: MarkdownFileInfo[]
@@ -33,7 +34,6 @@ export async function uploadNewNotes({
   internalConfig,
   cache,
   command,
-  existingNotes
 }: UploadNewNotesConfig) {
   const newNotes: Partial<Note>[] = []
   const newMdFiles = mdFiles.filter(
@@ -61,6 +61,10 @@ export async function uploadNewNotes({
 
     const title = mdFile.fileName
     const date = mdFile.modifiedTime.toISOString()
+
+    if (!isValidFilename(title)) {
+      throw new Error(`${title} has an invalid filename - can only have alphanumeric characters and spaces`)
+    }
 
     const note = {
       id: uuid,

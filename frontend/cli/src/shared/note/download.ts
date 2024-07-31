@@ -29,6 +29,7 @@ export async function downloadNotes({
 
   const { data, error } = await gqlClient.query(DownloadQuery, {}).toPromise()
   if (error) {
+    console.log(error)
     command.error(error)
   }
 
@@ -72,7 +73,7 @@ export async function writeNewNotes(
   notes: Note[],
   downloadConfig: DownloadNotesConfig
 ): Promise<Note[]> {
-  const { auth, key, config, internalConfig, cache, command } = downloadConfig
+  const { config, cache, command } = downloadConfig
 
   const newNotes: Note[] = notes.filter(
     note => !note.archived && !cache.trackedNoteIds.includes(note.id)

@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "module": "Node16",
+    "module": "NodeNext",
     "outDir": "dist",
     "rootDir": "src",
     "strict": true,
     "target": "es2022",
     "resolveJsonModule": true,
-    "moduleResolution": "node16",
+    "esModuleInterop": true,
+    "moduleResolution": "NodeNext",
     "baseUrl": "./src",
     "paths": {
       "~/*": ["*"]

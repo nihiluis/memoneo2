@@ -1,5 +1,5 @@
 import { createClient, Client, cacheExchange, fetchExchange } from "@urql/core"
-import { ENDPOINT_GQL_URL } from "~/constants/env.js"
+import { ENDPOINT_GQL_URL } from "../constants/env.js"
 import fetch from "node-fetch"
 import { MemoneoInternalConfig } from "../shared/config.js"
 

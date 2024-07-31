@@ -18,8 +18,6 @@ export default class Download extends Command {
   validateAuth = validateAuth.bind(this)
 
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(Download)
-
     const {
       config,
       auth,

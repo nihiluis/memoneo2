@@ -30,7 +30,6 @@ export async function syncNotes({
   auth,
   key,
   config,
-  internalConfig,
   cache,
   command,
   gqlClient,
