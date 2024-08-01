@@ -9,10 +9,7 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "moduleResolution": "NodeNext",
-    "baseUrl": "./src",
-    "paths": {
-      "~/*": ["*"]
-    }
+    "baseUrl": "./src"
   },
   "include": ["./src/**/*"],
   "ts-node": {

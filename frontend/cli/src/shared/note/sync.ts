@@ -44,11 +44,11 @@ export async function syncNotes({
   command.log("Syncing local and remote notes")
   const mdFileData = mdFiles
     .map(mdFile => {
-      if (!mdFile.metadata.hasOwnProperty("id")) {
+      const id = mdFile.metadata.id
+      if (!id) {
         return null
       }
 
-      const id = mdFile.metadata.id
       mdFileMap[id] = mdFile
 
       if (!noteMap.hasOwnProperty(id)) {
@@ -96,7 +96,7 @@ export async function syncNotes({
     data => data.hasNewMd5Hash || data.isMdFileNew || data.newFileNameOrPath
   )
   const updatedLocalNotes = mdFileData.filter(
-    ({ note, mdFile }) => note.file && note.version > mdFile.metadata.version
+    ({ note, mdFile }) => note.file && note.version > mdFile.metadata.version!
   )
 
   const progress = new SingleBar({

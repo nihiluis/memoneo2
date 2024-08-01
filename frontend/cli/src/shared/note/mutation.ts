@@ -38,6 +38,20 @@ export const UpdateNoteMutation = gql`
   }
 `
 
+export const ArchiveNoteMutation = gql`
+  mutation ArchiveNoteMutation(
+    $id: uuid!
+    $archived: Boolean!
+  ) {
+    update_note_by_pk(
+      pk_columns: { id: $id }
+      _set: { archived: $archived }
+    ) {
+      archived
+    }
+  }
+`
+
 export const InsertNoteFileDataMutation = gql`
   mutation InsertFileDataMutation($inputs: [file_data_insert_input!]!) {
     insert_file_data(objects: $inputs, on_conflict: {constraint: file_data_pkey, update_columns: [path, title]}) {

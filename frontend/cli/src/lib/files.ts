@@ -4,10 +4,10 @@ import markdownParser from "./markdownParser.js"
 import * as crypto from "crypto"
 
 export interface MarkdownFileMetadata {
-  id: string
-  title: string
-  date: string
-  version: number
+  id?: string
+  title?: string
+  date?: string
+  version?: number
 }
 
 export interface MarkdownFileInfo {

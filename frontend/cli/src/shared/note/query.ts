@@ -2,7 +2,7 @@ import { gql } from '@urql/core';
 
 export const DownloadQuery = gql`
   query DownloadQuery {
-    note {
+    note(where: {archived: {_eq: false}}) {
       id
       date
       body
@@ -20,8 +20,19 @@ export const DownloadQuery = gql`
 
 export const NoteIdQuery = gql`
   query NoteIdQuery {
-    note {
+    note(where: {archived: {_eq: false}}) {
       id
     }
   }
 `
+
+// export const NoteIdByPathQuery = gql`
+// query NoteIdByPathQuery($path: String!) {
+//   note(where: {file: {path: {_eq: $path}}}) {
+//     id
+//     file {
+//       path
+//     }
+//   }
+// }
+// `
