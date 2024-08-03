@@ -1,0 +1,1 @@
+Archived, unmaintained and not used anymore in favor of the CLI.
