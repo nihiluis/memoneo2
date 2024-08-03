@@ -1,6 +1,7 @@
 package api
 
 import (
+	"io"
 	"net/http"
 
 	"github.com/dghubble/sling"
@@ -22,15 +23,16 @@ type API struct {
 }
 
 type Config struct {
-	GraphQLSecret           string
-	GraphQLSecretHeader     string
-	GraphQLEndpointURL      string
-	GraphQLRelayEndpointURL string
-	GraphQLUserHeader       string
-	GraphQLRoleHeader       string
-	GraphQLRoleName         string
-	UserIDContextKey        string
-	AuthEndpointUrl         string
+	GraphQLSecret            string
+	GraphQLSecretHeader      string
+	GraphQLEndpointURL       string
+	GraphQLRelayEndpointURL  string
+	GraphQLUserHeader        string
+	GraphQLRoleHeader        string
+	GraphQLRoleName          string
+	UserIDContextKey         string
+	AuthEndpointUrl          string
+	ProxyAuthorizationHeader string
 }
 
 func NewService(logger *logger.Logger, config *Config) (*API, error) {
@@ -82,11 +84,24 @@ func (api *API) handleGraphQLQuery(c echo.Context) error {
 	s := sling.New().Post(api.config.GraphQLEndpointURL).
 		Set(api.config.GraphQLSecretHeader, api.config.GraphQLSecret).
 		Set(api.config.GraphQLRoleHeader, api.config.GraphQLRoleName).
-		Set(api.config.GraphQLUserHeader, userID.String())
-	_, err := s.Body(c.Request().Body).ReceiveSuccess(&data)
+		Set(api.config.GraphQLUserHeader, userID.String()).
+		Set("Proxy-Authorization", api.config.ProxyAuthorizationHeader).
+		Set("Content-Type", "application/json")
+
+	resp, err := s.Body(c.Request().Body).ReceiveSuccess(&data)
 	if err != nil {
-		return err
+		api.logger.Zap.Errorw("error in receiving response from GraphQL endpoint", "error", err)
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "internal server error"})
 	}
+
+	if len(data) == 0 {
+		bodyBytes, _ := io.ReadAll(resp.Body)
+		bodyString := string(bodyBytes)
+
+		api.logger.Zap.Warnw("received empty response from GraphQL endpoint", "user", userID.String(), "response", bodyString)
+		return c.NoContent(204)
+	}
+
 	return c.JSON(http.StatusOK, data)
 }
 

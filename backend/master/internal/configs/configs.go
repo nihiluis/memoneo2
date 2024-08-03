@@ -38,15 +38,16 @@ func (cfg *Configs) Datastore() (*datastore.Config, error) {
 // API returns API configuration
 func (cfg *Configs) API() (*api.Config, error) {
 	return &api.Config{
-		GraphQLSecret:           os.Getenv("HASURA_SECRET_KEY"),
-		GraphQLSecretHeader:     "X-Hasura-Admin-Secret",
-		GraphQLEndpointURL:      os.Getenv("HASURA_GQL_ENDPOINT_URL"),
-		GraphQLRelayEndpointURL: os.Getenv("HASURA_RELAY_ENDPOINT_URL"),
-		GraphQLUserHeader:       "X-Hasura-User-Id",
-		GraphQLRoleHeader:       "X-Hasura-Role",
-		GraphQLRoleName:         "user",
-		UserIDContextKey:        "dataUserID",
-		AuthEndpointUrl:         os.Getenv("AUTH_URL"),
+		GraphQLSecret:            os.Getenv("HASURA_SECRET_KEY"),
+		GraphQLSecretHeader:      "X-Hasura-Admin-Secret",
+		GraphQLEndpointURL:       os.Getenv("HASURA_GQL_ENDPOINT_URL"),
+		GraphQLRelayEndpointURL:  os.Getenv("HASURA_RELAY_ENDPOINT_URL"),
+		GraphQLUserHeader:        "X-Hasura-User-Id",
+		GraphQLRoleHeader:        "X-Hasura-Role",
+		GraphQLRoleName:          "user",
+		UserIDContextKey:         "dataUserID",
+		AuthEndpointUrl:          os.Getenv("AUTH_URL"),
+		ProxyAuthorizationHeader: os.Getenv("PROXY_AUTHORIZATION_HEADER"),
 	}, nil
 }
 

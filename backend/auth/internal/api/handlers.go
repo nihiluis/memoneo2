@@ -105,10 +105,14 @@ func (api *API) login(c echo.Context) error {
 
 	token, err := api.performLogin(c, mail, password)
 	if err != nil {
+		api.logger.Zap.Errorw("Unable to do auth", err)
 		return c.JSON(http.StatusUnauthorized, echo.Map{"message": "Unknown user and password combination or auth backend is down."})
 	}
 
 	authUser, err := api.auth.GetUserByMail(mail)
+	if err != nil {
+		return err
+	}
 
 	dataUser, err := api.users.GetDataUserByAuthID(authUser.ID)
 	if err != nil {
