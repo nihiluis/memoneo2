@@ -6,7 +6,7 @@ import loadPrerequisites from "../../shared/loadPrerequisites.js"
 import { cliUx } from "../../lib/reexports.js"
 import { deleteRemovedNotes } from "../../shared/note/delete.js"
 import { NoteIdQuery } from "../../shared/note/query.js"
-import { NoteId } from "../../shared/note/index.js"
+import { NoteIdAndTitle } from "../../shared/note/index.js"
 
 export default class Delete extends Command {
   static description = "Delete notes"
@@ -44,11 +44,11 @@ export default class Delete extends Command {
     )
     cliUx.action.stop()
 
+    cliUx.action.start(`Loading remote notes`)
     const { data, error } = await gqlClient.query(NoteIdQuery, {}).toPromise()
 
-    if (!data) {
+    if (!data || error) {
       this.error("Unable to retrieve data from the GQL API")
-      return
     }
 
     cliUx.action.stop()
@@ -64,7 +64,7 @@ export default class Delete extends Command {
     }
 
     // could use Zod here
-    const noteIds = data.note as NoteId[]
+    const noteIds = data.note as NoteIdAndTitle[]
     if (noteIds.length === 0) {
       cliUx.warn("Didn't find any notes on remote")
       return

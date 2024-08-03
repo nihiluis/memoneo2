@@ -22,6 +22,7 @@ export const NoteIdQuery = gql`
   query NoteIdQuery {
     note(where: {archived: {_eq: false}}) {
       id
+      title
     }
   }
 `

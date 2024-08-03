@@ -10,6 +10,8 @@ import { MemoneoFileCache } from "../fileCache.js"
 import { DownloadQuery } from "./query.js"
 import { writeNoteToFile } from "./write.js"
 import { SingleBar } from "cli-progress"
+import { promptConfirmation } from "../confirmation.js"
+import { limitTitleLength } from "./noteTitle.js"
 
 interface DownloadNotesConfig {
   auth: AuthResult
@@ -29,12 +31,13 @@ export async function downloadNotes({
 
   const { data, error } = await gqlClient.query(DownloadQuery, {}).toPromise()
   if (error) {
-    console.log(error)
     command.error(error)
+    command.exit()
   }
 
   if (!data) {
     command.error("Unable to retrieve data from the GQL API")
+    command.exit()
   }
 
   cliUx.action.stop()
@@ -83,6 +86,13 @@ export async function writeNewNotes(
     command.log("No new notes to download found.")
     return []
   }
+
+  command.log("")
+  command.log("Notes to download:")
+  newNotes.forEach(note => command.log(`* ${limitTitleLength(note.title)}`))
+  command.log("")
+  command.log("Do you want to save these notes locally?")
+  await promptConfirmation(command)
 
   await decryptNotes(newNotes, downloadConfig)
 

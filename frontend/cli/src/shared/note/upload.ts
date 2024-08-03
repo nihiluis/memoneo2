@@ -12,6 +12,8 @@ import { MemoneoFileCache } from "../fileCache.js"
 import { InsertNoteFileDataMutation, InsertNoteMutation } from "./mutation.js"
 import { writeNoteToFile } from "./write.js"
 import { isValidFilename } from "./file.js"
+import { limitTitleLength } from "./noteTitle.js"
+import { promptConfirmation } from "../confirmation.js"
 
 interface UploadNewNotesConfig {
   mdFiles: MarkdownFileInfo[]
@@ -40,13 +42,28 @@ export async function uploadNewNotes({
     mdFile => !mdFile.metadata.hasOwnProperty("id")
   )
 
+  // const newNoteUniqueConstraintMap: Record<string, Partial<Note>> = {}
+
+  if (newMdFiles.length === 0) {
+    command.log("No new notes to upload found.")
+    return
+  }
+
+  command.log("Notes to upload:")
+  newMdFiles.forEach(mdFile =>
+    command.log(
+      `* ${limitTitleLength(mdFile.fileName ?? "! Filename missing")}`
+    )
+  )
+  command.log("")
+  command.log("Do you want to upload these notes to remote?")
+  await promptConfirmation(command)
+
   const progress = new SingleBar({
     format: "Encrypting... | {bar} | {value}/{total} notes",
     barCompleteChar: "\u2588",
     barIncompleteChar: "\u2591",
   })
-
-  // const newNoteUniqueConstraintMap: Record<string, Partial<Note>> = {}
 
   progress.start(newMdFiles.length, 0)
   for (let mdFile of newMdFiles) {
@@ -63,7 +80,9 @@ export async function uploadNewNotes({
     const date = mdFile.modifiedTime.toISOString()
 
     if (!isValidFilename(title)) {
-      throw new Error(`${title} has an invalid filename - can only have alphanumeric characters and spaces`)
+      throw new Error(
+        `${title} has an invalid filename - can only have alphanumeric characters and spaces`
+      )
     }
 
     const note = {
@@ -102,15 +121,7 @@ export async function uploadNewNotes({
   //   }
   // }
 
-  if (newNotes.length === 0) {
-    command.log("No new notes to upload found.")
-    return
-  }
-
-  // console.log(JSON.stringify(newNotes.map(n => n.title)))
-
   cliUx.action.start("Uploading new notes")
-
   const { data, error } = await gqlClient
     .mutation(InsertNoteMutation, { inputs: newNotes })
     .toPromise()

@@ -8,8 +8,7 @@
     "target": "es2022",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "moduleResolution": "NodeNext",
-    "baseUrl": "./src"
+    "moduleResolution": "NodeNext"
   },
   "include": ["./src/**/*"],
   "ts-node": {

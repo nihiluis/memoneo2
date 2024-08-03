@@ -1,16 +1,19 @@
 import { Command } from "@oclif/core"
 import { Client } from "@urql/core"
-import dayjs from "dayjs"
+import dayjs, { Dayjs } from "dayjs"
 import { Note } from "./index.js"
 import { AuthResult } from "../../lib/auth.js"
 import { MarkdownFileInfo, md5HashText } from "../../lib/files.js"
 import { encryptText } from "../../lib/key.js"
 import { decodeBase64String, encodeBase64String } from "../base64.js"
 import { MemoneoConfig, MemoneoInternalConfig } from "../config.js"
-import { MemoneoFileCache } from "../fileCache.js"
+import { MemoneoFileCache, NoteCacheData } from "../fileCache.js"
 import { InsertNoteFileDataMutation, UpdateNoteMutation } from "./mutation.js"
 import { deleteMdFile, writeNoteToFile } from "./write.js"
 import { SingleBar } from "cli-progress"
+import { limitTitleLength } from "./noteTitle.js"
+import { promptConfirmation } from "../confirmation.js"
+import { cliUx } from "../../lib/reexports.js"
 
 interface SyncNotesConfig {
   notes: Note[]
@@ -22,6 +25,19 @@ interface SyncNotesConfig {
   cache: MemoneoFileCache
   command: Command
   gqlClient: Client
+}
+
+interface MarkdownFileSyncData {
+  hasNewMd5Hash: boolean
+  isMdFileNew: boolean
+  md5Hash: string
+  lastMd5Hash: string
+  note: Note
+  noteDate: Dayjs
+  mdFileDate: Dayjs
+  noteCacheData: NoteCacheData
+  mdFile: MarkdownFileInfo
+  newFileNameOrPath: boolean
 }
 
 export async function syncNotes({
@@ -41,7 +57,7 @@ export async function syncNotes({
     noteMap[note.id] = note
   }
 
-  command.log("Syncing local and remote notes")
+  cliUx.action.start("Retrieving local and remote changes to notes")
   const mdFileData = mdFiles
     .map(mdFile => {
       const id = mdFile.metadata.id
@@ -87,17 +103,101 @@ export async function syncNotes({
         noteCacheData,
         mdFile,
         newFileNameOrPath,
-      }
+      } satisfies MarkdownFileSyncData
     })
     .filter(data => !!data)
     .map(data => data!)
 
-  const outdatedLocalNotes = mdFileData.filter(
-    data => data.hasNewMd5Hash || data.isMdFileNew || data.newFileNameOrPath
+  cliUx.action.stop()
+
+  await pullOutdatedLocalNotes(
+    mdFileData,
+    command,
+    config,
+    auth,
+    key,
+    gqlClient
   )
+
+  await pushUpdatedLocalNotes(mdFileData, command, config)
+}
+async function pushUpdatedLocalNotes(
+  mdFileData: MarkdownFileSyncData[],
+  command: Command,
+  config: MemoneoConfig
+) {
   const updatedLocalNotes = mdFileData.filter(
     ({ note, mdFile }) => note.file && note.version > mdFile.metadata.version!
   )
+
+  // TODO what happens if a note is outdated from remote but was updated locally, what takes precedence?
+  if (updatedLocalNotes.length === 0) {
+    command.log("No note changes found to push to remote.")
+    return
+  }
+
+  command.log("")
+  command.log("Updated local notes:")
+  updatedLocalNotes.forEach(note =>
+    command.log(`* ${limitTitleLength(note.note.title ?? "! Title missing")}`)
+  )
+  command.log("")
+  command.log("Do you want to push the changes to remote?")
+  await promptConfirmation(command)
+  const progress2 = new SingleBar({
+    format: "Update outdated local notes... | {bar} | {value}/{total} notes",
+    barCompleteChar: "\u2588",
+    barIncompleteChar: "\u2591",
+  })
+  progress2.start(updatedLocalNotes.length, 0)
+  for (let localData of updatedLocalNotes) {
+    const { note, mdFile, noteCacheData } = localData
+
+    const updateFileName = note.file!.title !== mdFile.fileName
+    const updatePath = note.file!.path !== mdFile.path
+
+    await writeNoteToFile(note, config, {
+      path: note.file!.path,
+      title: note.file!.title,
+    })
+
+    noteCacheData.lastSync = note.updated_at
+    noteCacheData.lastMd5Hash = md5HashText(note.body)
+
+    if (updateFileName || updatePath) {
+      await deleteMdFile(mdFile, config)
+    }
+    progress2.increment()
+  }
+
+  progress2.stop()
+}
+
+async function pullOutdatedLocalNotes(
+  mdFileData: MarkdownFileSyncData[],
+  command: Command,
+  config: MemoneoConfig,
+  auth: AuthResult,
+  key: CryptoKey,
+  gqlClient: Client
+) {
+  const outdatedLocalNotes = mdFileData.filter(
+    data => data.hasNewMd5Hash || data.isMdFileNew || data.newFileNameOrPath
+  )
+  // TODO what happens if a note is outdated from remote but was updated locally, what takes precedence?
+  if (outdatedLocalNotes.length === 0) {
+    command.log("No note changes found to pull from remote.")
+    return
+  }
+
+  command.log("")
+  command.log("Outdated local notes:")
+  outdatedLocalNotes.forEach(note =>
+    command.log(`* ${limitTitleLength(note.note.title ?? "! Title missing")}`)
+  )
+  command.log("")
+  command.log("Do you want to pull the changes from remote?")
+  await promptConfirmation(command)
 
   const progress = new SingleBar({
     format: "Update outdated remote notes... | {bar} | {value}/{total} notes",
@@ -165,32 +265,4 @@ export async function syncNotes({
     progress.increment()
   }
   progress.stop()
-
-  const progress2 = new SingleBar({
-    format: "Update outdated local notes... | {bar} | {value}/{total} notes",
-    barCompleteChar: "\u2588",
-    barIncompleteChar: "\u2591",
-  })
-  progress2.start(updatedLocalNotes.length, 0)
-  for (let localData of updatedLocalNotes) {
-    const { note, mdFile, noteCacheData } = localData
-
-    const updateFileName = note.file!.title !== mdFile.fileName
-    const updatePath = note.file!.path !== mdFile.path
-
-    await writeNoteToFile(note, config, {
-      path: note.file!.path,
-      title: note.file!.title,
-    })
-
-    noteCacheData.lastSync = note.updated_at
-    noteCacheData.lastMd5Hash = md5HashText(note.body)
-
-    if (updateFileName || updatePath) {
-      await deleteMdFile(mdFile, config)
-    }
-    progress2.increment()
-  }
-
-  progress2.stop()
 }

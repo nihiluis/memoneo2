@@ -52,6 +52,14 @@ export const ArchiveNoteMutation = gql`
   }
 `
 
+export const ArchiveNotesMutation = gql`
+mutation ArchiveNotesMutation($ids: [uuid!]) {
+  update_note(where: {id: {_in: $ids}}, _set: {archived: true}) {
+    affected_rows
+  }
+}
+`
+
 export const InsertNoteFileDataMutation = gql`
   mutation InsertFileDataMutation($inputs: [file_data_insert_input!]!) {
     insert_file_data(objects: $inputs, on_conflict: {constraint: file_data_pkey, update_columns: [path, title]}) {

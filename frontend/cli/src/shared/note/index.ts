@@ -16,6 +16,7 @@ export interface NoteFileData {
   note_id?: string
 }
 
-export interface NoteId {
+export interface NoteIdAndTitle {
   id: string
+  title: string
 }

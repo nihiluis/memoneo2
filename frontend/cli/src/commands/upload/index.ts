@@ -21,7 +21,7 @@ export default class Download extends Command {
   }
 
   async run(): Promise<void> {
-    const { args, flags } = await this.parse(Download)
+    const { args } = await this.parse(Download)
 
     const {
       config,
