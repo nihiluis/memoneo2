@@ -20,6 +20,7 @@ export const MASTER_API_URL = DEV
 export const ENDPOINT_AUTH_URL = `${AUTH_API_URL}/auth`
 export const ENDPOINT_LOGIN_URL = `${AUTH_API_URL}/login`
 export const ENDPOINT_REGISTER_URL = `${AUTH_API_URL}/register`
+export const ENDPOINT_PASSWORD_URL = `${AUTH_API_URL}/auth/password`
 export const ENDPOINT_LOGOUT_URL = `${AUTH_API_URL}/logout`
 export const ENDPOINT_SAVE_KEY_URL = `${AUTH_API_URL}/enckey/save`
 

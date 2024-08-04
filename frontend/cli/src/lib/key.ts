@@ -4,6 +4,61 @@ export async function getBufferForKey(key: CryptoKey): Promise<Buffer> {
   return Buffer.from(await crypto.subtle.exportKey("raw", key))
 }
 
+export async function generateProtectedKey(): Promise<CryptoKey> {
+  const protectedKey = await crypto.subtle.generateKey(
+    {
+      name: "AES-GCM",
+      length: 256,
+    },
+    true,
+    ["encrypt", "decrypt"]
+  )
+
+  return protectedKey
+}
+
+interface EncryptProtectedKeyResult {
+  iv: Uint8Array
+  ivStr: string
+  ctStr: string
+}
+
+export async function encryptProtectedKey(
+  password: string,
+  protectedKey: CryptoKey
+): Promise<EncryptProtectedKeyResult> {
+  const pwUtf8 = new TextEncoder().encode(password)
+  const pwHash = await crypto.subtle.digest("SHA-256", pwUtf8)
+
+  const exportedKey = await crypto.subtle.exportKey("raw", protectedKey)
+
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const ivStr = Array.from(iv)
+    .map(b => String.fromCharCode(b))
+    .join("")
+
+  const alg = { name: "AES-GCM", iv: iv }
+
+  const encryptionKey = await crypto.subtle.importKey(
+    "raw",
+    pwHash,
+    alg,
+    false,
+    ["encrypt", "decrypt"]
+  )
+
+  const ctBuffer = await crypto.subtle.encrypt(
+    alg,
+    encryptionKey,
+    exportedKey
+  )
+
+  const ctArray = Array.from(new Uint8Array(ctBuffer))
+  const ctStr = ctArray.map(byte => String.fromCharCode(byte)).join("")
+
+  return { iv, ivStr, ctStr }
+}
+
 export async function decryptProtectedKey(
   password: string,
   ctStr: string,

@@ -1,9 +1,10 @@
 import protect from "await-protect"
 
 import * as fs from "fs/promises"
-import { AuthResult, checkAuth } from "../lib/auth.js"
+import { AuthResult, apiCheckAuth } from "../lib/auth.js"
 import { MemoneoInternalConfig } from "./config.js"
 import { performLogin } from "./login.js"
+import { readToken } from "../lib/token.js"
 
 export async function validateAuth(
   config?: MemoneoInternalConfig
@@ -14,11 +15,9 @@ export async function validateAuth(
       "Unable to find token file. Make sure you have used the init command first."
     )
   }
-  const tokenBuffer = await fs.readFile("./.memoneo/token")
 
-  const tokenString = tokenBuffer.toString("utf-8")
-
-  const authResult = await checkAuth(tokenString)
+  const tokenString = await readToken()
+  const authResult = await apiCheckAuth(tokenString)
 
   if (!authResult.success) {
     return await performLogin(config?.mail)

@@ -1,7 +1,8 @@
-import { AuthResult, login } from "../lib/auth.js"
+import { AuthResult, apiLogin } from "../lib/auth.js"
 import * as fs from "fs/promises"
 import { ux as cliUx } from "@oclif/core"
 import { input, password as passwordInput } from "@inquirer/prompts"
+import { writeToken } from "../lib/token.js"
 
 export type LoginResult = AuthResult & { password: string; mail: string }
 
@@ -14,7 +15,7 @@ export async function performLogin(
     password || (await passwordInput({ message: "What is your password?" }))
 
   cliUx.action.start("Authenticating mail=" + mail)
-  const authResult = await login(mail, password)
+  const authResult = await apiLogin(mail, password)
   const { errorMessage, error, enckey, token, success } = authResult
   if (error || !success) {
     throw new Error(
@@ -29,9 +30,7 @@ export async function performLogin(
 
   cliUx.action.stop()
 
-  const encodedToken = Buffer.from(token, "utf8")
-
-  await fs.writeFile("./.memoneo/token", encodedToken, { encoding: "base64" })
+  await writeToken(token)
 
   return { ...authResult, password, mail }
 }

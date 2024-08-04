@@ -76,6 +76,7 @@ func (api *API) AddHandlers(s *archhttp.EchoServer) {
 	s.Echo.POST("/register", api.register)
 	s.Echo.GET("/logout", api.logout)
 	authGroup.GET("", api.checkAuth)
+	authGroup.POST("/password", api.changePassword)
 
 	enckeyGroup := s.Echo.Group("/enckey")
 	enckeyGroup.Use(cookieMiddleware)
@@ -209,6 +210,42 @@ func (api *API) register(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{"token": token, "user": user, "userId": user.ID})
 }
 
+// ChangePasswordRequestBody is the JSON body of a request to the changePassword handler.
+type ChangePasswordRequestBody struct {
+	Password string `json:"password" validate:"required"`
+}
+
+func (api *API) changePassword(c echo.Context) error {
+	body := new(ChangePasswordRequestBody)
+	if err := c.Bind(body); err != nil {
+		return err
+	}
+	err := api.validate.Struct(body)
+	if err != nil {
+		return err
+	}
+
+	token := c.Get("user").(*jwt.Token)
+	claims := token.Claims.(jwt.MapClaims)
+	mail := claims["email"].(string)
+	idString := claims["sub"]
+	id, err := uuid.FromString(idString.(string))
+	if err != nil {
+		return err
+	}
+
+	api.logger.Zap.Infow("Handling password change", "user_id", id)
+
+	api.auth.ChangePassword(id, body.Password)
+
+	newToken, err := api.performLogin(c, mail, body.Password)
+	if err != nil {
+		return c.JSON(http.StatusOK, echo.Map{})
+	}
+
+	return c.JSON(http.StatusOK, echo.Map{"token": newToken})
+}
+
 func (api *API) checkAuth(c echo.Context) error {
 	token := c.Get("user").(*jwt.Token)
 
@@ -247,6 +284,7 @@ func (api *API) checkAuth(c echo.Context) error {
 		"userId":     dataUser.ID,
 		"authUserId": id,
 		"user":       fullUser,
+		"mail":       mail,
 	})
 }
 

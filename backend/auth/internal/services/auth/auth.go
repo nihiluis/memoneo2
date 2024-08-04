@@ -7,6 +7,7 @@ import "github.com/gofrs/uuid/v5"
 type Auth interface {
 	CreateUser(*User) (*User, error)
 	DeleteUser(*User) error
+	ChangePassword(userId uuid.UUID, password string) error
 	GetUserByMail(string) (*User, error)
 	GetUserByID(uuid.UUID) (*User, error)
 	CheckToken(token string) error

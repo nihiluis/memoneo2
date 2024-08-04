@@ -179,6 +179,19 @@ func (k *Keycloak) CreateUser(user *auth.User) (*auth.User, error) {
 	return user, nil
 }
 
+// ChangePassword changes the password for a user id.
+func (k *Keycloak) ChangePassword(userId uuid.UUID, password string) error {
+	ctx := context.Background()
+	token, err := k.getToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	err = k.client.SetPassword(ctx, token.AccessToken, userId.String(), k.config.RealmName, password, false)
+
+	return err
+}
+
 // GetUserByMail retrieves a user from the keycloak instance by its mail.
 func (k *Keycloak) GetUserByMail(mail string) (*auth.User, error) {
 	ctx := context.Background()
