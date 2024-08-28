@@ -56,8 +56,7 @@ export async function uploadNewNotes({
     )
   )
   command.log("")
-  command.log("Do you want to upload these notes to remote?")
-  await promptConfirmation(command)
+  await promptConfirmation(command, "Do you want to upload these notes to remote?")
 
   const progress = new SingleBar({
     format: "Encrypting... | {bar} | {value}/{total} notes",
