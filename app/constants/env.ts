@@ -1,4 +1,7 @@
-export const AUTH_PATH = "/auth"
+export const AUTH_BASE_URL = process.env.EXPO_PUBLIC_AUTH_BASE_URL
+export const MASTER_BASE_URL = process.env.EXPO_PUBLIC_MASTER_BASE_URL
+
+export const CHECK_AUTH_PATH = "/auth"
 export const LOGIN_PATH = "/login"
 export const REGISTER_PATH = "/register"
 export const PASSWORD_PATH = "/password"

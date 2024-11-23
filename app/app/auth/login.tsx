@@ -3,34 +3,65 @@ import { View } from "react-native"
 import { useForm } from "react-hook-form"
 import { FormInput } from "@/components/form/FormInput"
 import { Button } from "@/components/reusables/Button"
-import { Text } from "@/components/reusables/Text"
+import { MText } from "@/components/reusables/MText"
 import Logo from "@/components/Logo"
-import { Stack } from "expo-router"
-
+import { Stack, useRouter } from "expo-router"
+import { apiLogin } from "@/lib/auth/api"
+import { authAtom, tokenAtom } from "@/lib/auth/state"
+import { useAtom, useSetAtom } from "jotai"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import { ErrorText } from "@/components/ui/ErrorText"
+import { Spinner } from "@/components/ui/Spinner"
+import { useEffect } from "react"
+import MRootView from "@/components/ui/MRootView"
 type LoginFormData = {
-  email: string
+  mail: string
   password: string
 }
 
 export default function LoginScreen() {
+  const router = useRouter()
+
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<LoginFormData>({
     defaultValues: {
-      email: "",
+      mail: "",
       password: "",
     },
   })
 
-  const onSubmit = (data: LoginFormData) => {
-    console.log(data)
-    // Handle login logic here
+  const [token, setToken] = useAtom(tokenAtom)
+  const [auth, setAuth] = useAtom(authAtom)
+  const mutation = useMutation({
+    mutationFn: (data: LoginFormData) => apiLogin(data.mail, data.password),
+    onSuccess: data => {
+      setAuth({
+        isAuthenticated: data.success,
+        isLoading: false,
+        user: { id: data.userId, mail: data.mail },
+        error: data.errorMessage,
+      })
+
+      setToken(data.token)
+    },
+  })
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      console.log("redirect to home")
+      router.replace("/")
+    }
+  }, [auth.isAuthenticated])
+
+  async function onSubmit(data: LoginFormData) {
+    mutation.mutate(data)
   }
 
   return (
-    <View className="flex-1 justify-center p-4 bg-background">
+    <MRootView>
       <Stack.Screen
         options={{
           headerShown: false,
@@ -41,15 +72,15 @@ export default function LoginScreen() {
           <View className="items-center mb-4">
             <Logo width={128} height={128} />
           </View>
-          <Text className="text-xl text-muted-foreground text-center">
+          <MText className="text-xl text-muted-foreground text-center">
             Enter your credentials to sign in.
-          </Text>
+          </MText>
         </View>
 
         <View className="mb-8">
           <FormInput
             control={control}
-            name="email"
+            name="mail"
             label="Email"
             placeholder="Enter your email"
             autoCapitalize="none"
@@ -62,7 +93,7 @@ export default function LoginScreen() {
                 message: "Please enter a valid email",
               },
             }}
-            error={errors.email?.message}
+            error={errors.mail?.message}
           />
 
           <FormInput
@@ -80,12 +111,14 @@ export default function LoginScreen() {
             }}
             error={errors.password?.message}
           />
+          {auth.error && <ErrorText>{auth.error}</ErrorText>}
         </View>
 
         <Button size="lg" onPress={handleSubmit(onSubmit)}>
-          <Text>Sign In</Text>
+          {!mutation.isPending && <MText>Sign In</MText>}
+          {mutation.isPending && <Spinner />}
         </Button>
       </View>
-    </View>
+    </MRootView>
   )
 }

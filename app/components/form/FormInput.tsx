@@ -1,7 +1,7 @@
 import * as React from "react"
 import { View } from "react-native"
 import { Input } from "@/components/reusables/Input"
-import { Text } from "@/components/reusables/Text"
+import { MText } from "@/components/reusables/MText"
 import { cn } from "@/lib/reusables/utils"
 import type { TextInputProps } from "react-native"
 import { Controller, Control, RegisterOptions } from "react-hook-form"
@@ -28,9 +28,9 @@ const FormInput = React.forwardRef<
         render={({ field: { onChange, value, onBlur } }) => (
           <View className="w-full mb-8">
             {label && (
-              <Text className="text-lg mb-4 font-medium leading-none text-foreground">
+              <MText className="text-lg mb-4 font-medium leading-none text-foreground">
                 {label}
-              </Text>
+              </MText>
             )}
             <Input
               ref={ref}
@@ -41,10 +41,10 @@ const FormInput = React.forwardRef<
               {...props}
             />
             {description && (
-              <Text className="text-sm text-muted-foreground">{description}</Text>
+              <MText className="text-sm text-muted-foreground">{description}</MText>
             )}
             {error && (
-              <Text className="text-sm font-medium text-destructive">{error}</Text>
+              <MText className="text-sm font-medium text-destructive">{error}</MText>
             )}
           </View>
         )}
@@ -55,9 +55,9 @@ const FormInput = React.forwardRef<
   return (
     <View className="w-full space-y-2">
       {label && (
-        <Text className="text-sm font-medium leading-none text-foreground">
+        <MText className="text-sm font-medium leading-none text-foreground">
           {label}
-        </Text>
+        </MText>
       )}
       <Input
         ref={ref}
@@ -65,10 +65,10 @@ const FormInput = React.forwardRef<
         {...props}
       />
       {description && (
-        <Text className="text-sm text-muted-foreground">{description}</Text>
+        <MText className="text-sm text-muted-foreground">{description}</MText>
       )}
       {error && (
-        <Text className="text-sm font-medium text-destructive">{error}</Text>
+        <MText className="text-sm font-medium text-destructive">{error}</MText>
       )}
     </View>
   )

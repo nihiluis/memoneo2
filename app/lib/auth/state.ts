@@ -1,19 +1,20 @@
 import { atom } from "jotai"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 
-// Define the authentication state interface
 interface AuthState {
+  isLoading: boolean
   isAuthenticated: boolean
+  error: string
   user: {
     id: string
     mail: string
-    // Add other user properties as needed
   }
 }
 
-// Initial auth state
 const initialAuthState: AuthState = {
+  isLoading: false,
   isAuthenticated: false,
+  error: "",
   user: {
     id: "",
     mail: "",
@@ -28,9 +29,10 @@ const innerTokenAtom = atom<string>("")
 export const tokenAtom = atom(
   async get => get(innerTokenAtom),
   async (_get, set, newToken: string) => {
+    console.log("Setting token")
     await AsyncStorage.setItem(TOKEN_STORAGE_KEY, newToken)
 
-    set(tokenAtom, newToken)
+    set(innerTokenAtom, newToken)
   }
 )
 
