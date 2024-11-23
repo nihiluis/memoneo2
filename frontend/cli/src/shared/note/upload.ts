@@ -56,7 +56,10 @@ export async function uploadNewNotes({
     )
   )
   command.log("")
-  await promptConfirmation(command, "Do you want to upload these notes to remote?")
+  await promptConfirmation(
+    command,
+    "Do you want to upload these notes to remote?"
+  )
 
   const progress = new SingleBar({
     format: "Encrypting... | {bar} | {value}/{total} notes",
@@ -155,7 +158,7 @@ export async function uploadNewNotes({
       )
     }
 
-    note.body = mdFile.text
+    const decryptedBody = mdFile.text
 
     const fileData = {
       title: note.title,
@@ -163,14 +166,14 @@ export async function uploadNewNotes({
       note_id: note.id,
     }
 
-    await writeNoteToFile(note, config, fileData)
+    await writeNoteToFile(note, decryptedBody, config, fileData)
 
     noteFileData.push(fileData)
 
     cache.trackedNoteIds.push(note.id)
 
     const noteCacheData = cache.getOrCreateNoteCacheData(note.id)
-    noteCacheData.lastMd5Hash = md5HashText(note.body)
+    noteCacheData.lastMd5Hash = md5HashText(decryptedBody)
 
     progress2.increment()
   }

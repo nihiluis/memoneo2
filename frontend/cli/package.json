@@ -4,6 +4,12 @@
   "description": "oclif example Hello World CLI",
   "author": "Alex Smith @nihiluis",
   "type": "module",
+  "scripts": {
+    "build": "rimraf dist && tsc -b",
+    "build:sync": "npm run build && node ./bin/dev.js sync",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "prepack": "yarn build && oclif manifest && oclif readme"
+  },
   "bin": {
     "cli": "./bin/run"
   },
@@ -44,11 +50,6 @@
     "commands": "./dist/commands",
     "plugins": [],
     "topicSeparator": " "
-  },
-  "scripts": {
-    "build": "rimraf dist && tsc -b",
-    "postpack": "shx rm -f oclif.manifest.json",
-    "prepack": "yarn build && oclif manifest && oclif readme"
   },
   "engines": {
     "node": ">=12.0.0"

@@ -16,6 +16,7 @@ export async function deleteMdFile(
 
 export async function writeNoteToFile(
   note: Note,
+  decryptedBody: string,
   config: MemoneoConfig,
   fileInfo: NoteFileData
 ) {
@@ -25,7 +26,7 @@ export async function writeNoteToFile(
   date: ${note.date}
   version: ${note.version}
   ---
-  ${note.body}
+  ${decryptedBody}
   ` as string
 
   const targetFilePath = path.join(
