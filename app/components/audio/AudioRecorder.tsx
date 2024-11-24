@@ -1,17 +1,11 @@
-import {
-  AudioModule,
-  RecordingPresets,
-  useAudioPlayer,
-  useAudioRecorder,
-} from "expo-audio"
+import { AudioModule, RecordingPresets, useAudioRecorder } from "expo-audio"
 import { useEffect, useState } from "react"
 import { Alert } from "react-native"
 import MView from "../reusables/MView"
 import { Button } from "../reusables/Button"
-import { MText } from "../reusables/MText"
-import { atom, useAtom, useSetAtom } from "jotai"
-import { FeatherIcon } from "../ui/Icon"
+import { useSetAtom } from "jotai"
 import { audioAtom } from "@/lib/audio/state"
+import { Mic, PauseCircle, PlayCircle, StopCircle } from "@/lib/icons"
 
 export default function AudioRecorder() {
   const [permissionGranted, setPermissionGranted] = useState(false)
@@ -76,15 +70,17 @@ function AudioRecorderInner() {
       <Button
         size="iconLg"
         onPress={recording || paused ? stopRecording : record}>
-        {!recording && !paused && <FeatherIcon size={24} name="mic" />}
-        {(recording || paused) && <FeatherIcon size={24} name="stop-circle" />}
+        {!recording && !paused && <Mic size={24} className="text-background" />}
+        {(recording || paused) && (
+          <StopCircle size={24} className="text-background" />
+        )}
       </Button>
       <Button
         size="iconLg"
         onPress={paused ? record : pauseRecording}
         disabled={!recording && !paused}>
-        {!paused && <FeatherIcon size={24} name="pause-circle" />}
-        {paused && <FeatherIcon size={24} name="play-circle" />}
+        {!paused && <PauseCircle size={24} className="text-background" />}
+        {paused && <PlayCircle size={24} className="text-background" />}
       </Button>
     </MView>
   )

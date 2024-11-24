@@ -14,6 +14,8 @@ import "@/global.css"
 import { useColorScheme } from "@/hooks/useColorScheme"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import AuthProvider from "@/components/auth/AuthProvider"
+import { SetupProvider } from "@/components/setup/SetupProvider"
+import { PortalHost } from "@rn-primitives/portal"
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
@@ -21,7 +23,7 @@ SplashScreen.preventAutoHideAsync()
 const queryClient = new QueryClient()
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme()
+  const { colorScheme } = useColorScheme()
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   })
@@ -39,14 +41,18 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </AuthProvider>
+        <SetupProvider>
+          <AuthProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="records/[recordId]" options={{}} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </AuthProvider>
+        </SetupProvider>
       </QueryClientProvider>
       <StatusBar style="auto" />
+      <PortalHost />
     </ThemeProvider>
   )
 }

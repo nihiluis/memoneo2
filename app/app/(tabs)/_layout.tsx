@@ -2,15 +2,14 @@ import { Tabs } from "expo-router"
 import React from "react"
 import { Platform } from "react-native"
 
+import { Mic, Settings, Headphones } from "@/lib/icons"
 import { HapticTab } from "@/components/HapticTab"
-import { IconSymbol } from "@/components/ui/IconSymbol"
 import TabBarBackground from "@/components/ui/TabBarBackground"
 import { Colors } from "@/constants/Colors"
 import { useColorScheme } from "@/hooks/useColorScheme"
-import { FeatherIcon } from "@/components/ui/Icon"
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme()
+  const { colorScheme } = useColorScheme()
 
   return (
     <Tabs
@@ -30,19 +29,22 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <FeatherIcon size={24} name="home" color={color} />
-          ),
+          title: "New",
+          tabBarIcon: ({ color }) => <Mic size={24} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="records"
+        options={{
+          title: "Records",
+          tabBarIcon: ({ color }) => <Headphones size={24} color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: ({ color }) => (
-            <FeatherIcon size={24} name="settings" color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Settings size={24} color={color} />,
         }}
       />
     </Tabs>

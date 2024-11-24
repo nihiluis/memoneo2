@@ -1,13 +1,10 @@
-import { audioAtom } from "@/lib/audio/state"
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio"
-import { useAtomValue } from "jotai"
 import MView from "../reusables/MView"
 import { Button } from "../reusables/Button"
-import { FeatherIcon } from "../ui/Icon"
 import { useEffect, useState } from "react"
+import { PauseCircle, Play } from "@/lib/icons"
 
-export default function AudioPlayer() {
-  const { uri } = useAtomValue(audioAtom)
+export default function AudioPlayer({ uri }: { uri: string }) {
   const player = useAudioPlayer(uri)
   const playerStatus = useAudioPlayerStatus(player)
 
@@ -42,11 +39,9 @@ export default function AudioPlayer() {
 
   return (
     <MView className="flex flex-row gap-4 justify-center">
-      <Button
-        size="iconLg"
-        onPress={playing ? pausePlayback : startPlayback}>
-        {(!playing || paused) && <FeatherIcon size={24} name="play-circle" />}
-        {playing && <FeatherIcon size={24} name="pause-circle" />}
+      <Button size="iconLg" onPress={playing ? pausePlayback : startPlayback}>
+        {(!playing || paused) && <Play size={24} className="text-background" />}
+        {playing && <PauseCircle size={24} className="text-background" />}
       </Button>
     </MView>
   )

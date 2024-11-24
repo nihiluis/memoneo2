@@ -16,7 +16,11 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.memoneo"
+      "package": "com.anonymous.memoneo",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +42,13 @@
         "expo-audio",
         {
           "microphonePermission": "Allow to access your microphone."
+        }
+      ],
+      [
+        "react-native-permissions",
+        {
+          // Add setup_permissions to your Podfile (see iOS setup - steps 1, 2 and 3)
+          "iosPermissions": []
         }
       ]
     ],

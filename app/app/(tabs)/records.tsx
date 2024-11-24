@@ -1,3 +1,4 @@
+import { RecordList } from "@/components/audio/RecordList"
 import AuthScreen from "@/components/auth/AuthScreen"
 import { Button } from "@/components/reusables/Button"
 import { MText } from "@/components/reusables/MText"
@@ -7,28 +8,13 @@ import MRootView from "@/components/ui/MRootView"
 import { authAtom } from "@/lib/auth/state"
 import { useSetAtom } from "jotai"
 
-export default function SettingsScreen() {
-  const setAuth = useSetAtom(authAtom)
-
-  function signOff() {
-    setAuth({
-      isAuthenticated: false,
-      isLoading: false,
-      user: { id: "", mail: "" },
-      error: "",
-    })
-  }
+export default function RecordsScreen() {
 
   return (
     <AuthScreen>
       <MRootView>
-        <MView className="flex">
-        </MView>
-        <Separator className="my-4" />
-        <MView className="items-center mb-4">
-          <Button size="lg" variant="ghost" onPress={signOff}>
-            <MText>Sign off</MText>
-          </Button>
+        <MView className="mt-8 flex-1 bg-red">
+          <RecordList />
         </MView>
       </MRootView>
     </AuthScreen>

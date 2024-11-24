@@ -5,7 +5,7 @@ import { cn } from "@/lib/reusables/utils"
 import { TextClassContext } from "@/components/reusables/MText"
 
 const buttonVariants = cva(
-  "group flex items-center justify-center rounded-full web:ring-offset-background web:transition-colors web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",
+  "group flex items-center justify-center web:ring-offset-background web:transition-colors web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2",
   {
     variants: {
       variant: {
@@ -24,6 +24,7 @@ const buttonVariants = cva(
         lg: "h-11 px-8 native:h-14",
         icon: "h-12 w-12",
         iconLg: "h-16 w-16",
+        none: "",
       },
     },
     defaultVariants: {
@@ -50,6 +51,7 @@ const buttonTextVariants = cva(
         default: "native:text-lg",
         sm: "native:text-base",
         lg: "native:text-xl",
+        none: "",
         icon: "",
         iconLg: "",
       },
@@ -62,12 +64,14 @@ const buttonTextVariants = cva(
 )
 
 type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
-  VariantProps<typeof buttonVariants>
+  VariantProps<typeof buttonVariants> & {
+    rounded?: boolean
+  }
 
 const Button = React.forwardRef<
   React.ElementRef<typeof Pressable>,
   ButtonProps
->(({ className, variant, size, ...props }, ref) => {
+>(({ className, variant, size, rounded = true, ...props }, ref) => {
   return (
     <TextClassContext.Provider
       value={buttonTextVariants({
@@ -78,6 +82,7 @@ const Button = React.forwardRef<
       <Pressable
         className={cn(
           props.disabled && "opacity-50 web:pointer-events-none",
+          rounded && "rounded-full",
           buttonVariants({ variant, size, className })
         )}
         ref={ref}
