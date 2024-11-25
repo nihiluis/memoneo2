@@ -39,7 +39,10 @@
     "expo-haptics": "~14.0.0",
     "expo-intent-launcher": "~12.0.1",
     "expo-linking": "~7.0.3",
+    "expo-media-library": "~17.0.3",
     "expo-router": "~4.0.7",
+    "expo-sharing": "~13.0.0",
+    "expo-speech-recognition": "^1.0.1",
     "expo-splash-screen": "~0.29.12",
     "expo-status-bar": "~2.0.0",
     "expo-symbols": "~0.2.0",
@@ -62,9 +65,7 @@
     "react-native-webview": "13.12.4",
     "tailwind-merge": "^2.2.1",
     "tailwindcss": "^3.3.5",
-    "tailwindcss-animate": "^1.0.7",
-    "expo-sharing": "~13.0.0",
-    "expo-media-library": "~17.0.3"
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

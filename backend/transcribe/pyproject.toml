@@ -1,0 +1,10 @@
+[project]
+name = "transcribe"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ffmpeg>=1.4",
+    "speechrecognition>=3.11.0",
+]

@@ -36,7 +36,11 @@ export async function apiCheckAuth(
   const headers = getDefaultHeaders(existingToken)
 
   const [res, error] = await protect<any, Error>(
-    axios.get(getAuthUrl(CHECK_AUTH_PATH), { headers, withCredentials: true })
+    axios.get(getAuthUrl(CHECK_AUTH_PATH), {
+      headers,
+      withCredentials: true,
+      timeout: 3000,
+    })
   )
 
   if (error || !res.data.hasOwnProperty("token")) {
@@ -72,6 +76,7 @@ export async function apiLogin(
       {
         headers: getDefaultHeaders(),
         withCredentials: true,
+        timeout: 3000,
       }
     )
   )
