@@ -24,4 +24,5 @@ class WhisperInstance:
 
         arr = np.frombuffer(y, np.int16).flatten().astype(np.float32) / 32768.0
         result = self.w.transcribe(arr)
+        result = result.replace("[BLANK_AUDIO]", "").strip()
         return result
