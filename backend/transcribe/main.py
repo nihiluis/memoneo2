@@ -5,7 +5,7 @@ from whisperqueue import WhisperPool
 from uuid import uuid4
 from constants import STATUS_QUEUED
 from file import init_upload_dir, save_file
-
+from cleanup import start_cleanup_cronjob
 
 import os
 
@@ -13,6 +13,8 @@ import os
 init_upload_dir()
 db = TranscribeDB()
 pool = WhisperPool(db, "tiny.en", 1)
+
+start_cleanup_cronjob(db, 60, 3600)
 
 app = FastAPI()
 
