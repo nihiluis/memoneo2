@@ -67,19 +67,19 @@ class TranscribeDB:
                 WHERE id = ?
             """, (status, text, id))
 
-    def delete_old_transcriptions(self, timeout_seconds: int):
-        """Delete all transcriptions older than the specified timeout in seconds."""
+    def fail_old_transcriptions(self, timeout_seconds: int):
+        """Update all transcriptions older than the specified timeout to FAILED status."""
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                WITH deleted AS (
-                    DELETE FROM TRANSCRIPTIONS 
-                    WHERE (strftime('%s', 'now') - strftime('%s', created_at)) > ?
-                    RETURNING id
-                )
-                SELECT id FROM deleted
+                UPDATE TRANSCRIPTIONS 
+                SET status = 'FAILED',
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE (strftime('%s', 'now') - strftime('%s', created_at)) > ?
+                AND status = 'QUEUED'
+                RETURNING id
             """, (timeout_seconds,))
-            deleted_ids = [row[0] for row in cursor.fetchall()]
-            return deleted_ids
+            updated_ids = [row[0] for row in cursor.fetchall()]
+            return updated_ids
 
             
