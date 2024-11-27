@@ -1,11 +1,25 @@
 import { Paths, Directory, File } from "expo-file-system/next"
+import { TranscriptionStatus } from "../transcribe"
+
+export interface RecordFileMetadata {
+  transcribe: {
+    status: TranscriptionStatus
+    text: string
+    id?: string
+  }
+}
 
 export function getRecordDir() {
   return new Directory(Paths.document, "records")
 }
 
 export function createMetadataFile(file: File) {
-  const data = {}
+  const data: RecordFileMetadata = {
+    transcribe: {
+      status: "uninitialized",
+      text: "",
+    },
+  }
 
   const uri = file.uri.replace(".m4a", ".json")
   const metadataFile = new File(uri)
@@ -13,8 +27,15 @@ export function createMetadataFile(file: File) {
   metadataFile.write(JSON.stringify(data))
 }
 
-export interface RecordFileMetadata {
-  transcript?: string
+export function updateMetadata(
+  uri: string,
+  metadata: Partial<RecordFileMetadata>
+) {
+  const metadataFile = new File(uri.replace(".m4a", ".json"))
+
+  const existingMetadata = JSON.parse(metadataFile.text()) as RecordFileMetadata
+
+  metadataFile.write(JSON.stringify({ ...existingMetadata, metadata }))
 }
 
 export interface RecordFileData {
@@ -30,7 +51,9 @@ export type RecordFileDataWithMetadata = RecordFileData & {
   metadata: RecordFileMetadata
 }
 
-export function getRecordFile(filename: string): RecordFileDataWithMetadata {
+export function getRecordMetadata(
+  filename: string
+): RecordFileDataWithMetadata {
   const recordDir = getRecordDir()
   const file = new File(recordDir, filename)
 

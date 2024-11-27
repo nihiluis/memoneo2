@@ -1,33 +1,35 @@
 import AudioPlayer from "@/components/audio/AudioPlayer"
-import { RecordList } from "@/components/audio/RecordList"
 import AuthScreen from "@/components/auth/AuthScreen"
-import { PermissionProvider } from "@/components/permission/PermissionProvider"
 import { Button } from "@/components/reusables/Button"
 import { MText } from "@/components/reusables/MText"
 import MView from "@/components/reusables/MView"
-import { Separator } from "@/components/reusables/Separator"
 import MRootView from "@/components/ui/MRootView"
-import { getRecordFile } from "@/lib/audio/file"
-import { authAtom } from "@/lib/auth/state"
-import { getContentUriAsync } from "expo-file-system"
-import { File, Paths } from "expo-file-system/next"
-import { startActivityAsync } from "expo-intent-launcher"
+import {
+  getRecordMetadata,
+  RecordFileMetadata,
+  updateMetadata,
+} from "@/lib/audio/file"
 import { Stack, useLocalSearchParams } from "expo-router"
-import { useCallback, useMemo } from "react"
-import { Alert, Platform } from "react-native"
+import { useCallback, useMemo, useState } from "react"
+import { Alert } from "react-native"
 import { isAvailableAsync, shareAsync } from "expo-sharing"
+import { queueTranscription } from "@/lib/transcribe"
 
 export default function RecordScreen() {
   const { recordId } = useLocalSearchParams()
+  const [metadata, setMetadata] = useState<RecordFileMetadata | null>(null)
 
-  const recordFile = useMemo(() => {
+  const recordFileData = useMemo(() => {
     if (!recordId) return null
 
-    return getRecordFile(recordId as string)
+    const fileData = getRecordMetadata(recordId as string)
+    setMetadata(fileData.metadata)
+
+    return fileData
   }, [recordId])
 
   const openRecordExternally = useCallback(async () => {
-    if (!recordFile) return
+    if (!recordFileData) return
 
     const available = await isAvailableAsync()
     if (!available) {
@@ -36,8 +38,8 @@ export default function RecordScreen() {
     }
 
     try {
-      console.log("Sharing audio file", recordFile.uri)
-      await shareAsync(recordFile.uri, {
+      console.log("Sharing audio file", recordFileData.uri)
+      await shareAsync(recordFileData.uri, {
         mimeType: "audio/mpeg",
         dialogTitle: "Open audio file",
       })
@@ -45,9 +47,20 @@ export default function RecordScreen() {
       console.error("Failed to share record", error)
       Alert.alert("Error", "Failed to share record.")
     }
-  }, [recordFile])
+  }, [recordFileData])
 
-  const hasTranscript = !!recordFile?.metadata.transcript
+  const transcribeRecord = useCallback(async () => {
+    if (!recordFileData) return
+
+    const id = await queueTranscription(recordFileData.uri)
+    updateMetadata(recordFileData.uri, {
+      transcribe: { id, text: "", status: "queued" },
+    })
+  }, [recordFileData])
+
+  const hasTranscript =
+    recordFileData?.metadata.transcribe.status === "completed" &&
+    recordFileData?.metadata.transcribe.text.length > 0
 
   return (
     <AuthScreen>
@@ -57,25 +70,27 @@ export default function RecordScreen() {
         }}
       />
       <MRootView>
-        {!recordFile && (
+        {!recordFileData && (
           <MView className="flex-1">
             <MText className="text-muted-foreground">
               Record not available.
             </MText>
           </MView>
         )}
-        {recordFile && (
+        {recordFileData && (
           <MView className="mt-12 flex-1">
             <MView className="flex-1 gap-4">
-              <MText className="text-4xl font-bold">{recordFile.title}</MText>
+              <MText className="text-4xl font-bold">
+                {recordFileData.title}
+              </MText>
               <MText className="text-lg text-muted-foreground">
                 {hasTranscript
-                  ? recordFile.metadata.transcript
+                  ? recordFileData.metadata.transcribe.text
                   : "Click on the transcribe button to convert this audio file to text."}
               </MText>
             </MView>
             <MView className="gap-4">
-              <AudioPlayer uri={recordFile.uri} />
+              <AudioPlayer uri={recordFileData.uri} />
               <Button
                 variant="outline"
                 size="lg"
@@ -83,7 +98,7 @@ export default function RecordScreen() {
                 <MText>Share</MText>
               </Button>
               {!hasTranscript && (
-                <Button variant="outline" size="lg">
+                <Button variant="outline" size="lg" onPress={transcribeRecord}>
                   <MText>Transcribe</MText>
                 </Button>
               )}
