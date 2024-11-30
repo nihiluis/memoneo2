@@ -13,11 +13,14 @@ import { Stack, useLocalSearchParams } from "expo-router"
 import { useCallback, useMemo, useState } from "react"
 import { Alert } from "react-native"
 import { isAvailableAsync, shareAsync } from "expo-sharing"
-import { queueTranscription } from "@/lib/transcribe"
+import { pollTranscription, queueTranscription } from "@/lib/transcribe"
+import { useMutation } from "@tanstack/react-query"
 
 export default function RecordScreen() {
   const { recordId } = useLocalSearchParams()
   const [metadata, setMetadata] = useState<RecordFileMetadata | null>(null)
+  const [pendingTranscription, setPendingTranscription] =
+    useState<boolean>(false)
 
   const recordFileData = useMemo(() => {
     if (!recordId) return null
@@ -49,18 +52,66 @@ export default function RecordScreen() {
     }
   }, [recordFileData])
 
+  const transcribeMutation = useMutation({
+    mutationFn: async (uri: string) => {
+      return await queueTranscription(uri)
+    },
+  })
+
+  const syncMetadata = useCallback(
+    async (uri: string, newMetadata: RecordFileMetadata) => {
+      if (!recordFileData) return
+      if (pendingTranscription) return
+
+      updateMetadata(uri, newMetadata)
+      setMetadata(newMetadata)
+    },
+    [recordFileData, pendingTranscription]
+  )
+
   const transcribeRecord = useCallback(async () => {
     if (!recordFileData) return
+    if (pendingTranscription) return
 
-    const id = await queueTranscription(recordFileData.uri)
-    updateMetadata(recordFileData.uri, {
-      transcribe: { id, text: "", status: "queued" },
-    })
-  }, [recordFileData])
+    try {
+      const id = await transcribeMutation.mutateAsync(recordFileData.uri)
+
+      syncMetadata(recordFileData.uri, {
+        transcribe: { id, text: "", status: "queued" },
+      })
+      setPendingTranscription(true)
+
+      try {
+        const finalResult = await pollTranscription(id)
+
+        syncMetadata(recordFileData.uri, {
+          transcribe: {
+            id,
+            text: finalResult.text ?? "",
+            status: finalResult.status,
+          },
+        })
+      } catch (error) {
+        console.error("Failed to poll transcription", error)
+        syncMetadata(recordFileData.uri, {
+          transcribe: {
+            id,
+            text: "",
+            status: "error",
+          },
+        })
+      } finally {
+        setPendingTranscription(false)
+      }
+    } catch (error) {
+      console.error("Failed to queue transcription", error)
+      Alert.alert("Error", "Failed to queue transcription.")
+    }
+  }, [recordFileData, transcribeMutation])
 
   const hasTranscript =
-    recordFileData?.metadata.transcribe.status === "completed" &&
-    recordFileData?.metadata.transcribe.text.length > 0
+    metadata?.transcribe.status === "completed" &&
+    metadata?.transcribe.text.length > 0
 
   return (
     <AuthScreen>
@@ -85,7 +136,7 @@ export default function RecordScreen() {
               </MText>
               <MText className="text-lg text-muted-foreground">
                 {hasTranscript
-                  ? recordFileData.metadata.transcribe.text
+                  ? metadata.transcribe.text
                   : "Click on the transcribe button to convert this audio file to text."}
               </MText>
             </MView>

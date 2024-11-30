@@ -15,7 +15,7 @@ const Spinner = React.forwardRef<
   return (
     <ActivityIndicator
       ref={ref}
-      className={cn("text-foreground", className)}
+      className={cn("text-red", className)}
       {...props}
     />
   )
