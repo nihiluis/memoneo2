@@ -54,7 +54,7 @@ export default function RecordScreen() {
 
   const transcribeMutation = useMutation({
     mutationFn: async (uri: string) => {
-      return await queueTranscription(uri)
+      return await queueTranscription(metadata?.transcribe.id ?? "", uri)
     },
   })
 
@@ -77,13 +77,14 @@ export default function RecordScreen() {
       const id = await transcribeMutation.mutateAsync(recordFileData.uri)
 
       syncMetadata(recordFileData.uri, {
-        transcribe: { id, text: "", status: "queued" },
+        transcribe: { id, text: "", status: "QUEUED" },
       })
       setPendingTranscription(true)
 
       try {
         const finalResult = await pollTranscription(id)
 
+        console.log("transcribe finalResult", finalResult)
         syncMetadata(recordFileData.uri, {
           transcribe: {
             id,
@@ -110,7 +111,7 @@ export default function RecordScreen() {
   }, [recordFileData, transcribeMutation])
 
   const hasTranscript =
-    metadata?.transcribe.status === "completed" &&
+    metadata?.transcribe.status === "COMPLETED" &&
     metadata?.transcribe.text.length > 0
 
   return (

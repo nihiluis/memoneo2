@@ -5,7 +5,7 @@ export interface RecordFileMetadata {
   transcribe: {
     status: TranscriptionStatus
     text: string
-    id?: string
+    id: string
   }
 }
 
@@ -16,8 +16,9 @@ export function getRecordDir() {
 export function createMetadataFile(file: File) {
   const data: RecordFileMetadata = {
     transcribe: {
-      status: "uninitialized",
+      status: "UNINITIALIZED",
       text: "",
+      id: "",
     },
   }
 
@@ -29,13 +30,15 @@ export function createMetadataFile(file: File) {
 
 export function updateMetadata(
   uri: string,
-  metadata: Partial<RecordFileMetadata>
+  metadata: RecordFileMetadata
 ) {
   const metadataFile = new File(uri.replace(".m4a", ".json"))
 
   const existingMetadata = JSON.parse(metadataFile.text()) as RecordFileMetadata
 
-  metadataFile.write(JSON.stringify({ ...existingMetadata, metadata }))
+  const newMetadata: RecordFileMetadata = { ...metadata }
+  console.log("writing newMetadata", newMetadata)
+  metadataFile.write(JSON.stringify(newMetadata))
 }
 
 export interface RecordFileData {
