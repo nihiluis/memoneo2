@@ -17,7 +17,8 @@ def start_cleanup_cronjob(db: TranscribeDB, interval: int, timeout_seconds: int)
                 for id in old_failed_ids:
                     try_delete_file(id)
 
-                print(f"Cleaned up {len(old_failed_ids)} transcriptions")
+                if len(old_failed_ids) > 0:
+                    print(f"Cleaned up {len(old_failed_ids)} transcriptions")
             except Exception as e:
                 print(f"Error in cleanup job: {e}")
             time.sleep(interval)  # Wait for 1 minute

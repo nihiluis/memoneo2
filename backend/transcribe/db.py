@@ -41,13 +41,14 @@ class TranscribeDB:
         """)
         conn.commit()
 
-    def get_transcription(self, id: str) -> Transcription:
+    def get_transcription(self, id: str) -> Transcription | None:
         with self._get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT id, status, text FROM TRANSCRIPTIONS WHERE id = ?
             """, (id,))
-            return Transcription(*cursor.fetchone())
+            row = cursor.fetchone()
+            return Transcription(*row) if row else None
 
     def create_transcription(self, id: str):
         with self._get_conn() as conn:
