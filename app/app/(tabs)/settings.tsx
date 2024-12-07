@@ -1,4 +1,5 @@
 import AuthScreen from "@/components/auth/AuthScreen"
+import { FormInput } from "@/components/form/FormInput"
 import { Button } from "@/components/reusables/Button"
 import { MText } from "@/components/reusables/MText"
 import MView from "@/components/reusables/MView"
@@ -17,6 +18,9 @@ export default function SettingsScreen() {
       user: { id: "", mail: "" },
       error: "",
     })
+  }
+
+  function setEncryptionKey() {
   }
 
   return (

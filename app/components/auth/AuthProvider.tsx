@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { apiCheckAuth } from "@/lib/auth/api"
 import { useRouter } from "expo-router"
 import { useMutation } from "@tanstack/react-query"
+import enckey from "@/modules/enckey"
 
 export default function AuthProvider({
   children,

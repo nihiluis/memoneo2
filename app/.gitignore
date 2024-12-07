@@ -8,3 +8,7 @@ node_modules
 .expo
 react-native-reusables
 .env.local
+local.properties
+.gradle
+build/
+.idea

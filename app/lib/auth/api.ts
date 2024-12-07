@@ -2,6 +2,7 @@ import protect from "await-protect"
 import axios from "axios"
 import { getAuthUrl } from "../settings/urls"
 import { CHECK_AUTH_PATH, LOGIN_PATH } from "@/constants/env"
+import enckey from "@/modules/enckey"
 
 export type Enckey = {
   key: string
@@ -99,8 +100,19 @@ export async function apiLogin(
 
   const token: string = res.data.token
   const userId: string = res.data.userId
-  const enckey: Enckey = res.data.enckey
+  const savedEnckey: Enckey = res.data.enckey
+
+  if (enckey) {
+    enckey.createAndStoreKey(password, savedEnckey.key, savedEnckey.salt)
+  }
 
   console.log(`apiLogin success: ${userId} ${mail}`)
-  return { success: true, token, userId, enckey, mail, errorMessage: "" }
+  return {
+    success: true,
+    token,
+    userId,
+    enckey: savedEnckey,
+    mail,
+    errorMessage: "",
+  }
 }

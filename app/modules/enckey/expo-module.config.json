@@ -1,0 +1,17 @@
+{
+  "platforms": [
+    "apple",
+    "android",
+    "web"
+  ],
+  "apple": {
+    "modules": [
+      "EnckeyModule"
+    ]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.enckey.EnckeyModule"
+    ]
+  }
+}
