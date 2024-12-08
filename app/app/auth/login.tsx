@@ -43,6 +43,7 @@ export default function LoginScreen() {
         isLoading: false,
         user: { id: data.userId, mail: data.mail },
         error: data.errorMessage,
+        enckey: data.enckey ?? null,
       })
 
       setToken(data.token)

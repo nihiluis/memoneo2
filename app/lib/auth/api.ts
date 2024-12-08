@@ -3,6 +3,7 @@ import axios from "axios"
 import { getAuthUrl } from "../settings/urls"
 import { CHECK_AUTH_PATH, LOGIN_PATH } from "@/constants/env"
 import enckey from "@/modules/enckey"
+import { decodeBase64String } from "../base64"
 
 export type Enckey = {
   key: string
@@ -102,8 +103,17 @@ export async function apiLogin(
   const userId: string = res.data.userId
   const savedEnckey: Enckey = res.data.enckey
 
-  if (enckey) {
-    enckey.createAndStoreKey(password, savedEnckey.key, savedEnckey.salt)
+  if (savedEnckey) {
+    console.log("apiLogin createAndStoreKey")
+    try {
+      await enckey.createAndStoreKey(
+        password,
+        savedEnckey.key,
+        savedEnckey.salt
+      )
+    } catch (error) {
+      console.error("Failed to create and store key", error)
+    }
   }
 
   console.log(`apiLogin success: ${userId} ${mail}`)

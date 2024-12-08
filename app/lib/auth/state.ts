@@ -1,5 +1,6 @@
 import { atom } from "jotai"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { Enckey } from "./api"
 
 interface AuthState {
   isLoading: boolean
@@ -9,6 +10,7 @@ interface AuthState {
     id: string
     mail: string
   }
+  enckey: Enckey | null
 }
 
 const initialAuthState: AuthState = {
@@ -19,6 +21,7 @@ const initialAuthState: AuthState = {
     id: "",
     mail: "",
   },
+  enckey: null,
 }
 
 export const TOKEN_STORAGE_KEY = "auth_token"

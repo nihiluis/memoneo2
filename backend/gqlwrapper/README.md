@@ -1,0 +1,1 @@
+Created this so I don't need to add GQL to the React Native app.

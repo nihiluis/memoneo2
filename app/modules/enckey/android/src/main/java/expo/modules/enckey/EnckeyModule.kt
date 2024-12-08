@@ -25,10 +25,10 @@ class EnckeyModule : Module() {
       EnckeyStore.storeKey(key)
     }
 
-    AsyncFunction("encryptText") { text: String, salt: String ->
+    AsyncFunction("encryptText") { text: String ->
       val key = EnckeyStore.retrieveKey() ?: throw NoKeyStoredException()
-      try {
-        EnckeyEncryption.encryptText(text, salt, key)
+      return@AsyncFunction try {
+        EnckeyEncryption.encryptText(text, key)
       } catch (ex: Exception) {
         Log.e(ID, "Error encrypting text: ${ex.message}", ex)
         

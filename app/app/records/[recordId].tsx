@@ -15,12 +15,20 @@ import { Alert } from "react-native"
 import { isAvailableAsync, shareAsync } from "expo-sharing"
 import { pollTranscription, queueTranscription } from "@/lib/transcribe"
 import { useMutation } from "@tanstack/react-query"
+import { uploadTranscript } from "@/lib/upload"
+import { authAtom } from "@/lib/auth/state"
+import { useAtomValue } from "jotai"
 
 export default function RecordScreen() {
+  const auth = useAtomValue(authAtom)
   const { recordId } = useLocalSearchParams()
   const [metadata, setMetadata] = useState<RecordFileMetadata | null>(null)
   const [pendingTranscription, setPendingTranscription] =
     useState<boolean>(false)
+
+  const hasTranscript =
+    metadata?.transcribe.status === "COMPLETED" &&
+    metadata?.transcribe.text.length > 0
 
   const recordFileData = useMemo(() => {
     if (!recordId) return null
@@ -55,6 +63,20 @@ export default function RecordScreen() {
   const transcribeMutation = useMutation({
     mutationFn: async (uri: string) => {
       return await queueTranscription(metadata?.transcribe.id ?? "", uri)
+    },
+  })
+
+  const uploadMutation = useMutation({
+    mutationFn: async () => {
+      if (!recordFileData) return
+      if (!auth.enckey) return
+      if (!hasTranscript) return
+      return await uploadTranscript(
+        auth.user.id,
+        recordFileData,
+        metadata.transcribe.text,
+        auth.enckey
+      )
     },
   })
 
@@ -110,10 +132,6 @@ export default function RecordScreen() {
     }
   }, [recordFileData, transcribeMutation])
 
-  const hasTranscript =
-    metadata?.transcribe.status === "COMPLETED" &&
-    metadata?.transcribe.text.length > 0
-
   return (
     <AuthScreen>
       <Stack.Screen
@@ -155,7 +173,10 @@ export default function RecordScreen() {
                 </Button>
               )}
               {hasTranscript && (
-                <Button variant="outline" size="lg">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onPress={() => uploadMutation.mutate()}>
                   <MText>Upload</MText>
                 </Button>
               )}

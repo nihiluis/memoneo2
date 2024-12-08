@@ -53,6 +53,7 @@ export default function AuthProvider({
         isAuthenticated: data.success,
         user: { id: data.userId, mail: data.mail },
         error: data.errorMessage,
+        enckey: data.enckey ?? null,
       })
 
       setToken(data.token)
@@ -76,6 +77,7 @@ export default function AuthProvider({
           isAuthenticated: false,
           user: { id: "", mail: "" },
           error: "",
+          enckey: null,
         })
         mutation.mutate(token)
       } else {
@@ -84,6 +86,7 @@ export default function AuthProvider({
           isAuthenticated: false,
           user: { id: "", mail: "" },
           error: "",
+          enckey: null,
         })
         setAuthInitialized(true)
       }

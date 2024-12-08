@@ -9,3 +9,6 @@ Memoneo builds upon three applications (which can be setup through the provided 
 - PostgreSQL
 - Hasura GraphQL API
 - Keycloak
+
+# Security issue
+The IV is stored in plain text in the database, instead of being prepended to the ciphertext. This is a potential security issue.
