@@ -15,11 +15,12 @@ import { Alert } from "react-native"
 import { isAvailableAsync, shareAsync } from "expo-sharing"
 import { pollTranscription, queueTranscription } from "@/lib/transcribe"
 import { useMutation } from "@tanstack/react-query"
-import { uploadTranscript } from "@/lib/upload"
-import { authAtom } from "@/lib/auth/state"
+import { uploadTranscript } from "@/lib/upload/api"
+import { authAtom, tokenAtom } from "@/lib/auth/state"
 import { useAtomValue } from "jotai"
 
 export default function RecordScreen() {
+  const token = useAtomValue(tokenAtom)
   const auth = useAtomValue(authAtom)
   const { recordId } = useLocalSearchParams()
   const [metadata, setMetadata] = useState<RecordFileMetadata | null>(null)
@@ -72,10 +73,10 @@ export default function RecordScreen() {
       if (!auth.enckey) return
       if (!hasTranscript) return
       return await uploadTranscript(
+        token,
         auth.user.id,
         recordFileData,
-        metadata.transcribe.text,
-        auth.enckey
+        metadata.transcribe.text
       )
     },
   })

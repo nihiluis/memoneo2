@@ -16,6 +16,7 @@
     "elysia": "^1.1.26",
     "graphql": "^16.9.0",
     "node-fetch": "^3.3.2",
+    "pino": "^9.5.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

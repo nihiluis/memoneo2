@@ -1,14 +1,16 @@
-import { Enckey } from "../auth/api"
 import enckey from "@/modules/enckey"
 import { RecordFileData } from "../audio/file"
 import { randomUUID } from "expo-crypto"
+import axios from "axios"
+import { getGqlWrapperUrl } from "../settings/urls"
 
 export async function uploadTranscript(
+  token: string,
   userId: string,
   recordFileData: RecordFileData,
   transcript: string,
-  enckeyData: Enckey
 ) {
+  console.log("Uploading transcript", transcript)
   let encryptedText = ""
   try {
     encryptedText = await enckey.encryptText(transcript)
@@ -32,5 +34,21 @@ export async function uploadTranscript(
     user_id: userId,
   }
 
-  console.log(note)
+  try {
+    console.log("Uploading note", note)
+    const res = await axios.put(
+      getGqlWrapperUrl("/note"),
+      note,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        timeout: 5000,
+      }
+    )
+    console.log("Uploaded transcript", res.data)
+  } catch (error) {
+    console.error("Failed to upload transcript", error)
+    return
+  }
 }
