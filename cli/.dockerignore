@@ -1,0 +1,5 @@
+_testdata
+.memoneo
+node_modules
+dist
+_old_key_backup
