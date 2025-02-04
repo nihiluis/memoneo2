@@ -20,14 +20,16 @@ export async function writeNoteToFile(
   config: MemoneoConfig,
   fileInfo: NoteFileData
 ) {
-  const fileText = dedent`---
+  // Create metadata section with dedent to keep it clean
+  const metadata = dedent`---
   id: ${note.id}
   title: ${note.title}
   date: ${note.date}
   version: ${note.version}
-  ---
-  ${decryptedBody}
-  ` as string
+  ---`
+
+  // Combine metadata with body, preserving body's whitespace
+  const fileText = `${metadata}\n${decryptedBody.trim()}`
 
   const targetFilePath = path.join(
     config.baseDirectory,

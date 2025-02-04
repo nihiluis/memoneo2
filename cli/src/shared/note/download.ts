@@ -104,7 +104,9 @@ export async function writeNewNotes(
 
   progress.start(newNotes.length, 0)
   for (let note of newNotes) {
-    await writeNoteToFile(note, config, {
+    const decryptedBody = note.body
+    
+    await writeNoteToFile(note, decryptedBody, config, {
       title: note.file?.title ?? note.title,
       path: note.file?.path ?? config.defaultDirectory,
     })
