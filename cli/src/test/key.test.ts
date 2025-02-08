@@ -4,6 +4,9 @@ import { loadKey } from "../shared/loadKey.js"
 import { decodeBase64String } from "../shared/base64.js"
 
 describe("Key Tests", () => {
+  /**
+   * Requires you to be logged in and have the key set up in the .memoneo config.
+   */
   it("should pass a basic test", async () => {
     const testEncryptedBody = ``
     const testIv = ``

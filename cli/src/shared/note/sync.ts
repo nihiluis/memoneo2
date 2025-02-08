@@ -65,6 +65,7 @@ export async function syncNotes({
 
   const mdFileData: MarkdownFileSyncData[] = []
 
+  const cacheUpdates: Record<string, NoteCacheData> = {}
   for (const mdFile of mdFiles) {
     const id = mdFile.metadata.id
     if (!id) {
@@ -93,7 +94,7 @@ export async function syncNotes({
     let hasNewMd5Hash = localMd5Hash !== lastMd5Hash
     const hasLastMd5Hash = lastMd5Hash !== ""
 
-    const noteCacheDataWithChanges = {...noteCacheData}
+    const noteCacheDataWithChanges = { ...noteCacheData }
 
     if (!hasLastMd5Hash) {
       command.warn(
@@ -123,9 +124,8 @@ export async function syncNotes({
           `Local file matches remote file content but has different hash for note ${id}. This is unexpected. Updating lastMd5Hash in cache.`
         )
         noteCacheDataWithChanges.lastMd5Hash = currentMd5Hash
+        hasNewMd5Hash = false
       }
-
-      hasNewMd5Hash = false
     }
 
     const newFileName = mdFile.fileName !== currentRemoteNoteData.file?.title
@@ -138,6 +138,7 @@ export async function syncNotes({
       outdatedType = "Modified"
       outdatedReason =
         "Local file has a different md5 hash than the remote file."
+      noteCacheDataWithChanges.lastMd5Hash = localMd5Hash
     } else if (newFileNameOrPath) {
       outdatedType = "LocationChanged"
       if (newFileName) {
@@ -162,11 +163,10 @@ export async function syncNotes({
       outdatedReason,
     } satisfies MarkdownFileSyncData)
 
-    cache.updateNoteCacheData(id, noteCacheDataWithChanges)
+    cacheUpdates[id] = noteCacheDataWithChanges
   }
 
   cliUx.action.stop()
-
 
   const { promptYes, fileSyncData: updatedLocalNotes } =
     await writeUpdatedNotesFromLocalToRemote(
@@ -180,6 +180,10 @@ export async function syncNotes({
   if (!promptYes) {
     return
   }
+
+  Object.entries(cacheUpdates).forEach(([id, cacheUpdate]) => {
+    cache.updateNoteCacheData(id, cacheUpdate)
+  })
 
   const updatedLocalNotesIds = updatedLocalNotes.map(note => note.note.id)
 

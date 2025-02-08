@@ -22,11 +22,19 @@ const metadataParser = (text: string): ParseResult => {
 
   const validateMarkdownText = () => {}
 
-  const setMetadataPatterns = async () => {
-    const newline = detectNewline(text)
-    METADATA_START = new RegExp(`^---${newline}`)
+  const setMetadataPatterns = () => {
+    const newline = detectNewline(text) || "\n"
+    const alternateNewline = newline === "\n" ? "\r\n" : "\n"
+    
+    METADATA_START = new RegExp(`^---(?:${newline}|${alternateNewline})`)
     METADATA_END = `${newline}---${newline}`
     METADATA_FILE_END = `${newline}---`
+    
+    const METADATA_END_ALT = `${alternateNewline}---${alternateNewline}`
+
+    if (text.indexOf(METADATA_END) === -1) {
+      METADATA_END = METADATA_END_ALT
+    }
   }
 
   const splitTextWithMetadata = () => {
