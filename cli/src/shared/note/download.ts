@@ -61,7 +61,7 @@ export async function decryptNotes(
   for (let note of notes) {
     const decryptedBody = await decryptText(
       decodeBase64String(note.body),
-      decodeBase64String(auth.enckey!.salt),
+      decodeBase64String(note.body_iv),
       key
     )
     progress.increment()
@@ -105,7 +105,7 @@ export async function writeNewNotes(
   progress.start(newNotes.length, 0)
   for (let note of newNotes) {
     const decryptedBody = note.body
-    
+
     await writeNoteToFile(note, decryptedBody, config, {
       title: note.file?.title ?? note.title,
       path: note.file?.path ?? config.defaultDirectory,

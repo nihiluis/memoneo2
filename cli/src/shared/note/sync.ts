@@ -187,7 +187,7 @@ async function writeUpdatedNotesFromRemoteToLocal(
 
     const decryptedBody = await decryptText(
       decodeBase64String(note.body),
-      decodeBase64String(auth.enckey!.salt),
+      decodeBase64String(note.body_iv),
       key
     )
     await writeNoteToFile(note, decryptedBody, config, {
@@ -272,17 +272,14 @@ async function writeUpdatedNotesFromLocalToRemote(
       // I'm not sure why this is done here, for the version?
       await writeNoteToFile(note, decryptedBody, config, noteFileData)
 
-      const encryptedBody = await encryptText(
-        mdFile.text,
-        decodeBase64String(auth.enckey!.salt),
-        key
-      )
+      const encryptedBody = await encryptText(mdFile.text, key)
 
       const { data, error } = await gqlClient
         .mutation(UpdateNoteMutation, {
           id: note.id,
           title: mdFile.metadata.title,
           body: encodeBase64String(encryptedBody.ctStr),
+          bodyIv: encodeBase64String(encryptedBody.ivStr),
           date: mdFile.metadata.date,
           version: note.version,
         })

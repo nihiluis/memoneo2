@@ -47,11 +47,7 @@ export async function encryptProtectedKey(
     ["encrypt", "decrypt"]
   )
 
-  const ctBuffer = await crypto.subtle.encrypt(
-    alg,
-    encryptionKey,
-    exportedKey
-  )
+  const ctBuffer = await crypto.subtle.encrypt(alg, encryptionKey, exportedKey)
 
   const ctArray = Array.from(new Uint8Array(ctBuffer))
   const ctStr = ctArray.map(byte => String.fromCharCode(byte)).join("")
@@ -107,10 +103,12 @@ interface EncryptTextResult {
 
 export async function encryptText(
   text: string,
-  saltStr: string,
   protectedKey: CryptoKey
 ): Promise<EncryptTextResult> {
-  const iv = new Uint8Array(Array.from(saltStr).map(ch => ch.charCodeAt(0)))
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const ivStr = Array.from(iv)
+    .map(b => String.fromCharCode(b))
+    .join("")
   const alg = { name: "AES-GCM", iv: iv }
 
   const ctBuffer = await crypto.subtle.encrypt(
@@ -122,7 +120,7 @@ export async function encryptText(
   const ctArray = Array.from(new Uint8Array(ctBuffer))
   const ctStr = ctArray.map(byte => String.fromCharCode(byte)).join("")
 
-  return { ivStr: saltStr, ctStr }
+  return { ivStr, ctStr }
 }
 
 export async function decryptText(
@@ -130,6 +128,10 @@ export async function decryptText(
   ivStr: string,
   protectedKey: CryptoKey
 ): Promise<string> {
+  if (!ctStr || !ivStr) {
+    throw new Error("Missing required parameters: ciphertext or IV is empty")
+  }
+
   const decryptIv = new Uint8Array(
     Array.from(ivStr).map(ch => ch.charCodeAt(0))
   )
@@ -137,13 +139,35 @@ export async function decryptText(
 
   const ctUint8 = new Uint8Array(Array.from(ctStr).map(ch => ch.charCodeAt(0)))
 
-  const protectedKeyBuffer = await crypto.subtle.decrypt(
-    decryptAlg,
-    protectedKey,
-    ctUint8
-  )
+  try {
+    const protectedKeyBuffer = await crypto.subtle.decrypt(
+      decryptAlg,
+      protectedKey,
+      ctUint8
+    )
 
-  const plaintext = new TextDecoder().decode(protectedKeyBuffer)
+    const plaintext = new TextDecoder().decode(protectedKeyBuffer)
 
-  return plaintext
+    return plaintext
+  } catch (err: unknown) {
+    const error = err as Error
+    console.error("Failed to decrypt text. Details:", {
+      error,
+      ivLength: ivStr.length,
+      ctLength: ctStr.length,
+      keyAlgorithm: protectedKey.algorithm,
+      keyUsages: protectedKey.usages,
+      errorName: error.name,
+      errorMessage: error.message,
+      errorCause: (error.cause as Error)?.message
+    })
+    throw new Error(
+      "Failed to decrypt text. This could be due to:\n" +
+      "1. Invalid encryption key (most likely cause)\n" +
+      "2. Corrupted ciphertext\n" +
+      "3. Mismatched IV (initialization vector)\n" +
+      "Please ensure you're using the correct encryption key and the data hasn't been corrupted.\n" +
+      `Technical details: ${error.name}: ${error.message}`
+    )
+  }
 }

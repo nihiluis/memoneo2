@@ -3,8 +3,16 @@ package expo.modules.enckey
 import android.util.Log
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+import java.security.Security
 
 class EnckeyModule : Module() {
+  init {
+    // Register BouncyCastle provider if not already registered
+    if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+      Security.addProvider(BouncyCastleProvider())
+    }
+  }
 
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
@@ -32,7 +40,7 @@ class EnckeyModule : Module() {
       } catch (ex: Exception) {
         Log.e(ID, "Error encrypting text: ${ex.message}", ex)
         
-        "error"
+        throw ex
       }
     }
   }

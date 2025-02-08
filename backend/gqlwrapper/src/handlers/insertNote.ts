@@ -1,14 +1,14 @@
 import { Context, t } from "elysia"
 import { InsertNoteMutation } from "../mutation.js"
-import { cacheExchange, Client, createClient, fetchExchange } from "@urql/core"
+import { Client } from "@urql/core"
 import { getToken } from "./utils.js"
 import { gqlClient } from "../client.js"
 import { createLogger } from "../logger.js"
-import { ENDPOINT_GQL_URL } from "../env.js"
 
 const NoteSchema = t.Object({
   id: t.String(),
   body: t.String(),
+  body_iv: t.String(),
   title: t.String(),
   date: t.String(),
   archived: t.Boolean(),

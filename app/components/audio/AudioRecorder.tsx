@@ -37,7 +37,15 @@ function AudioRecorderInner() {
     // fresh
     if (!paused) {
       setAudioState({ uri: "" })
-      await audioRecorder.prepareToRecordAsync()
+
+      try {
+        await audioRecorder.prepareToRecordAsync()
+      } catch (err) {
+        console.error("Failed to prepare recording:", err)
+        Alert.alert("Failed to prepare recording. Please try again.")
+        return
+      }
+      console.log("OK")
     }
     audioRecorder.record()
 

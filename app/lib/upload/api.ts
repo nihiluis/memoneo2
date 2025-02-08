@@ -6,14 +6,19 @@ import { getGqlWrapperUrl } from "../settings/urls"
 
 export async function uploadTranscript(
   token: string,
+  ivStr: string,
   userId: string,
   recordFileData: RecordFileData,
   transcript: string,
 ) {
   console.log("Uploading transcript", transcript)
   let encryptedText = ""
+  let textIv = ""
   try {
-    encryptedText = await enckey.encryptText(transcript)
+    const encryptedResult = await enckey.encryptText(transcript)
+    // The first 12 bytes (16 chars in base64) of the result is the IV
+    textIv = encryptedResult.substring(0, 16)
+    encryptedText = encryptedResult.substring(16)
   } catch (error) {
     console.error("Failed to encrypt transcript", error)
     return
@@ -27,6 +32,7 @@ export async function uploadTranscript(
   const note = {
     id: uuid,
     body: encryptedText,
+    body_iv: textIv,
     title,
     date,
     archived: false,

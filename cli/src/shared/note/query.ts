@@ -6,6 +6,7 @@ export const DownloadQuery = gql`
       id
       date
       body
+      body_iv
       archived
       title
       updated_at

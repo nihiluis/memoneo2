@@ -74,6 +74,7 @@ export default function RecordScreen() {
       if (!hasTranscript) return
       return await uploadTranscript(
         token,
+        auth.enckey.salt,
         auth.user.id,
         recordFileData,
         metadata.transcribe.text

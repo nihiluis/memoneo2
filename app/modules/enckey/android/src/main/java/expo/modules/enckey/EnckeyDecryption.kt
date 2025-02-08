@@ -1,7 +1,9 @@
 package expo.modules.enckey
 
+import android.annotation.SuppressLint
 import android.util.Base64
 import android.util.Log
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.SecretKey
@@ -13,6 +15,7 @@ object EnckeyDecryption {
     private const val TAG_LENGTH_BIT = 128 // GCM authentication tag length
     private const val TAG = "EnckeyDecryption"
 
+    @SuppressLint("DeprecatedProvider")
     fun decryptProtectedKey(
         password: String,
         ctStr: String,

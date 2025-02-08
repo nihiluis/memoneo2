@@ -4,12 +4,13 @@ export const InsertNoteMutation = gql`
   mutation InsertNoteMutation($inputs: [note_insert_input!]!) {
     insert_note(
       objects: $inputs
-      on_conflict: { constraint: note_pkey, update_columns: [title, body] }
+      on_conflict: { constraint: note_pkey, update_columns: [title, body, body_iv] }
     ) {
       returning {
         id
         title
         body
+        body_iv
         date
         version
       }
@@ -22,15 +23,17 @@ export const UpdateNoteMutation = gql`
     $id: uuid!
     $title: String!
     $body: String!
+    $bodyIv: String!
     $version: Int!
     $date: date!
   ) {
     update_note_by_pk(
       pk_columns: { id: $id }
-      _set: { title: $title, body: $body, version: $version, date: $date }
+      _set: { title: $title, body: $body, body_iv: $bodyIv, version: $version, date: $date }
     ) {
       title
       body
+      body_iv
       date
       updated_at
       version

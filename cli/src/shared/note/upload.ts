@@ -69,11 +69,7 @@ export async function uploadNewNotes({
 
   progress.start(newMdFiles.length, 0)
   for (let mdFile of newMdFiles) {
-    const encryptedText = await encryptText(
-      mdFile.text,
-      decodeBase64String(auth.enckey!.salt),
-      key
-    )
+    const encryptedText = await encryptText(mdFile.text, key)
 
     const uuid = generateUuid()
     mdFile.willBeCreated = uuid
@@ -90,6 +86,7 @@ export async function uploadNewNotes({
     const note = {
       id: uuid,
       body: encodeBase64String(encryptedText.ctStr),
+      bodyIv: encodeBase64String(encryptedText.ivStr),
       title,
       date,
       archived: false,

@@ -173,4 +173,15 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // Force consistent Kotlin versions
+    implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
+    
+    // Kotlin standard library
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion")
+    
+    // Kotlin Coroutines
+    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:$coroutinesVersion"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
 }
