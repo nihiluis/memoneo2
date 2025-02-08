@@ -63,7 +63,10 @@ export async function deleteRemovedNotes(
   command.log("")
 
   command.log("These files will be archived on remote.")
-  await promptConfirmation(command)
+  const yes = await promptConfirmation(command)
+  if (!yes) {
+    return
+  }
 
   const { error: archiveError } = await gqlClient
     .mutation(ArchiveNotesMutation, {

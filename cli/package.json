@@ -7,8 +7,15 @@
   "scripts": {
     "build": "rimraf dist && tsc -b",
     "build:sync": "pnpm run build && node ./bin/dev.js sync",
+    "build:upload": "pnpm run build && node ./bin/dev.js upload",
+    "build:download": "pnpm run build && node ./bin/dev.js download",
     "postpack": "shx rm -f oclif.manifest.json",
-    "memoneo": "node ./bin/run.js"
+    "memoneo": "node ./bin/run.js",
+    "sync": "node ./bin/run.js sync",
+    "upload": "node ./bin/run.js upload",
+    "download": "node ./bin/run.js download",
+    "delete": "node ./bin/run.js delete",
+    "test": "vitest run"
   },
   "bin": {
     "cli": "./bin/run"
@@ -34,6 +41,7 @@
     "node-fetch-commonjs": "^3.3.2",
     "rimraf": "^6.0.1",
     "uuid": "^10.0.0",
+    "vitest": "^3.0.5",
     "yaml": "^2.5.0"
   },
   "devDependencies": {

@@ -132,6 +132,10 @@ export async function decryptText(
     throw new Error("Missing required parameters: ciphertext or IV is empty")
   }
 
+  if (ivStr.length !== 12) {
+    throw new Error(`IV must be 12 bytes, got ${ivStr.length} bytes`)
+  }
+
   const decryptIv = new Uint8Array(
     Array.from(ivStr).map(ch => ch.charCodeAt(0))
   )

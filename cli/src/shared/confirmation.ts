@@ -1,10 +1,25 @@
 import { input } from "@inquirer/prompts"
 import { Command } from "@oclif/core"
 
-export async function promptConfirmation(command: Command, textMessage: string = "") {
+interface Config {
+  exit: boolean
+}
+
+export async function promptConfirmation(
+  command: Command,
+  textMessage: string = "",
+  config?: Config
+): Promise<boolean> {
+  const { exit } = config ?? { exit: false }
+
   const baseTextMessage = textMessage ?? "Are you sure?"
-  const confirmAnswer = (await input({ message: baseTextMessage + " y/n" })) || "n"
-  if (confirmAnswer.toLowerCase() !== "y") {
+  const confirmAnswer =
+    (await input({ message: baseTextMessage + " y/n" })) || "n"
+
+  const confirmAnswerStr = confirmAnswer.toLowerCase()
+  if (confirmAnswerStr !== "y" && exit) {
     command.exit()
   }
+
+  return confirmAnswerStr === "y"
 }

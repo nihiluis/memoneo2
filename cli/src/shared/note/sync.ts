@@ -29,6 +29,7 @@ interface SyncNotesConfig {
 
 interface MarkdownFileSyncData {
   outdatedType: OutdatedType | null
+  outdatedReason: string
   hasNewMd5Hash: boolean
   isMdFileNew: boolean
   // The local md5hash of the text in the md file.
@@ -61,77 +62,125 @@ export async function syncNotes({
   }
 
   cliUx.action.start("Retrieving local and remote changes to notes")
-  const mdFileData = mdFiles
-    .map(mdFile => {
-      const id = mdFile.metadata.id
-      if (!id) {
-        return null
-      }
 
-      mdFileMap[id] = mdFile
+  const mdFileData: MarkdownFileSyncData[] = []
 
-      if (!noteMap.hasOwnProperty(id)) {
+  for (const mdFile of mdFiles) {
+    const id = mdFile.metadata.id
+    if (!id) {
+      continue
+    }
+
+    mdFileMap[id] = mdFile
+
+    if (!noteMap.hasOwnProperty(id)) {
+      command.warn(
+        `Found local note ${id} which does not exist on remote. Skipping sync. Manual fix is necessary.`
+      )
+      continue
+    }
+
+    const noteCacheData = cache.getOrCreateNoteCacheData(id)
+
+    const currentRemoteNoteData = noteMap[id]
+
+    const noteDate = dayjs(currentRemoteNoteData.updated_at)
+    const mdFileDate = dayjs(mdFile.modifiedTime)
+
+    const localMd5Hash = md5HashText(mdFile.text)
+    const lastMd5Hash = noteCacheData.lastMd5Hash
+
+    let hasNewMd5Hash = localMd5Hash !== lastMd5Hash
+    const hasLastMd5Hash = lastMd5Hash !== ""
+
+    const noteCacheDataWithChanges = {...noteCacheData}
+
+    if (!hasLastMd5Hash) {
+      command.warn(
+        `Local note ${id} has no lastMd5Hash. This is unexpected. Fixing cache...`
+      )
+
+      noteCacheDataWithChanges.lastMd5Hash = localMd5Hash
+
+      const decryptedRemoteText = await decryptText(
+        decodeBase64String(currentRemoteNoteData.body),
+        decodeBase64String(currentRemoteNoteData.body_iv),
+        key
+      )
+      const remoteMd5Hash = md5HashText(decryptedRemoteText)
+
+      hasNewMd5Hash = localMd5Hash !== remoteMd5Hash
+    } else if (hasNewMd5Hash) {
+      const decryptedText = await decryptText(
+        decodeBase64String(currentRemoteNoteData.body),
+        decodeBase64String(currentRemoteNoteData.body_iv),
+        key
+      )
+      const currentMd5Hash = md5HashText(decryptedText)
+
+      if (localMd5Hash === currentMd5Hash) {
         command.warn(
-          `Found local note ${id} which is not registered in the cloud. Skipping sync.`
+          `Local file matches remote file content but has different hash for note ${id}. This is unexpected. Updating lastMd5Hash in cache.`
         )
-        return null
+        noteCacheDataWithChanges.lastMd5Hash = currentMd5Hash
       }
 
-      const noteCacheData = cache.getOrCreateNoteCacheData(id)
+      hasNewMd5Hash = false
+    }
 
-      const note = noteMap[id]
+    const newFileName = mdFile.fileName !== currentRemoteNoteData.file?.title
+    const newFilePath = mdFile.path !== currentRemoteNoteData.file?.path
+    const newFileNameOrPath = newFileName || newFilePath
 
-      const noteDate = dayjs(note.updated_at)
-      const mdFileDate = dayjs(mdFile.modifiedTime)
+    let outdatedType: OutdatedType | null = null
+    let outdatedReason = ""
+    if (hasNewMd5Hash) {
+      outdatedType = "Modified"
+      outdatedReason =
+        "Local file has a different md5 hash than the remote file."
+    } else if (newFileNameOrPath) {
+      outdatedType = "LocationChanged"
+      if (newFileName) {
+        outdatedReason = `File name changed from ${currentRemoteNoteData.file?.title} to ${mdFile.fileName}`
+      } else {
+        outdatedReason = `File path changed from ${currentRemoteNoteData.file?.path} to ${mdFile.path}`
+      }
+    }
 
-      const localMd5Hash = md5HashText(mdFile.text)
-      const lastMd5Hash = noteCacheData.lastMd5Hash
+    mdFileData.push({
+      outdatedType,
+      hasNewMd5Hash,
+      isMdFileNew: false,
+      localMd5Hash,
+      lastMd5Hash,
+      note: currentRemoteNoteData,
+      noteDate,
+      mdFileDate,
+      noteCacheData,
+      mdFile,
+      newFileNameOrPath,
+      outdatedReason,
+    } satisfies MarkdownFileSyncData)
 
-      const hasNewMd5Hash =
-        lastMd5Hash.length > 0 && localMd5Hash !== lastMd5Hash
-
-      // can this even exist in sync? should be uploaded earlier
-      const isMdFileNew =
-        lastMd5Hash.length === 0 && mdFileDate.isAfter(noteDate)
-      const newFileNameOrPath =
-        mdFile.fileName !== note.file?.title || mdFile.path !== note.file?.path
-      // console.log(`note ${note.title} hasNewMd5Hash ${hasNewMd5Hash} isMdFileNew ${isMdFileNew} newFileNameOrPath ${newFileNameOrPath}`)
-
-      const outdatedType: OutdatedType | null = hasNewMd5Hash
-        ? "Modified"
-        : isMdFileNew
-        ? "New"
-        : newFileNameOrPath
-        ? "LocationChanged"
-        : null
-
-      return {
-        outdatedType,
-        hasNewMd5Hash,
-        isMdFileNew,
-        localMd5Hash,
-        lastMd5Hash,
-        note,
-        noteDate,
-        mdFileDate,
-        noteCacheData,
-        mdFile,
-        newFileNameOrPath,
-      } satisfies MarkdownFileSyncData
-    })
-    .filter(data => !!data)
-    .map(data => data!)
+    cache.updateNoteCacheData(id, noteCacheDataWithChanges)
+  }
 
   cliUx.action.stop()
 
-  const updatedLocalNotes = await writeUpdatedNotesFromLocalToRemote(
-    mdFileData,
-    command,
-    config,
-    auth,
-    key,
-    gqlClient
-  )
+
+  const { promptYes, fileSyncData: updatedLocalNotes } =
+    await writeUpdatedNotesFromLocalToRemote(
+      mdFileData,
+      command,
+      config,
+      auth,
+      key,
+      gqlClient
+    )
+  if (!promptYes) {
+    return
+  }
+
   const updatedLocalNotesIds = updatedLocalNotes.map(note => note.note.id)
 
   const filteredMdFileData = mdFileData.filter(
@@ -160,7 +209,7 @@ async function writeUpdatedNotesFromRemoteToLocal(
 
   // TODO what happens if a note is outdated from remote but was updated locally, what takes precedence?
   if (updatedRemoteNotes.length === 0) {
-    command.log("No note changes found to push to remote.")
+    command.log("No remote note changes found to apply to local.")
     return
   }
 
@@ -209,6 +258,11 @@ async function writeUpdatedNotesFromRemoteToLocal(
 
 type OutdatedType = "Modified" | "New" | "LocationChanged"
 
+interface WriteResult {
+  promptYes: boolean
+  fileSyncData: MarkdownFileSyncData[]
+}
+
 /**
  * @returns the notes that were outdated from remote and were updated locally
  */
@@ -219,13 +273,13 @@ async function writeUpdatedNotesFromLocalToRemote(
   auth: AuthResult,
   key: CryptoKey,
   gqlClient: Client
-): Promise<MarkdownFileSyncData[]> {
+): Promise<WriteResult> {
   const outdatedLocalNotes = mdFileData.filter(data => !!data.outdatedType)
 
   // TODO what happens if a note is outdated from remote but was updated locally, what takes precedence?
   if (outdatedLocalNotes.length === 0) {
     command.log("No note changes found that could be written to remote.")
-    return []
+    return { promptYes: false, fileSyncData: [] }
   }
 
   command.log("")
@@ -234,12 +288,15 @@ async function writeUpdatedNotesFromLocalToRemote(
     command.log(
       `* ${limitTitleLength(note.note.title ?? "! Title missing")} - ${
         note.outdatedType
-      }`
+      } - ${note.outdatedReason}`
     )
   )
   command.log("")
   command.log("Do you want to write these changes to remote?")
-  await promptConfirmation(command)
+  const yes = await promptConfirmation(command)
+  if (!yes) {
+    return { promptYes: false, fileSyncData: [] }
+  }
 
   const progress = new SingleBar({
     format: "Update outdated remote notes... | {bar} | {value}/{total} notes",
@@ -279,7 +336,7 @@ async function writeUpdatedNotesFromLocalToRemote(
           id: note.id,
           title: mdFile.metadata.title,
           body: encodeBase64String(encryptedBody.ctStr),
-          bodyIv: encodeBase64String(encryptedBody.ivStr),
+          body_iv: encodeBase64String(encryptedBody.ivStr),
           date: mdFile.metadata.date,
           version: note.version,
         })
@@ -305,5 +362,5 @@ async function writeUpdatedNotesFromLocalToRemote(
   }
   progress.stop()
 
-  return outdatedLocalNotes
+  return { promptYes: true, fileSyncData: outdatedLocalNotes }
 }

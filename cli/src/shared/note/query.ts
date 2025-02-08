@@ -1,8 +1,8 @@
-import { gql } from '@urql/core';
+import { gql } from "@urql/core"
 
 export const DownloadQuery = gql`
   query DownloadQuery {
-    note(where: {archived: {_eq: false}}) {
+    note(where: { archived: { _eq: false } }) {
       id
       date
       body
@@ -21,7 +21,7 @@ export const DownloadQuery = gql`
 
 export const NoteIdQuery = gql`
   query NoteIdQuery {
-    note(where: {archived: {_eq: false}}) {
+    note(where: { archived: { _eq: false } }) {
       id
       title
     }

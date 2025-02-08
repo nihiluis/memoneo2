@@ -40,6 +40,6 @@ export default class Download extends Command {
     const notes = await downloadNotes(downloadConfig)
     await writeNewNotes(notes, downloadConfig)
 
-    await saveFileCache(cache)
+    await saveFileCache(this, cache)
   }
 }

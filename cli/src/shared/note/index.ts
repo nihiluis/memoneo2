@@ -2,6 +2,7 @@ export interface Note {
   id: string
   date: string
   body: string
+  decryptedBody?: string
   body_iv: string
   archived: boolean
   version: number

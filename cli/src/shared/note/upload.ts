@@ -42,8 +42,6 @@ export async function uploadNewNotes({
     mdFile => !mdFile.metadata.hasOwnProperty("id")
   )
 
-  // const newNoteUniqueConstraintMap: Record<string, Partial<Note>> = {}
-
   if (newMdFiles.length === 0) {
     command.log("No new notes to upload found.")
     return
@@ -56,10 +54,13 @@ export async function uploadNewNotes({
     )
   )
   command.log("")
-  await promptConfirmation(
+  const yes = await promptConfirmation(
     command,
     "Do you want to upload these notes to remote?"
   )
+  if (!yes) {
+    return
+  }
 
   const progress = new SingleBar({
     format: "Encrypting... | {bar} | {value}/{total} notes",
@@ -74,8 +75,8 @@ export async function uploadNewNotes({
     const uuid = generateUuid()
     mdFile.willBeCreated = uuid
 
-    const title = mdFile.fileName
-    const date = mdFile.modifiedTime.toISOString()
+    const title = mdFile.metadata.title ?? mdFile.fileName
+    const date = mdFile.metadata.date ?? mdFile.modifiedTime.toISOString()
 
     if (!isValidFilename(title)) {
       throw new Error(
@@ -86,7 +87,7 @@ export async function uploadNewNotes({
     const note = {
       id: uuid,
       body: encodeBase64String(encryptedText.ctStr),
-      bodyIv: encodeBase64String(encryptedText.ivStr),
+      body_iv: encodeBase64String(encryptedText.ivStr),
       title,
       date,
       archived: false,

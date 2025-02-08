@@ -55,12 +55,15 @@ export default class Sync extends Command {
     }
 
     const notes = await downloadNotes(downloadConfig)
+    await saveFileCache(this, cache, { logMessage: false })
+
     await writeNewNotes(notes, downloadConfig)
+    await saveFileCache(this, cache, { logMessage: false })
 
     await uploadNewNotes({ existingNotes: notes, mdFiles, ...downloadConfig })
+    await saveFileCache(this, cache, { logMessage: false })
 
     await syncNotes({ notes, mdFiles, ...downloadConfig })
-
-    await saveFileCache(cache)
+    await saveFileCache(this, cache, { logMessage: true })
   }
 }

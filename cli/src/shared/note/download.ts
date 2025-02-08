@@ -11,7 +11,7 @@ import { DownloadQuery } from "./query.js"
 import { writeNoteToFile } from "./write.js"
 import { SingleBar } from "cli-progress"
 import { promptConfirmation } from "../confirmation.js"
-import { limitTitleLength } from "./noteTitle.js"
+import { formatNoteDate, limitTitleLength } from "./noteTitle.js"
 
 interface DownloadNotesConfig {
   auth: AuthResult
@@ -65,7 +65,7 @@ export async function decryptNotes(
       key
     )
     progress.increment()
-    note.body = decryptedBody
+    note.decryptedBody = decryptedBody
   }
   progress.stop()
 
@@ -89,10 +89,15 @@ export async function writeNewNotes(
 
   command.log("")
   command.log("Notes to download:")
-  newNotes.forEach(note => command.log(`* ${limitTitleLength(note.title)}`))
+  newNotes.forEach(note =>
+    command.log(`* ${limitTitleLength(note.title)} (${formatNoteDate(note)})`)
+  )
   command.log("")
   command.log("Do you want to save these notes locally?")
-  await promptConfirmation(command)
+  const yes = await promptConfirmation(command)
+  if (!yes) {
+    return []
+  }
 
   await decryptNotes(newNotes, downloadConfig)
 
@@ -104,7 +109,12 @@ export async function writeNewNotes(
 
   progress.start(newNotes.length, 0)
   for (let note of newNotes) {
-    const decryptedBody = note.body
+    const decryptedBody = note.decryptedBody
+    if (!decryptedBody) {
+      command.error(`Note ${note.id} has no decrypted body`)
+      command.exit()
+      continue
+    }
 
     await writeNoteToFile(note, decryptedBody, config, {
       title: note.file?.title ?? note.title,

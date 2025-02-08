@@ -1,3 +1,4 @@
+import { Command } from "@oclif/core"
 import protect from "await-protect"
 import * as fs from "fs/promises"
 
@@ -7,6 +8,7 @@ export interface MemoneoFileCache {
   trackedNoteIds: string[]
   notes: Record<string, NoteCacheData>
   getOrCreateNoteCacheData(id: string): NoteCacheData
+  updateNoteCacheData(id: string, data: Partial<NoteCacheData>): void
 }
 
 export interface NoteCacheData {
@@ -23,13 +25,22 @@ export async function loadFileCache(): Promise<MemoneoFileCache | undefined> {
   const cache = JSON.parse(cacheBuffer.toString("utf-8"))
   cache.getOrCreateNoteCacheData = (id: string) =>
     getOrCreateNoteCacheData(cache, id)
+  cache.updateNoteCacheData = (id: string, data: Partial<NoteCacheData>) =>
+    updateNoteCacheData(cache, id, data)
 
   // TODO validate config
 
   return cache
 }
 
-export async function saveFileCache(cache: MemoneoFileCache) {
+export async function saveFileCache(
+  command: Command,
+  cache: MemoneoFileCache,
+  options: { logMessage?: boolean } = { logMessage: true }
+) {
+  if (options.logMessage) {
+    command.log("Saving file cache...")
+  }
   await fs.writeFile(CACHE_PATH, JSON.stringify(cache))
 }
 
@@ -56,6 +67,8 @@ export async function createEmptyFileCache(): Promise<MemoneoFileCache> {
     notes: {},
     getOrCreateNoteCacheData: (id: string) =>
       getOrCreateNoteCacheData(cache, id),
+    updateNoteCacheData: (id: string, data: Partial<NoteCacheData>) =>
+      updateNoteCacheData(cache, id, data),
   }
 
   await fs.writeFile(CACHE_PATH, JSON.stringify(cache))
@@ -72,4 +85,12 @@ function getOrCreateNoteCacheData(
   }
 
   return cache.notes[id]
+}
+
+function updateNoteCacheData(
+  cache: MemoneoFileCache,
+  id: string,
+  data: Partial<NoteCacheData>
+) {
+  cache.notes[id] = { ...cache.notes[id], ...data }
 }

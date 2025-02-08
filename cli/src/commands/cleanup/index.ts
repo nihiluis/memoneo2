@@ -7,9 +7,16 @@ import { cliUx } from "../../lib/reexports.js"
 import { deleteRemovedNotes } from "../../shared/note/delete.js"
 import { NoteIdQuery } from "../../shared/note/query.js"
 import { NoteIdAndTitle } from "../../shared/note/index.js"
+import { promptConfirmation } from "../../shared/confirmation.js"
+import {
+  ArchiveNoteMutation,
+  DeleteNotesMutation,
+} from "../../shared/note/mutation.js"
+import { limitTitleLength } from "../../shared/note/noteTitle.js"
+import { removeIdFromMetadataInFile } from "../../shared/note/write.js"
 
-export default class Delete extends Command {
-  static description = "Delete notes"
+export default class Cleanup extends Command {
+  static description = "Cleanup notes"
 
   static examples = []
 
@@ -19,17 +26,21 @@ export default class Delete extends Command {
     dir: Args.string({
       description:
         "The target directory that is recursively searched for md files",
-      required: false,
+      required: true,
     }),
   }
 
   async run(): Promise<void> {
-    const { args } = await this.parse(Delete)
+    const { args } = await this.parse(Cleanup)
 
     const { config, auth, key, internalConfig, cache, gqlClient } =
       await loadPrerequisites()
 
-    const targetDirectory: string = args["dir"] || config.baseDirectory
+    const targetDirectory = args["dir"]
+    if (!targetDirectory) {
+      this.error("Please provide a target directory")
+    }
+
     const targetDirectoryStat = await fs.stat(targetDirectory)
     if (!targetDirectoryStat.isDirectory()) {
       this.error(
@@ -44,34 +55,34 @@ export default class Delete extends Command {
     )
     cliUx.action.stop()
 
-    cliUx.action.start(`Loading remote notes`)
-    const { data, error } = await gqlClient.query(NoteIdQuery, {}).toPromise()
+    const noteIds = mdFiles.map(mdFile => mdFile.metadata.id).filter(id => !!id)
+    mdFiles.forEach(mdFile =>
+      this.log(
+        `* ${limitTitleLength(mdFile.metadata.title ?? "! Title missing")}`
+      )
+    )
+
+    await promptConfirmation(
+      this,
+      "Are you sure you want to cleanup these notes?\n" +
+        "This will remove the ids from the metadata in the files and delete the notes on remote.",
+      { exit: true }
+    )
+
+    const { data, error } = await gqlClient
+      .mutation(DeleteNotesMutation, { ids: noteIds })
+      .toPromise()
 
     if (!data || error) {
       this.error("Unable to retrieve data from the GQL API")
     }
 
-    cliUx.action.stop()
+    for (const mdFile of mdFiles) {
+      if (!noteIds.includes(mdFile.metadata.id)) {
+        continue
+      }
 
-    const deleteConfig = {
-      auth,
-      key,
-      config,
-      internalConfig,
-      cache,
-      gqlClient,
-      command: this,
+      await removeIdFromMetadataInFile(mdFile, config)
     }
-
-    // could use Zod here
-    const noteIds = data.note as NoteIdAndTitle[]
-    if (noteIds.length === 0) {
-      cliUx.warn("Didn't find any notes on remote")
-      return
-    }
-
-    await deleteRemovedNotes(noteIds, mdFiles, deleteConfig)
-
-    await saveFileCache(this, cache)
   }
 }

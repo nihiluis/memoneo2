@@ -43,3 +43,29 @@ export async function writeNoteToFile(
 
   await fs.writeFile(targetFilePath, fileText)
 }
+
+export async function removeIdFromMetadataInFile(
+  mdFile: MarkdownFileInfo,
+  config: MemoneoConfig
+) {
+  const metadata = dedent`---
+  title: ${mdFile.metadata.title}
+  date: ${mdFile.metadata.date}
+  version: ${mdFile.metadata.version}
+  ---`
+
+  // Combine metadata with body, preserving body's whitespace
+  const fileText = `${metadata}\n${mdFile.text}`
+
+  const targetFilePath = path.join(
+    config.baseDirectory,
+    mdFile.path,
+    `${mdFile.fileName}.md`
+  )
+
+  await fs.mkdir(path.join(config.baseDirectory, mdFile.path), {
+    recursive: true,
+  })
+
+  await fs.writeFile(targetFilePath, fileText)
+}
