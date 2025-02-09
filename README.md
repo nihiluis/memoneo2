@@ -1,6 +1,10 @@
 # Memoneo
 Memoneo provides a small cli to encrypt and sync your markdown notes to a Postgres database via a self-hosted backend.
 
+## Demo
+
+
+
 ## Project structure
 ## Frontends
 - [Memoneo CLI](./cli/README.md) organize your markdown notes locally and sync them to the Memoneo server
